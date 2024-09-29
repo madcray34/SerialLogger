@@ -23,16 +23,26 @@ namespace netlib
 
       while (SetupDiEnumDeviceInfo(hDevInfo, i, &devInfoData))
       {
-         char buffer[256];
-         if (SetupDiGetDeviceInstanceIdA(hDevInfo, &devInfoData, buffer, sizeof(buffer), nullptr))
+         // Buffer to store the port name
+         char portName[256];
+
+         // Query the device's port name using SPDRP_FRIENDLYNAME or SPDRP_PORTNAME
+         if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, nullptr,
+                                               (PBYTE)portName, sizeof(portName), nullptr))
          {
-            std::string deviceInstanceId = buffer;
-            if (deviceInstanceId.find("COM") != std::string::npos)
+            std::string friendlyStr = portName;
+
+            // Find "COM" in the friendly name and extract the COM port
+            std::size_t comPos        = friendlyStr.find("COM");
+            std::size_t closeParenPos = friendlyStr.find(")", comPos);
+            if (comPos != std::string::npos && closeParenPos != std::string::npos)
             {
-               std::string comPort = deviceInstanceId.substr(deviceInstanceId.find("COM"));
+               // Extract the substring starting from "COM"
+               std::string comPort = friendlyStr.substr(comPos, closeParenPos - comPos);
                ports.push_back(comPort);
             }
          }
+
          i++;
       }
 

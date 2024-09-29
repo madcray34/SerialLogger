@@ -6,15 +6,16 @@
 
 class Presenter : public IPresenter
 {
-public:
-    Presenter(IModel &model, std::function<void(SensorData)> callback)
-        : m_model{model}, m_viewCallback{callback} {};
-    ~Presenter() = default;
+   public:
+   Presenter(IModel &model, std::function<void(SensorData)> callback)
+       : m_model{ model }, m_viewCallback{ callback } {};
+   ~Presenter() = default;
 
-    // Start data reception in a separate thread
-    void start();
+   // Start data reception in a separate thread
+   void start();
+   void stop();
 
-private:
-    IModel &m_model;
-    std::function<void(SensorData)> m_viewCallback;
+   private:
+   IModel                         &m_model;
+   std::function<void(SensorData)> m_viewCallback;
 };

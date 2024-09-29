@@ -4,8 +4,8 @@
 namespace netlib
 {
    Connection::Connection(boost::asio::io_context& asioContext, boost::asio::serial_port port,
-                          ITSQueue<owned_message>& qIn)
-       : m_asioContext(asioContext), m_port(std::move(port)), m_qMessagesIn(qIn)
+                          std::string name, ITSQueue<owned_message>& qIn)
+       : m_asioContext(asioContext), m_port(std::move(port)), m_portName(name), m_qMessagesIn(qIn)
    {
       configureSerialPort(m_port);
    }
@@ -38,6 +38,28 @@ namespace netlib
       return m_port.is_open();
    }
 
+
+   std::string_view Connection::getPortName() const
+   {
+      return m_portName;
+   }
+
+
+   void Connection::exampleMethod()
+   {
+      // Check if shared_from_this is valid
+      if (auto self = shared_from_this())
+      {
+         std::cout << "Shared pointer to Connection is valid." << std::endl;
+         std::cout << "Use count: " << self.use_count() << std::endl;    // Should be > 1 if
+                                                                         // valid
+      }
+      else
+      {
+         std::cout << "Failed to get shared pointer." << std::endl;
+      }
+   }
+
    void Connection::ReadBody()
    {
       // TODO Trick for the future to not have to wait forever if data is not coming close the port
@@ -58,8 +80,8 @@ namespace netlib
           {
              if (!ec)
              {
-                std::cout << "[" << id << "] Read " << length << " bytes successfully.\n";
-                // Add to incoming message queue
+                // std::cout << "[" << id << "] Read " << length << " bytes successfully.\n";
+                //  Add to incoming message queue
                 AddToIncomingMessageQueue();
              }
              else
@@ -72,8 +94,11 @@ namespace netlib
 
    void Connection::AddToIncomingMessageQueue()
    {
-      m_qMessagesIn.push_back({ this->shared_from_this(), m_msgTemporaryIn });
+      std::shared_ptr<Connection> _ptr = this->shared_from_this();
+      if (_ptr)    // avoid dangling pointers
+         m_qMessagesIn.push_back({ _ptr, m_msgTemporaryIn });
 
+      m_msgTemporaryIn.body.clear();    // or reset if needed
       // We must now prime the asio context to receive the next message. It
       // wil just sit and wait for bytes to arrive, and the message construction
       // process repeats itself.

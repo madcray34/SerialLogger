@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <string_view>
 
 namespace netlib
 {
@@ -32,5 +33,12 @@ namespace netlib
        * @return boolean.
        */
       virtual bool isConnected() const = 0;
+
+      /**
+       * @brief Get the Port Name object
+       *
+       * @return std::string
+       */
+      virtual std::string_view getPortName() const = 0;
    };
 }    // namespace netlib

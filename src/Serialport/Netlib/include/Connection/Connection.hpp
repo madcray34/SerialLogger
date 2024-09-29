@@ -16,7 +16,7 @@ namespace netlib
    template<typename T>
    class ITSQueue;
 
-   class Connection : public IConnection, std::enable_shared_from_this<Connection>
+   class Connection : public std::enable_shared_from_this<Connection>, public IConnection
    {
       public:
       /**
@@ -27,7 +27,7 @@ namespace netlib
        * @param qIn
        */
       Connection(boost::asio::io_context& asioContext, boost::asio::serial_port port,
-                 ITSQueue<owned_message>& qIn);
+                 std::string name, ITSQueue<owned_message>& qIn);
 
       virtual ~Connection()
       {}
@@ -39,6 +39,10 @@ namespace netlib
       void disconnect() override;
 
       bool isConnected() const override;
+
+      std::string_view getPortName() const override;
+
+      void exampleMethod();
 
       private:
       /**
@@ -63,6 +67,9 @@ namespace netlib
 
       // Each connection has a unique serial port
       boost::asio::serial_port m_port;
+
+      // Reference to the port name
+      std::string m_portName;
 
       // This references the incoming queue of the parent object
       ITSQueue<owned_message>& m_qMessagesIn;

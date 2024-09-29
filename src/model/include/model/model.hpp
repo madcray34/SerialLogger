@@ -5,13 +5,22 @@
 
 class Model : public IModel
 {
-public:
-    Model() {};
-    ~Model() = default;
+   public:
+   Model() : stopReceiving(false) {};
 
-    // Start data reception in a separate thread
-    void startReceivingData(std::function<void(SensorData)> callback);
+   ~Model()
+   {
+      stopReceivingData();
+   }
 
-private:
-    std::mutex m_mutex;
+   // Start data reception in a separate thread
+   void startReceivingData(std::function<void(SensorData)> callback) override;
+   void stopReceivingData() override
+   {
+      stopReceiving = true;
+   };
+
+   private:
+   std::mutex        m_mutex;
+   std::atomic<bool> stopReceiving;
 };

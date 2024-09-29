@@ -139,6 +139,7 @@ int main(int, char **)
    netlib::WindowsCOMPortScanner          portScanner;
    netlib::CustomServer                   server{ myQueue, portScanner, std::chrono::seconds(5) };
    server.start();
+   server.startMonitoringQueue();
 
    FileExplorer fileExplorer;
    Plotter      plotter;
@@ -155,8 +156,6 @@ int main(int, char **)
    // This is the main windows frame of the application, it runs untill the suer clicks exit
    while (!glfwWindowShouldClose(window))
    {
-      server.update(10, true);
-
       start_cycle();
       ImGui::NewFrame();
       ImPlot::CreateContext();
@@ -199,6 +198,8 @@ int main(int, char **)
    glfwDestroyWindow(window);
    glfwTerminate();
 
+   server.stopMonitoringQueue();
+   presenter.stop();
    return 0;
 }
 

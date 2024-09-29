@@ -4,14 +4,15 @@
 
 struct SensorData
 {
-    int64_t timestamp;
-    float displacement;
-    float voltage;
-    float coil_current;
+   int64_t timestamp;
+   float   displacement;
+   float   voltage;
+   float   coil_current;
 };
 
 class IModel
 {
-public:
-    virtual void startReceivingData(std::function<void(SensorData)> callback) = 0;
+   public:
+   virtual void startReceivingData(std::function<void(SensorData)> callback) = 0;
+   virtual void stopReceivingData()                                          = 0;
 };

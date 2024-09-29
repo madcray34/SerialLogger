@@ -72,51 +72,76 @@ namespace netlib
                 {
                    for (const auto& port : comPorts)
                    {
-                      std::cout << " Detected COM PORT- " << port << std::endl;
-                      std::optional<boost::asio::serial_port> newPort;    // Declare as optional
-                      try
+                      // Check if the port is already connected
+                      bool portAlreadyConnected = false;
+
+                      for (const auto& connection : m_deqConnections)
                       {
-                         // construct the boost::asio::serial_port value in-place
-                         // That attempt's to open the port
-                         newPort.emplace(m_asioContext, port.data());
-                      }
-                      catch (std::exception& e)
-                      {
-                         // If port was not opened a runtime error was launched
-                         std::cerr << "Error opening serial port: " << e.what() << std::endl;
-                         waitForClientConnection();
+                         if (connection->getPortName() == port)
+                         {
+                            portAlreadyConnected = true;
+                            break;    // Exit loop early if port is found
+                         }
                       }
 
-                      // Create a new connection to handle this port
-                      std::shared_ptr<Connection> newconn = std::make_shared<Connection>(
-                          m_asioContext, std::move(newPort.value()), m_qMsgIn);
-
-                      // Give the user server a chance to deny connection
-                      if (onClientConnect(newconn))
+                      if (!portAlreadyConnected)
                       {
-                         // Connection allowed, so add to container of new connections
-                         m_deqConnections.push_back(std::move(newconn));
+                         std::cout << " Detected COM PORT- " << port << std::endl;
+                         std::optional<boost::asio::serial_port> newPort;    // Declare as optional
+                         try
+                         {
+                            // construct the boost::asio::serial_port value in-place
+                            // That attempt's to open the port
+                            newPort.emplace(m_asioContext, port.data());
+                         }
+                         catch (std::exception& e)
+                         {
+                            // If port was not opened a runtime error was launched
+                            std::cerr << "Error opening serial port: " << e.what() << std::endl;
+                            waitForClientConnection();
+                         }
 
-                         // And very important! Issue a task to the connection's
-                         // asio context to sit and wait for bytes to arrive!
-                         m_deqConnections.back()->connectToClient(nIDCounter++);
+                         // Create a new connection to handle this port
+                         std::shared_ptr<Connection> newconn = std::make_shared<Connection>(
+                             m_asioContext, std::move(newPort.value()), port, m_qMsgIn);
 
-                         std::cout << "[" << m_deqConnections.back()->getID()
-                                   << "] Connection Approved\n"
-                                   << std::endl;
-                      }
-                      else
-                      {
-                         std::cout << "[-----] Connection Denied\n" << std::endl;
+                         newconn->exampleMethod();
 
-                         // Connection will go out of scope with no pending tasks, so will
-                         // get destroyed automagically due to the wonder of smart pointers
+                         // Give the user server a chance to deny connection
+                         if (onClientConnect(newconn))
+                         {
+                            // Connection allowed, so add to container of new connections
+                            m_deqConnections.push_back(std::move(newconn));
+
+                            // And very important! Issue a task to the connection's
+                            // asio context to sit and wait for bytes to arrive!
+                            m_deqConnections.back()->connectToClient(nIDCounter++);
+
+                            std::cout << "[" << m_deqConnections.back()->getID()
+                                      << "] Connection Approved\n"
+                                      << std::endl;
+                         }
+                         else
+                         {
+                            newconn->disconnect();
+                            std::cout << "[-----] Connection Denied\n" << std::endl;
+
+                            // Connection will go out of scope with no pending tasks, so will
+                            // get destroyed automagically due to the wonder of smart pointers
+                         }
                       }
                    }
                 }
                 else
                 {
                    std::cout << "No COM ports detected." << std::endl;
+
+                   // If something was connected now it isn't anymore, clean up
+                   for (const auto& connection : m_deqConnections)
+                   {
+                      connection->disconnect();
+                   }
+                   m_deqConnections.clear();
                 }
              }
              else

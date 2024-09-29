@@ -1,5 +1,6 @@
 #pragma once
 #include <ServerBase/ServerBase.hpp>
+#include <atomic>
 
 namespace netlib
 {
@@ -8,10 +9,20 @@ namespace netlib
       public:
       CustomServer(ITSQueue<owned_message>& msgIn, COMPortScanner& portScanner,
                    std::chrono::seconds periodicity)
-          : ServerBase(msgIn, portScanner, periodicity)
+          : ServerBase(msgIn, portScanner, periodicity), stopMonitoring(false)
       {}
 
-      ~CustomServer() = default;
+      ~CustomServer()
+      {
+         stopMonitoringQueue();
+      }
+
+      void startMonitoringQueue();
+
+      void stopMonitoringQueue()
+      {
+         stopMonitoring = true;    // Signal the monitoring thread to stop
+      }
 
       protected:
       bool onClientConnect(std::shared_ptr<Connection> client) override;
@@ -31,5 +42,8 @@ namespace netlib
        * @param msg
        */
       void onMessage(std::shared_ptr<Connection> client, [[maybe_unused]] Message& _msg) override;
+
+      private:
+      std::atomic<bool> stopMonitoring;
    };
 }    // namespace netlib
