@@ -133,24 +133,27 @@ int main(int, char **)
    ImGui_ImplGlfw_InitForOpenGL(window, true);
    ImGui_ImplOpenGL3_Init(glsl_version);
 
+
+   FileExplorer                     fileExplorer;
+   netlib::TSQueue<netlib::Message> plotterQueue;
+   Plotter                          plotter{ plotterQueue };
+
+   netlib::TSQueue<netlib::Message> modelQueue;
+   Model                            model{ modelQueue };
+
+   // Instantiate the Presenter, passing the model and plotter's update method as the callback
+   Presenter presenter(model, [&](netlib::Message data) { plotter.update(data); });
+
+   // Start data reception in a separate thread
+   presenter.start();
+
    // ITSQueue<owned_message> &msgIn, COMPortScanner &portScanner,
    //    std::chrono::seconds periodicity
    netlib::TSQueue<netlib::owned_message> myQueue;
    netlib::WindowsCOMPortScanner          portScanner;
-   netlib::CustomServer                   server{ myQueue, portScanner, std::chrono::seconds(5) };
+   netlib::CustomServer server{ myQueue, portScanner, std::chrono::seconds(5), model };
    server.start();
    server.startMonitoringQueue();
-
-   FileExplorer fileExplorer;
-   Plotter      plotter;
-
-   Model model;
-
-   // Instantiate the Presenter, passing the model and plotter's update method as the callback
-   Presenter presenter(model, [&](SensorData data) { plotter.update(data); });
-
-   // Start data reception in a separate thread
-   presenter.start();
    const auto clear_color = ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
 
    // This is the main windows frame of the application, it runs untill the suer clicks exit

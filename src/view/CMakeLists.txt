@@ -10,6 +10,7 @@ target_include_directories(${LIBRARY_VIEW_NAME} PUBLIC
 
 target_link_libraries(${LIBRARY_VIEW_NAME} PUBLIC 
     ${LIBRARY_MODEL_NAME}
+    ${LIBRARY_NET_NAME}
     imgui::imgui
     implot::implot
     fmt::fmt-header-only

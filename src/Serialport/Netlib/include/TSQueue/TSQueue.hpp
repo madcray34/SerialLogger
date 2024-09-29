@@ -1,5 +1,5 @@
 #pragma once
-#include <deque>
+
 #include <mutex>
 #include <condition_variable>
 #include <TSQueue/ITSQueue.hpp>
@@ -19,6 +19,33 @@ namespace netlib
       virtual ~TSQueue() override
       {
          clear();
+      }
+
+      // TODO Ideas for the future
+      // Iterator support: Use std::deque's iterator
+      // For now just expose deque
+      typename std::deque<T>::iterator begin() override
+      {
+         std::scoped_lock lock(muxQueue);
+         return deqQueue.begin();
+      }
+
+      typename std::deque<T>::iterator end() override
+      {
+         std::scoped_lock lock(muxQueue);
+         return deqQueue.end();
+      }
+
+      typename std::deque<T>::const_iterator begin() const override
+      {
+         std::scoped_lock lock(muxQueue);
+         return deqQueue.begin();
+      }
+
+      typename std::deque<T>::const_iterator end() const override
+      {
+         std::scoped_lock lock(muxQueue);
+         return deqQueue.end();
       }
 
       public:
@@ -135,7 +162,7 @@ namespace netlib
       }
 
       protected:
-      std::mutex              muxQueue;
+      mutable std::mutex      muxQueue;
       std::deque<T>           deqQueue;
       std::condition_variable cvBlocking;
       std::mutex              muxBlocking;

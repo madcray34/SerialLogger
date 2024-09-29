@@ -7,7 +7,8 @@ add_library(${LIBRARY_MODEL_NAME} STATIC
 target_include_directories(${LIBRARY_MODEL_NAME} PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-#target_link_libraries(${LIBRARY_MODEL_NAME} PUBLIC )
+target_link_libraries(${LIBRARY_MODEL_NAME} PUBLIC 
+    ${LIBRARY_NET_NAME} )
 
 if (ENABLE_WARNINGS)
     target_set_warnings(TARGET ${LIBRARY_MODEL_NAME}

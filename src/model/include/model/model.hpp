@@ -3,10 +3,16 @@
 #include <mutex>
 
 
+namespace netlib
+{
+   template<typename T>
+   class ITSQueue;
+};
+
 class Model : public IModel
 {
    public:
-   Model() : stopReceiving(false) {};
+   Model(netlib::ITSQueue<netlib::Message>& _q);
 
    ~Model()
    {
@@ -14,13 +20,16 @@ class Model : public IModel
    }
 
    // Start data reception in a separate thread
-   void startReceivingData(std::function<void(SensorData)> callback) override;
+   void startReceivingData(std::function<void(netlib::Message)> callback) override;
    void stopReceivingData() override
    {
       stopReceiving = true;
    };
 
+   void pushMessage(netlib::Message& _msg) override;
+
    private:
-   std::mutex        m_mutex;
-   std::atomic<bool> stopReceiving;
+   std::mutex                         m_mutex;
+   std::atomic<bool>                  stopReceiving;
+   netlib::ITSQueue<netlib::Message>& m_Q;
 };

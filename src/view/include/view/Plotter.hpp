@@ -1,52 +1,33 @@
 #pragma once
-#include <boost/circular_buffer.hpp>
 #include <cstdint>
 #include <model/Imodel.hpp>
 #include <mutex>
-#include <set>
 #include <string_view>
-#include <unordered_map>
+#include <TSQueue/Message.hpp>
+
+namespace netlib
+{
+   template<typename T>
+   class ITSQueue;
+};
 
 class Plotter
 {
-public:
-    enum class Function : uint8_t
-    {
-        TIMESTAMP,
-        DISPLACEMENT,
-        OUTPUTVOLTAGE,
-        COIL_CURRENT
-    };
+   static constexpr uint16_t c_size{ 100 };
 
-    std::unordered_map<Function, std::string_view> c_functionNameMap = {
-        {Function::DISPLACEMENT, "displacement"},
-        {Function::OUTPUTVOLTAGE, "dac output voltage"},
-        {Function::COIL_CURRENT, "coil current"}};
+   public:
+   Plotter(netlib::ITSQueue<netlib::Message>& _q);
+   ~Plotter() = default;
+   void Draw(std::string_view label);
+   void update(netlib::Message data);
 
-    static constexpr uint16_t c_size{100};
+   private:
+   void DrawSelection();
+   void DrawPlot();
 
-public:
-    Plotter() : m_selectedFunctions{} {};
-    ~Plotter() = default;
-    void Draw(std::string_view label);
-    void update(SensorData data);
-
-private:
-    void DrawSelection();
-    void DrawPlot();
-    float &evaluateFunction(Function fun, int idx);
-
-public:
-    std::set<Function> m_selectedFunctions;
-
-private:
-    boost::circular_buffer<float> timestamps{c_size};
-    boost::circular_buffer<float> displacements{c_size};
-    boost::circular_buffer<float> voltages{c_size};
-    boost::circular_buffer<float> coil_currents{c_size};
-    float zero = {0.0f};
-    uint16_t m_lastInsertedValue = {};
-    std::mutex m_mutex;
+   private:
+   uint16_t                           m_lastInsertedValue = {};
+   netlib::ITSQueue<netlib::Message>& m_Q;
 };
 
-void render(Plotter &window_obj);
+void render(Plotter& window_obj);

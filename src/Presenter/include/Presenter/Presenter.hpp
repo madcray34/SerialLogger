@@ -7,7 +7,7 @@
 class Presenter : public IPresenter
 {
    public:
-   Presenter(IModel &model, std::function<void(SensorData)> callback)
+   Presenter(IModel &model, std::function<void(netlib::Message)> callback)
        : m_model{ model }, m_viewCallback{ callback } {};
    ~Presenter() = default;
 
@@ -16,6 +16,6 @@ class Presenter : public IPresenter
    void stop();
 
    private:
-   IModel                         &m_model;
-   std::function<void(SensorData)> m_viewCallback;
+   IModel                              &m_model;
+   std::function<void(netlib::Message)> m_viewCallback;
 };

@@ -1,18 +1,13 @@
 #pragma once
 #include <cstdint>
 #include <functional>
-
-struct SensorData
-{
-   int64_t timestamp;
-   float   displacement;
-   float   voltage;
-   float   coil_current;
-};
+#include <TSQueue/Message.hpp>
 
 class IModel
 {
    public:
-   virtual void startReceivingData(std::function<void(SensorData)> callback) = 0;
-   virtual void stopReceivingData()                                          = 0;
+   virtual ~IModel()                                                              = default;
+   virtual void startReceivingData(std::function<void(netlib::Message)> callback) = 0;
+   virtual void stopReceivingData()                                               = 0;
+   virtual void pushMessage(netlib::Message& _msg)                                = 0;
 };

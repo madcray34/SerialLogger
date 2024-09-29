@@ -1,6 +1,7 @@
 #pragma once
 #include <ServerBase/ServerBase.hpp>
 #include <atomic>
+#include <model/Imodel.hpp>
 
 namespace netlib
 {
@@ -8,8 +9,8 @@ namespace netlib
    {
       public:
       CustomServer(ITSQueue<owned_message>& msgIn, COMPortScanner& portScanner,
-                   std::chrono::seconds periodicity)
-          : ServerBase(msgIn, portScanner, periodicity), stopMonitoring(false)
+                   std::chrono::seconds periodicity, IModel& _model)
+          : ServerBase(msgIn, portScanner, periodicity), stopMonitoring(false), m_model(_model)
       {}
 
       ~CustomServer()
@@ -45,5 +46,6 @@ namespace netlib
 
       private:
       std::atomic<bool> stopMonitoring;
+      IModel&           m_model;
    };
 }    // namespace netlib

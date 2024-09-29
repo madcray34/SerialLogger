@@ -9,6 +9,7 @@ target_include_directories(${LIBRARY_NETSERVER_NAME} PUBLIC
 
 target_link_libraries(${LIBRARY_NETSERVER_NAME} PUBLIC
     ${LIBRARY_NET_NAME}
+    ${LIBRARY_MODEL_NAME}
     Boost::system
     Boost::asio)
 
