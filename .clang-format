@@ -1,0 +1,78 @@
+# Visual Studio generated .clang-format file
+
+# The style options in this file are a best effort attempt to replicate the
+# current IDE formatting configuration from Tools > Options. The following
+# style options, however, should be verified:
+# AfterFunction
+---
+BasedOnStyle: google
+AccessModifierOffset: 0
+AlignConsecutiveAssignments: Consecutive # true, false
+AlignConsecutiveDeclarations: Consecutive # true, false
+#AllowShortBlocksOnASingleLine: Never # Never, Empty, Always
+AllowShortFunctionsOnASingleLine: None # None, InlineOnly, Empty, Inline, All
+AllowShortIfStatementsOnASingleLine: Never # Never, WithoutElse, Always
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakTemplateDeclarations: Yes # No, MultiLine, Yes
+#BreakBeforeBraces: Allman # Attach, Linux, Mozilla, Stroustrup, Allman, Whitesmiths, GNU, WebKit, Custom
+BreakBeforeBraces: Custom
+BraceWrapping:
+  SplitEmptyFunction: false
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterControlStatement : Always 
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: true
+  BeforeWhile: true
+  IndentBraces: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakBeforeTernaryOperators: false # true, false
+BreakConstructorInitializers: BeforeComma  # BeforeColon, BeforeComma, AfterColon
+BreakStringLiterals: false # true, false
+Cpp11BracedListStyle: false # true, false
+#DeriveLineEnding: false # true, false
+#DerivePointerAlignment: false # true, false
+#DisableFormat: false # true, false
+#ExperimentalAutoDetectBinPacking: false # true, false
+#IncludeBlocks: Regroup # Preserve, Merge, Regroup
+#IndentCaseBlocks: false # true, false
+IndentPPDirectives: BeforeHash # None, AfterHash, BeforeHash
+IndentWidth: 3
+IndentWrappedFunctionNames: true  # true, false
+MaxEmptyLinesToKeep: 10
+NamespaceIndentation: All # None, Inner, All
+#PenaltyBreakAssignment:0
+#PenaltyBreakBeforeFirstCallParameter:0
+PenaltyBreakComment: 0
+#PenaltyBreakFirstLessLess:0
+#PenaltyBreakString:0
+#PenaltyBreakTemplateDeclaration:0
+#PenaltyExcessCharacter: 0
+#PenaltyReturnTypeOnItsOwnLine: 0
+PointerAlignment: Middle # Left, Middle, Right
+SortIncludes: Never
+SpaceAfterTemplateKeyword: false # true, false
+#SpaceBeforeParens: Never # Never, ControlStatements, NonEmptyParentheses, Always
+#SpaceBeforeSquareBrackets: false # true, false
+#SpaceInEmptyBlock: false # true, false
+SpacesBeforeTrailingComments: 4
+#SpacesInConditionalStatement: false # true, false
+SpacesInContainerLiterals: false # true, false
+Standard: Latest # c++03, c++11, c++14, c++17, c++20, Latest, Auto
+TabWidth: 3
+ReflowComments: true
+
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+ObjCBlockIndentWidth: 4
+PenaltyBreakAssignment: 4
+ColumnLimit: 100
+
+CommentPragmas: '^(/\\*\\*|/\\*!<|///|///<|//!<|//!)'
