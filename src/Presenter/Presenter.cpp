@@ -4,7 +4,7 @@ void Presenter::start()
 {
    // Pass to the model the view callback through a lambda function
    m_model.startReceivingData(
-       [this](netlib::Message data)
+       [this](std::string data)
        {
           // Forward data to the View
           m_viewCallback(data);

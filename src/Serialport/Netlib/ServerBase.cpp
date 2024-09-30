@@ -188,7 +188,8 @@ namespace netlib
    void ServerBase::onClientDisconnect(std::shared_ptr<Connection> client)
    {}
 
-   void ServerBase::onMessage(std::shared_ptr<Connection> _client, [[maybe_unused]] Message& _msg)
+   void ServerBase::onMessage(std::shared_ptr<Connection>   _client,
+                              [[maybe_unused]] std::string& _msg)
    {}
 
 

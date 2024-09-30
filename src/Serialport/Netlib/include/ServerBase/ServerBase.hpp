@@ -1,6 +1,7 @@
 #pragma once
 #include <ServerBase/IServerBase.hpp>
 #include <deque>
+#include <TSQueue/Message.hpp>
 
 #ifdef _WIN32
    #define _WIN32_WINNT 0x0A00
@@ -34,8 +35,8 @@ namespace netlib
       protected:
       virtual bool onClientConnect(std::shared_ptr<Connection> client) override;
       virtual void onClientDisconnect(std::shared_ptr<Connection> client) override;
-      virtual void onMessage(std::shared_ptr<Connection> _client,
-                             [[maybe_unused]] Message&   _msg) override;
+      virtual void onMessage(std::shared_ptr<Connection>   _client,
+                             [[maybe_unused]] std::string& _msg) override;
 
       // Thread Safe Queue for incoming message packets
       ITSQueue<owned_message>& m_qMsgIn;

@@ -12,7 +12,7 @@ namespace netlib
 class Model : public IModel
 {
    public:
-   Model(netlib::ITSQueue<netlib::Message>& _q);
+   Model(netlib::ITSQueue<std::string>& _q);
 
    ~Model()
    {
@@ -20,16 +20,16 @@ class Model : public IModel
    }
 
    // Start data reception in a separate thread
-   void startReceivingData(std::function<void(netlib::Message)> callback) override;
+   void startReceivingData(std::function<void(std::string)> callback) override;
    void stopReceivingData() override
    {
       stopReceiving = true;
    };
 
-   void pushMessage(netlib::Message& _msg) override;
+   void pushMessage(std::string& _msg) override;
 
    private:
-   std::mutex                         m_mutex;
-   std::atomic<bool>                  stopReceiving;
-   netlib::ITSQueue<netlib::Message>& m_Q;
+   std::mutex                     m_mutex;
+   std::atomic<bool>              stopReceiving;
+   netlib::ITSQueue<std::string>& m_Q;
 };

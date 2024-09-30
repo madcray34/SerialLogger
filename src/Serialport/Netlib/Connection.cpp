@@ -74,22 +74,23 @@ namespace netlib
       //            within the timeout
       //         }
       //      });
-      boost::asio::async_read_until(
-          m_port, boost::asio::dynamic_buffer(m_msgTemporaryIn.body), '\n',
-          [this](std::error_code ec, [[maybe_unused]] std::size_t length)
-          {
-             if (!ec)
-             {
-                // std::cout << "[" << id << "] Read " << length << " bytes successfully.\n";
-                //  Add to incoming message queue
-                AddToIncomingMessageQueue();
-             }
-             else
-             {
-                std::cout << "[" << id << "] Read Body Fail: " << ec.message() << "\n";
-                m_port.close();
-             }
-          });
+      boost::asio::async_read_until(m_port, boost::asio::dynamic_buffer(m_msgTemporaryIn), '\n',
+                                    [this](std::error_code ec, [[maybe_unused]] std::size_t length)
+                                    {
+                                       if (!ec)
+                                       {
+                                          // std::cout << "[" << id << "] Read " << length << "
+                                          // bytes successfully.\n";
+                                          //  Add to incoming message queue
+                                          AddToIncomingMessageQueue();
+                                       }
+                                       else
+                                       {
+                                          std::cout << "[" << id
+                                                    << "] Read Body Fail: " << ec.message() << "\n";
+                                          m_port.close();
+                                       }
+                                    });
    }
 
    void Connection::AddToIncomingMessageQueue()
@@ -98,7 +99,7 @@ namespace netlib
       if (_ptr)    // avoid dangling pointers
          m_qMessagesIn.push_back({ _ptr, m_msgTemporaryIn });
 
-      m_msgTemporaryIn.body.clear();    // or reset if needed
+      m_msgTemporaryIn.clear();    // or reset if needed
       // We must now prime the asio context to receive the next message. It
       // wil just sit and wait for bytes to arrive, and the message construction
       // process repeats itself.

@@ -76,7 +76,7 @@ namespace netlib
 
       // Incoming messages are constructed asynchronously, so we will
       // store the part assembled message here, until it is ready
-      Message m_msgTemporaryIn{};
+      std::string m_msgTemporaryIn{};
 
       bool m_bConnectionEstablished = false;
 

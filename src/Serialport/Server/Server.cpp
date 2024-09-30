@@ -28,9 +28,9 @@ namespace netlib
       std::cout << "Removing client [" << client->getPortName() << "]" << std::endl;
    }
 
-   void CustomServer::onMessage(std::shared_ptr<Connection> client, [[maybe_unused]] Message & _msg)
+   void CustomServer::onMessage(std::shared_ptr<Connection>    client,
+                                [[maybe_unused]] std::string & _msg)
    {
-      std::cout << "From client [" << client->getPortName() << "] msg:" << _msg.data() << std::endl;
       m_model.pushMessage(_msg);
    }
 }    // namespace netlib

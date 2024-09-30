@@ -8,8 +8,10 @@
 #include <TSQueue/ITSQueue.hpp>
 
 
-Plotter::Plotter(netlib::ITSQueue<netlib::Message> &_q) : m_Q(_q)
-{}
+Plotter::Plotter(netlib::ITSQueue<std::string> &_q) : m_Q(_q)
+{
+   m_Q.resize(static_cast<size_t>(1000));
+}
 
 /**
  * @brief Here we define every aspect of what it should be drawn in the Frame window
@@ -52,7 +54,7 @@ void Plotter::Draw(std::string_view label)
 }
 
 
-void Plotter::update(netlib::Message data)
+void Plotter::update(std::string &data)
 {
    m_Q.push_back(data);
 };
@@ -66,10 +68,11 @@ void Plotter::DrawSelection()
 void Plotter::DrawPlot()
 {
    // Range-based for loop
-   for (const auto &item : m_Q)
+   std::string dataString{};
+   for (auto &item : m_Q)
    {
-      std::string dataString{ item.body.begin(), item.body.end() };
-      ImGui::Text("%s", dataString.c_str());
+      ImGui::Text("%s", item.c_str());
+      ImGui::Separator();
    }
 }
 

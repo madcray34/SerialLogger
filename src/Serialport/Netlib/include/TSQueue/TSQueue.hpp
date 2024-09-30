@@ -161,6 +161,12 @@ namespace netlib
          }
       }
 
+      virtual void resize(size_t size) override
+      {
+         std::scoped_lock lock(muxQueue);
+         deqQueue.resize(size);
+      }
+
       protected:
       mutable std::mutex      muxQueue;
       std::deque<T>           deqQueue;

@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include <TSQueue/Message.hpp>
+#include <string>
 
 namespace netlib
 {
@@ -54,7 +54,7 @@ namespace netlib
        * @param client
        * @param msg
        */
-      virtual void onMessage(std::shared_ptr<Connection> client,
-                             [[maybe_unused]] Message&   _msg) = 0;
+      virtual void onMessage(std::shared_ptr<Connection>   client,
+                             [[maybe_unused]] std::string& _msg) = 0;
    };
 }    // namespace netlib

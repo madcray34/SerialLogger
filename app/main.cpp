@@ -134,15 +134,15 @@ int main(int, char **)
    ImGui_ImplOpenGL3_Init(glsl_version);
 
 
-   FileExplorer                     fileExplorer;
-   netlib::TSQueue<netlib::Message> plotterQueue;
-   Plotter                          plotter{ plotterQueue };
+   FileExplorer                 fileExplorer;
+   netlib::TSQueue<std::string> plotterQueue;
+   Plotter                      plotter{ plotterQueue };
 
-   netlib::TSQueue<netlib::Message> modelQueue;
-   Model                            model{ modelQueue };
+   netlib::TSQueue<std::string> modelQueue;
+   Model                        model{ modelQueue };
 
    // Instantiate the Presenter, passing the model and plotter's update method as the callback
-   Presenter presenter(model, [&](netlib::Message data) { plotter.update(data); });
+   Presenter presenter(model, [&](std::string data) { plotter.update(data); });
 
    // Start data reception in a separate thread
    presenter.start();
