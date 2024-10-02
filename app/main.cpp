@@ -27,6 +27,19 @@
    #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
+#ifndef SOURCE_ROOT_DIR
+   #define SOURCE_ROOT_DIR "Undefined"
+#endif
+
+#ifndef SOURCE_LOGS_DIR
+   #define SOURCE_LOGS_DIR "Undefined"
+#endif
+
+#ifndef OUTPUT_FILE_PATH
+   #define OUTPUT_FILE_PATH "Undefined"
+#endif
+
+
 constexpr auto WINDOW_WIDTH  = std::uint32_t{ 1280 };
 constexpr auto WINDOW_HEIGHT = std::uint32_t{ 720 };
 
@@ -63,6 +76,51 @@ void end_cycle(GLFWwindow *const window, const ImVec4 &clear_color, ImGuiConfigF
       glfwMakeContextCurrent(backup_current_context);
    }
    glfwSwapBuffers(window);
+}
+
+void drawmenu(GLFWwindow *const window)
+{
+   // Begin Menu Bar
+   if (ImGui::BeginMenuBar())
+   {
+      if (ImGui::BeginMenu("File"))
+      {
+         if (ImGui::MenuItem("Open", "Ctrl+O"))
+         {
+            // Handle 'Open' action
+         }
+         if (ImGui::MenuItem("Save", "Ctrl+S"))
+         {
+            // Handle 'Save' action
+         }
+         if (ImGui::MenuItem("Exit", "Alt+F4"))
+         {
+            glfwSetWindowShouldClose(window, true);
+         }
+         ImGui::EndMenu();
+      }
+      if (ImGui::BeginMenu("Edit"))
+      {
+         if (ImGui::MenuItem("Undo", "Ctrl+Z"))
+         {
+            // Handle 'Undo' action
+         }
+         if (ImGui::MenuItem("Redo", "Ctrl+Y", false, false))    // Disabled item
+         {
+            // Handle 'Redo' action
+         }
+         ImGui::EndMenu();
+      }
+      if (ImGui::BeginMenu("Help"))
+      {
+         if (ImGui::MenuItem("About"))
+         {
+            // Show an 'About' dialog or information
+         }
+         ImGui::EndMenu();
+      }
+      ImGui::EndMenuBar();
+   }
 }
 
 
@@ -134,12 +192,18 @@ int main(int, char **)
    ImGui_ImplOpenGL3_Init(glsl_version);
 
 
-   FileExplorer                 fileExplorer;
+   std::string defaultPath{
+      "C:/-- SomethingNew/ImGui/my_project/001 - "
+      "FileExplorer/dataToexperiment"
+   };
+
+   FileExplorer                 fileExplorer{ SOURCE_LOGS_DIR };
    netlib::TSQueue<std::string> plotterQueue;
    Plotter                      plotter{ plotterQueue };
 
-   netlib::TSQueue<std::string> modelQueue;
-   Model                        model{ modelQueue };
+   netlib::TSQueue<std::string> modelFq;
+   netlib::TSQueue<std::string> modelSq;
+   Model                        model{ modelFq, modelSq, OUTPUT_FILE_PATH };
 
    // Instantiate the Presenter, passing the model and plotter's update method as the callback
    Presenter presenter(model, [&](std::string data) { plotter.update(data); });
@@ -184,6 +248,7 @@ int main(int, char **)
       ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
       ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
+      drawmenu(window);
       render(fileExplorer);
       render(plotter);
       ImGui::End();    // End the main DockSpace window

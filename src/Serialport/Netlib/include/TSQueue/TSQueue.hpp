@@ -21,9 +21,6 @@ namespace netlib
          clear();
       }
 
-      // TODO Ideas for the future
-      // Iterator support: Use std::deque's iterator
-      // For now just expose deque
       typename std::deque<T>::iterator begin() override
       {
          std::scoped_lock lock(muxQueue);

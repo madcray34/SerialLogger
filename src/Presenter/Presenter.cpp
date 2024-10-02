@@ -9,9 +9,12 @@ void Presenter::start()
           // Forward data to the View
           m_viewCallback(data);
        });
+
+   m_model.startSavingToFile();
 }
 
 void Presenter::stop()
 {
    m_model.stopReceivingData();
+   m_model.stopSavingToFile();
 }

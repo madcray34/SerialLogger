@@ -9,9 +9,7 @@
 
 
 Plotter::Plotter(netlib::ITSQueue<std::string> &_q) : m_Q(_q)
-{
-   m_Q.resize(static_cast<size_t>(1000));
-}
+{}
 
 /**
  * @brief Here we define every aspect of what it should be drawn in the Frame window
@@ -57,6 +55,8 @@ void Plotter::Draw(std::string_view label)
 void Plotter::update(std::string &data)
 {
    m_Q.push_back(data);
+   if (m_Q.count() > c_size)
+      m_Q.pop_front();
 };
 
 void Plotter::DrawSelection()
@@ -68,11 +68,13 @@ void Plotter::DrawSelection()
 void Plotter::DrawPlot()
 {
    // Range-based for loop
-   std::string dataString{};
-   for (auto &item : m_Q)
+   for (auto it = m_Q.begin(); it != m_Q.end(); ++it)
    {
-      ImGui::Text("%s", item.c_str());
-      ImGui::Separator();
+      if (it->c_str())
+      {
+         ImGui::Text("%s", it->c_str());
+         ImGui::Separator();
+      }
    }
 }
 

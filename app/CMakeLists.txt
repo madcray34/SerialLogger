@@ -34,6 +34,20 @@ if (ENABLE_LTO)
     )
 endif()
 
+# Set the source root directory
+set(SOURCE_ROOT "${CMAKE_SOURCE_DIR}")
+
+# Append folder and filename to create paths
+set(SOURCE_LOGS_DIR "${SOURCE_ROOT}/logs")
+set(OUTPUT_FILE_PATH "${SOURCE_LOGS_DIR}/output.txt")
+
+# Pass the paths as preprocessor macros
+target_compile_definitions(${EXECUTABLE_NAME} PRIVATE 
+    SOURCE_ROOT_DIR="${SOURCE_ROOT}"
+    SOURCE_LOGS_DIR="${SOURCE_LOGS_DIR}"
+    OUTPUT_FILE_PATH="${OUTPUT_FILE_PATH}"
+)
+
 # # Set output directory for the executable
 # set_target_properties(${EXECUTABLE_NAME} 
 #     PROPERTIES RUNTIME_OUTPUT_DIRECTORY 
