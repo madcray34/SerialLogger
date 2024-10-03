@@ -8,7 +8,7 @@ namespace netlib
    class CustomServer : public ServerBase
    {
       public:
-      CustomServer(ITSQueue<owned_message>& msgIn, COMPortScanner& portScanner,
+      CustomServer(ITSQueue<OwnedMessage>& msgIn, COMPortScanner& portScanner,
                    std::chrono::seconds periodicity, IModel& _model)
           : ServerBase(msgIn, portScanner, periodicity), stopMonitoring(false), m_model(_model)
       {}
@@ -42,8 +42,8 @@ namespace netlib
        * @param client
        * @param msg
        */
-      void onMessage(std::shared_ptr<Connection>   client,
-                     [[maybe_unused]] std::string& _msg) override;
+      void onMessage(std::shared_ptr<Connection>    client,
+                     [[maybe_unused]] std::string&& _msg) override;
 
       private:
       std::atomic<bool> stopMonitoring;

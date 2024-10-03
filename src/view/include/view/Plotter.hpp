@@ -18,7 +18,7 @@ class Plotter
    Plotter(netlib::ITSQueue<std::string>& _q);
    ~Plotter() = default;
    void Draw(std::string_view label);
-   void update(std::string& data);
+   void update(std::string&& data);
 
    private:
    void DrawSelection();

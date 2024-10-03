@@ -27,13 +27,13 @@ class Model : public IModel
    }
 
    // Start data reception in a separate thread
-   void startReceivingData(std::function<void(std::string)> callback) override;
+   void startReceivingData(std::function<void(std::string&&)> callback) override;
    void stopReceivingData() override
    {
       m_stopReceiving = true;
    };
 
-   void pushMessage(std::string& _msg) override;
+   void pushMessage(std::string&& _msg) override;
 
    // Start save in a separate thread
    void startSavingToFile() override;

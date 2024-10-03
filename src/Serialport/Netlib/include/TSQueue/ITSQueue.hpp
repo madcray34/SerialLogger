@@ -22,11 +22,12 @@ namespace netlib
       virtual T              pop_front()               = 0;
       virtual T              pop_back()                = 0;
       virtual void           push_back(const T& item)  = 0;
+      virtual void           push_back(T&& item)       = 0;
       virtual void           push_front(const T& item) = 0;
+      virtual void           push_front(T&& item)      = 0;
       virtual bool           empty()                   = 0;
       virtual size_t         count()                   = 0;
       virtual void           clear()                   = 0;
       virtual void           wait()                    = 0;
-      virtual void           resize(size_t size)       = 0;
    };
 }    // namespace netlib

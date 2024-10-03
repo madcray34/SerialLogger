@@ -206,15 +206,15 @@ int main(int, char **)
    Model                        model{ modelFq, modelSq, OUTPUT_FILE_PATH };
 
    // Instantiate the Presenter, passing the model and plotter's update method as the callback
-   Presenter presenter(model, [&](std::string data) { plotter.update(data); });
+   Presenter presenter(model, [&](std::string &&data) { plotter.update(std::move(data)); });
 
    // Start data reception in a separate thread
    presenter.start();
 
-   // ITSQueue<owned_message> &msgIn, COMPortScanner &portScanner,
+   // ITSQueue<OwnedMessage> &msgIn, COMPortScanner &portScanner,
    //    std::chrono::seconds periodicity
-   netlib::TSQueue<netlib::owned_message> myQueue;
-   netlib::WindowsCOMPortScanner          portScanner;
+   netlib::TSQueue<netlib::OwnedMessage> myQueue;
+   netlib::WindowsCOMPortScanner         portScanner;
    netlib::CustomServer server{ myQueue, portScanner, std::chrono::seconds(5), model };
    server.start();
    server.startMonitoringQueue();

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mutex>
+#include <shared_mutex>
 #include <condition_variable>
 #include <TSQueue/ITSQueue.hpp>
 
@@ -23,25 +23,25 @@ namespace netlib
 
       typename std::deque<T>::iterator begin() override
       {
-         std::scoped_lock lock(muxQueue);
+         std::shared_lock lock(muxQueue);
          return deqQueue.begin();
       }
 
       typename std::deque<T>::iterator end() override
       {
-         std::scoped_lock lock(muxQueue);
+         std::shared_lock lock(muxQueue);
          return deqQueue.end();
       }
 
       typename std::deque<T>::const_iterator begin() const override
       {
-         std::scoped_lock lock(muxQueue);
+         std::shared_lock lock(muxQueue);
          return deqQueue.begin();
       }
 
       typename std::deque<T>::const_iterator end() const override
       {
-         std::scoped_lock lock(muxQueue);
+         std::shared_lock lock(muxQueue);
          return deqQueue.end();
       }
 
@@ -52,7 +52,7 @@ namespace netlib
        */
       const T& front() override
       {
-         std::scoped_lock lock(muxQueue);
+         std::shared_lock lock(muxQueue);
          return deqQueue.front();
       }
 
@@ -62,7 +62,7 @@ namespace netlib
        */
       const T& back() override
       {
-         std::scoped_lock lock(muxQueue);
+         std::shared_lock lock(muxQueue);
          return deqQueue.back();
       }
 
@@ -73,9 +73,9 @@ namespace netlib
       T pop_front() override
       {
          std::scoped_lock lock(muxQueue);
-         auto             t = std::move(deqQueue.front());
+         T                result = std::move(deqQueue.front());
          deqQueue.pop_front();
-         return t;
+         return result;
       }
 
       /**
@@ -85,9 +85,9 @@ namespace netlib
       T pop_back() override
       {
          std::scoped_lock lock(muxQueue);
-         auto             t = std::move(deqQueue.back());
+         T                result = std::move(deqQueue.back());
          deqQueue.pop_back();
-         return t;
+         return result;
       }
 
       /**
@@ -97,10 +97,29 @@ namespace netlib
       void push_back(const T& item) override
       {
          std::scoped_lock lock(muxQueue);
-         deqQueue.emplace_back(std::move(item));
+         bool             wasEmpty = deqQueue.empty();
+         deqQueue.emplace_back(item);
+         if (wasEmpty)
+         {
+            std::unique_lock<std::mutex> ul(muxBlocking);
+            cvBlocking.notify_one();
+         }
+      }
 
-         std::unique_lock<std::mutex> ul(muxBlocking);
-         cvBlocking.notify_one();
+      /**
+       * @brief Adds an item to back of Queue.
+       * @param item
+       */
+      void push_back(T&& item) override
+      {
+         std::scoped_lock lock(muxQueue);
+         bool             wasEmpty = deqQueue.empty();
+         deqQueue.emplace_back(std::move(item));
+         if (wasEmpty)
+         {
+            std::unique_lock<std::mutex> ul(muxBlocking);
+            cvBlocking.notify_one();
+         }
       }
 
       /**
@@ -110,10 +129,30 @@ namespace netlib
       void push_front(const T& item) override
       {
          std::scoped_lock lock(muxQueue);
+         bool             wasEmpty = deqQueue.empty();
+         deqQueue.emplace_front(item);
+         if (wasEmpty)
+         {
+            std::unique_lock<std::mutex> ul(muxBlocking);
+            cvBlocking.notify_one();
+         }
+      }
+
+      /**
+       * @brief Adds an item to front of Queue.
+       * @param item
+       */
+      void push_front(T&& item) override
+      {
+         std::scoped_lock lock(muxQueue);
+         bool             wasEmpty = deqQueue.empty();
          deqQueue.emplace_front(std::move(item));
 
-         std::unique_lock<std::mutex> ul(muxBlocking);
-         cvBlocking.notify_one();
+         if (wasEmpty)
+         {
+            std::unique_lock<std::mutex> ul(muxBlocking);
+            cvBlocking.notify_one();
+         }
       }
 
       /**
@@ -144,6 +183,8 @@ namespace netlib
       {
          std::scoped_lock lock(muxQueue);
          deqQueue.clear();
+         std::unique_lock<std::mutex> ul(muxBlocking);
+         cvBlocking.notify_all();
       }
 
       /**
@@ -158,16 +199,17 @@ namespace netlib
          }
       }
 
-      virtual void resize(size_t size) override
+      template<typename Rep, typename Period>
+      bool wait_for(const std::chrono::duration<Rep, Period>& timeout)
       {
-         std::scoped_lock lock(muxQueue);
-         deqQueue.resize(size);
+         std::unique_lock<std::mutex> ul(muxBlocking);
+         return cvBlocking.wait_for(ul, timeout, [this]() { return !this->empty(); });
       }
 
       protected:
-      mutable std::mutex      muxQueue;
-      std::deque<T>           deqQueue;
-      std::condition_variable cvBlocking;
-      std::mutex              muxBlocking;
+      mutable std::shared_mutex muxQueue;
+      std::deque<T>             deqQueue;
+      std::condition_variable   cvBlocking;
+      std::mutex                muxBlocking;
    };
 }    // namespace netlib

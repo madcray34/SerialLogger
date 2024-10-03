@@ -4,7 +4,7 @@
 namespace netlib
 {
    Connection::Connection(boost::asio::io_context& asioContext, boost::asio::serial_port port,
-                          std::string name, ITSQueue<owned_message>& qIn)
+                          std::string name, ITSQueue<OwnedMessage>& qIn)
        : m_asioContext(asioContext), m_port(std::move(port)), m_portName(name), m_qMessagesIn(qIn)
    {
       configureSerialPort(m_port);
@@ -97,7 +97,7 @@ namespace netlib
    {
       std::shared_ptr<Connection> _ptr = this->shared_from_this();
       if (_ptr)    // avoid dangling pointers
-         m_qMessagesIn.push_back({ _ptr, m_msgTemporaryIn });
+         m_qMessagesIn.push_back(std::move(OwnedMessage(_ptr, m_msgTemporaryIn)));
 
       m_msgTemporaryIn.clear();    // or reset if needed
       // We must now prime the asio context to receive the next message. It

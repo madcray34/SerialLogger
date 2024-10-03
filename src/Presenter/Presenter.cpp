@@ -4,10 +4,10 @@ void Presenter::start()
 {
    // Pass to the model the view callback through a lambda function
    m_model.startReceivingData(
-       [this](std::string data)
+       [this](std::string &&data)
        {
           // Forward data to the View
-          m_viewCallback(data);
+          m_viewCallback(std::move(data));
        });
 
    m_model.startSavingToFile();

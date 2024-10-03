@@ -6,7 +6,7 @@
 
 namespace netlib
 {
-   ServerBase::ServerBase(ITSQueue<owned_message>& msgIn, COMPortScanner& portScanner,
+   ServerBase::ServerBase(ITSQueue<OwnedMessage>& msgIn, COMPortScanner& portScanner,
                           std::chrono::seconds periodicity)
        : m_qMsgIn(msgIn)
        , m_portS(portScanner)
@@ -174,7 +174,7 @@ namespace netlib
          auto msg = m_qMsgIn.pop_front();
 
          // Pass to message handler
-         onMessage(msg.m_remote, msg.m_msg);
+         onMessage(std::move(msg.m_remote), std::move(msg.m_msg));
 
          nMessageCount++;
       }
@@ -189,7 +189,7 @@ namespace netlib
    {}
 
    void ServerBase::onMessage(std::shared_ptr<Connection>   _client,
-                              [[maybe_unused]] std::string& _msg)
+                              [[maybe_unused]] std::string&& _msg)
    {}
 
 

@@ -52,9 +52,9 @@ void Plotter::Draw(std::string_view label)
 }
 
 
-void Plotter::update(std::string &data)
+void Plotter::update(std::string &&data)
 {
-   m_Q.push_back(data);
+   m_Q.push_back(std::move(data));
    if (m_Q.count() > c_size)
       m_Q.pop_front();
 };

@@ -55,6 +55,6 @@ namespace netlib
        * @param msg
        */
       virtual void onMessage(std::shared_ptr<Connection>   client,
-                             [[maybe_unused]] std::string& _msg) = 0;
+                             [[maybe_unused]] std::string&& _msg) = 0;
    };
 }    // namespace netlib

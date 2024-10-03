@@ -27,7 +27,7 @@ namespace netlib
        * @param qIn
        */
       Connection(boost::asio::io_context& asioContext, boost::asio::serial_port port,
-                 std::string name, ITSQueue<owned_message>& qIn);
+                 std::string name, ITSQueue<OwnedMessage>& qIn);
 
       virtual ~Connection()
       {}
@@ -72,7 +72,7 @@ namespace netlib
       std::string m_portName;
 
       // This references the incoming queue of the parent object
-      ITSQueue<owned_message>& m_qMessagesIn;
+      ITSQueue<OwnedMessage>& m_qMessagesIn;
 
       // Incoming messages are constructed asynchronously, so we will
       // store the part assembled message here, until it is ready

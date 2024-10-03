@@ -7,7 +7,7 @@
 class Presenter : public IPresenter
 {
    public:
-   Presenter(IModel &model, std::function<void(std::string)> callback)
+   Presenter(IModel &model, std::function<void(std::string &&)> callback)
        : m_model{ model }, m_viewCallback{ callback } {};
    ~Presenter() = default;
 

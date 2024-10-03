@@ -9,7 +9,7 @@ Model::Model(netlib::ITSQueue<std::string>& _qf, netlib::ITSQueue<std::string>& 
     : m_stopReceiving(false), m_stopSaving(false), m_Qf(_qf), m_Qs(_qs), m_savingPath(saveFileName)
 {}
 
-void Model::startReceivingData(std::function<void(std::string)> callback)
+void Model::startReceivingData(std::function<void(std::string&&)> callback)
 {
    // Create a new thread that is updating data in the background
    std::thread(
@@ -27,7 +27,7 @@ void Model::startReceivingData(std::function<void(std::string)> callback)
 
                 // Lock for data update and call the presenter callback
                 std::lock_guard<std::mutex> lock(m_muxCB);
-                callback(message);
+                callback(std::move(message));
              }
           }
        })
@@ -61,7 +61,7 @@ void Model::startSavingToFile()
        .detach();    // Run in the background
 }
 
-void Model::pushMessage(std::string& _msg)
+void Model::pushMessage(std::string&& _msg)
 {
    std::string copy = _msg;
    m_Qf.push_back(std::move(_msg));
