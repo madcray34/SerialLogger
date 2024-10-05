@@ -59,7 +59,7 @@ endif()
 
 add_compile_definitions(NOMINMAX)
 
-add_subdirectory(src)
-add_subdirectory(app)
+add_subdirectory(src ./src)
+add_subdirectory(app ./app)
 
 # add_clang_tidy_msvc_to_target(${PROJECT_NAME})

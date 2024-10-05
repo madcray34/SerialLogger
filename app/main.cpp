@@ -219,13 +219,13 @@ int main(int, char **)
    server.start();
    server.startMonitoringQueue();
    const auto clear_color = ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
+   ImPlot::CreateContext();
 
    // This is the main windows frame of the application, it runs untill the suer clicks exit
    while (!glfwWindowShouldClose(window))
    {
       start_cycle();
       ImGui::NewFrame();
-      ImPlot::CreateContext();
 
       // Main DockSpace
       ImGuiViewport *viewport = ImGui::GetMainViewport();
