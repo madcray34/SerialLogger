@@ -39,6 +39,24 @@
    #define OUTPUT_FILE_PATH "Undefined"
 #endif
 
+// TEMPORARY JUST FOR CHECKING EFFICIENCY
+#include <iostream>
+#include <atomic>
+
+std::atomic<int> allocation_count = 0;
+
+void *operator new(std::size_t size)
+{
+   allocation_count++;
+   std::cout << "Allocated " << size << " bytes, total allocations: " << allocation_count.load()
+             << std::endl;
+   return std::malloc(size);
+}
+
+void operator delete(void *ptr) noexcept
+{
+   std::free(ptr);
+}
 
 constexpr auto WINDOW_WIDTH  = std::uint32_t{ 1280 };
 constexpr auto WINDOW_HEIGHT = std::uint32_t{ 720 };
@@ -78,44 +96,32 @@ void end_cycle(GLFWwindow *const window, const ImVec4 &clear_color, ImGuiConfigF
    glfwSwapBuffers(window);
 }
 
-void drawmenu(GLFWwindow *const window)
+
+void drawmenu(GLFWwindow *const window, bool &show_file_explorer)
 {
+   // TODO create a class to properly handle the menu bar
+   /**
+    * @brief Those string are made static to not construct them every frame
+    */
+   static constexpr auto c_menu_file             = "File";
+   static constexpr auto c_menu_exit             = "Exit";
+   static constexpr auto c_menu_exit_shortcut    = "Alt+F4";
+   static constexpr auto c_menu_fileExp          = "OpenFileExplorer";
+   static constexpr auto c_menu_fileExp_shortcut = "Alt+f";
+
    // Begin Menu Bar
    if (ImGui::BeginMenuBar())
    {
-      if (ImGui::BeginMenu("File"))
+      if (ImGui::BeginMenu(c_menu_file))
       {
-         if (ImGui::MenuItem("Open", "Ctrl+O"))
+         if (ImGui::MenuItem(c_menu_fileExp, c_menu_fileExp_shortcut))
          {
-            // Handle 'Open' action
+            show_file_explorer = !show_file_explorer;
          }
-         if (ImGui::MenuItem("Save", "Ctrl+S"))
-         {
-            // Handle 'Save' action
-         }
-         if (ImGui::MenuItem("Exit", "Alt+F4"))
+
+         if (ImGui::MenuItem(c_menu_exit, c_menu_exit_shortcut))
          {
             glfwSetWindowShouldClose(window, true);
-         }
-         ImGui::EndMenu();
-      }
-      if (ImGui::BeginMenu("Edit"))
-      {
-         if (ImGui::MenuItem("Undo", "Ctrl+Z"))
-         {
-            // Handle 'Undo' action
-         }
-         if (ImGui::MenuItem("Redo", "Ctrl+Y", false, false))    // Disabled item
-         {
-            // Handle 'Redo' action
-         }
-         ImGui::EndMenu();
-      }
-      if (ImGui::BeginMenu("Help"))
-      {
-         if (ImGui::MenuItem("About"))
-         {
-            // Show an 'About' dialog or information
          }
          ImGui::EndMenu();
       }
@@ -214,12 +220,14 @@ int main(int, char **)
    // ITSQueue<OwnedMessage> &msgIn, COMPortScanner &portScanner,
    //    std::chrono::seconds periodicity
    netlib::TSQueue<netlib::OwnedMessage> myQueue;
-   netlib::WindowsCOMPortScanner         portScanner;
+   static netlib::WindowsCOMPortScanner  portScanner;
    netlib::CustomServer server{ myQueue, portScanner, std::chrono::seconds(5), model };
    server.start();
    server.startMonitoringQueue();
    const auto clear_color = ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
    ImPlot::CreateContext();
+
+   bool show_file_explorer{ false };
 
    // This is the main windows frame of the application, it runs untill the suer clicks exit
    while (!glfwWindowShouldClose(window))
@@ -248,8 +256,13 @@ int main(int, char **)
       ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
       ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
-      drawmenu(window);
-      render(fileExplorer);
+      drawmenu(window, show_file_explorer);
+
+      if (show_file_explorer)
+      {
+         render(fileExplorer);
+      }
+
       render(plotter);
       ImGui::End();    // End the main DockSpace window
       ImGui::Render();

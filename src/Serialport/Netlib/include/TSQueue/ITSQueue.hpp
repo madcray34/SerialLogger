@@ -29,5 +29,6 @@ namespace netlib
       virtual size_t         count()                   = 0;
       virtual void           clear()                   = 0;
       virtual void           wait()                    = 0;
+      virtual void           wait(const bool& exit)    = 0;
    };
 }    // namespace netlib

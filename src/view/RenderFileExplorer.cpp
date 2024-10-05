@@ -52,7 +52,7 @@ void FileExplorer::Draw(std::string_view label)
 
 void FileExplorer::DrawMenu()
 {
-   if (ImGui::Button("Go Up"))
+   if (ImGui::Button(c_goUpName.data()))
    {
       if (m_currentPath.has_parent_path())
       {
@@ -63,7 +63,7 @@ void FileExplorer::DrawMenu()
    ImGui::SameLine();
    ImGui::PushTextWrapPos(ImGui::GetContentRegionAvail().x);    // Enable wrapping at the window's
                                                                 // max width
-   ImGui::Text("Current directory: %s", m_currentPath.string().c_str());
+   ImGui::Text(c_currentDir.data(), m_currentPath.string().c_str());
    ImGui::PopTextWrapPos();
 }
 
@@ -71,27 +71,29 @@ void FileExplorer::DrawContent()
 {
    for (const auto &entry : fs::directory_iterator(m_currentPath))
    {
-      const auto is_selected  = entry.path() == m_selectedEntry;
-      const auto is_directory = entry.is_directory();
-      const auto is_file      = entry.is_regular_file();
+      const auto &is_selected  = entry.path() == m_selectedEntry;
+      const auto &is_directory = entry.is_directory();
+      const auto &is_file      = entry.is_regular_file();
 
-      auto entry_name = entry.path().filename().string();
+      std::string_view entry_name = entry.path().filename().string();
 
-      if (is_directory)
-      {
-         entry_name = "[D]" + entry_name;
-      }
-      else if (is_file)
-      {
-         entry_name = "[F]" + entry_name;
-      }
+      // if (is_directory)
+      // {
+      //    entry_name = c_dirSymbol + entry_name;
+      // }
+      // else if (is_file)
+      // {
+      //    entry_name = c_fileSymbol + entry_name;
+      // }
 
       // The boolean is for the refrashe rate to mantain highlighted the last selected item in the
       // current view
-      if (ImGui::Selectable(entry_name.c_str(), is_selected))
+      if (ImGui::Selectable(entry_name.data(), is_selected))
       {
          if (is_directory)
+         {
             m_currentPath /= entry.path().filename();
+         }
          // The '/=' part add the fiolename to the currentpath for Unix use
 
          m_selectedEntry = entry.path();
@@ -105,32 +107,32 @@ void FileExplorer::DrawActions()
                                                                 // max width
    if (fs::is_directory(m_selectedEntry))
    {
-      ImGui::Text("Selected dir: %s", m_selectedEntry.string().c_str());
+      ImGui::Text(c_selectedDir.data(), m_selectedEntry.string().c_str());
    }
    else if (fs::is_regular_file(m_selectedEntry))
    {
-      ImGui::Text("Selected file: %s", m_selectedEntry.string().c_str());
+      ImGui::Text(c_selectedDir.data(), m_selectedEntry.string().c_str());
    }
    else
    {
-      ImGui::Text("Nothing selected...");
+      ImGui::Text(c_nothingSelected.data());
       // Since no button in this case is used ...
       // ... Fake a button to fix the size beneath
       ImGui::PushStyleVar(ImGuiStyleVar_Alpha,    // it's invisible
                           ImGui::GetStyle().Alpha * 0.0f);
-      ImGui::Button("Non0clickable button");
+      ImGui::Button(c_nonClickable.data());
       ImGui::PopStyleVar();
       return;
    }
 
-   if (fs::is_regular_file(m_selectedEntry) && ImGui::Button("Open"))
+   if (fs::is_regular_file(m_selectedEntry) && ImGui::Button(c_open.data()))
    {
       openFileWithDefaultEditor();
    }
 
    ImGui::SameLine();
 
-   if (ImGui::Button("Rename"))
+   if (ImGui::Button(c_rename.data()))
    {
       m_dlgRenameOpen = true;
       ImGui::OpenPopup(c_renamePopupName.data());
@@ -138,7 +140,7 @@ void FileExplorer::DrawActions()
 
    ImGui::SameLine();
 
-   if (ImGui::Button("Delete"))
+   if (ImGui::Button(c_delete.data()))
    {
       m_dlgDeleteOpen = true;
       ImGui::OpenPopup(c_deletePopupName.data());
@@ -153,11 +155,11 @@ void FileExplorer::DrawFilter()
    static char extention_filter[16] = { "\0" };
    float       availableWidth       = ImGui::GetContentRegionAvail().x - 5;
    ImGui::PushTextWrapPos(availableWidth);
-   ImGui::Text("Filter by extension");
+   ImGui::Text(c_filter.data());
    ImGui::SameLine();
    ImGui::SetNextItemWidth(availableWidth);
    // The ### hides the label
-   ImGui::InputText("###inFilter", extention_filter, sizeof(extention_filter));
+   ImGui::InputText(c_maskedLabel.data(), extention_filter, sizeof(extention_filter));
 
    if (std::strlen(extention_filter) == 0)
    {
@@ -176,7 +178,7 @@ void FileExplorer::DrawFilter()
       }
    }
 
-   ImGui::Text("Number of files: %u", cnt);
+   ImGui::Text(c_numberOfLines.data(), cnt);
    ImGui::PopTextWrapPos();
 }
 
@@ -199,10 +201,10 @@ void FileExplorer::renameFilePopup()
    {
       static char buffer_name[512] = { "\0" };
 
-      ImGui::Text("New name: ");
+      ImGui::Text(c_newName.data());
       // ImGui::SetKeyboardFocusHere();
-      ImGui::InputText("###newName", buffer_name, sizeof(buffer_name));
-      if (ImGui::Button("Rename"))
+      ImGui::InputText(c_maskedLabel.data(), buffer_name, sizeof(buffer_name));
+      if (ImGui::Button(c_rename.data()))
       {
          auto new_path = m_selectedEntry.parent_path() / buffer_name;
          if (renameFile(m_selectedEntry, new_path))
@@ -213,7 +215,7 @@ void FileExplorer::renameFilePopup()
          }
       }
 
-      if (ImGui::Button("Cancel"))
+      if (ImGui::Button(c_cancel.data()))
       {
          m_dlgRenameOpen = false;
       }
@@ -226,8 +228,8 @@ void FileExplorer::deleteFilePopup()
 {
    if (ImGui::BeginPopupModal(c_deletePopupName.data(), &m_dlgDeleteOpen))
    {
-      ImGui::Text("Delete %s?", m_selectedEntry.filename().string().c_str());
-      if (ImGui::Button("Yes"))
+      ImGui::Text(c_deleteQuestion.data(), m_selectedEntry.filename().string().c_str());
+      if (ImGui::Button(c_yes.data()))
       {
          if (deleteFile(m_selectedEntry))
          {
@@ -236,7 +238,7 @@ void FileExplorer::deleteFilePopup()
          }
       }
 
-      if (ImGui::Button("No"))
+      if (ImGui::Button(c_no.data()))
       {
          m_dlgDeleteOpen = false;
       }
@@ -274,5 +276,6 @@ bool FileExplorer::deleteFile(const fs::path &name)
 
 void render(FileExplorer &window_obj)
 {
-   window_obj.Draw("FileExplorer");
+   static constexpr auto viewName2 = "FileExplorer";
+   window_obj.Draw(viewName2);
 }

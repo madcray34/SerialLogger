@@ -18,7 +18,7 @@ void Model::startReceivingData(std::function<void(std::string&&)> callback)
           while (!m_stopReceiving)
           {
              // Wait for a message to arrive in the queue
-             m_Qf.wait();
+             m_Qf.wait(m_stopReceiving);
 
              // Process all messages in the queue
              while (!m_Qf.empty())
@@ -49,7 +49,7 @@ void Model::startSavingToFile()
           while (!m_stopSaving)
           {
              // Wait for a message to arrive in the queue
-             m_Qs.wait();
+             m_Qs.wait(m_stopSaving);
              std::string message = m_Qs.pop_front();    // Now you move the string for file
                                                         // saving
              outFile << message << std::endl;           // Save message to file

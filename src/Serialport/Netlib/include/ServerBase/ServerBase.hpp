@@ -14,7 +14,7 @@
 #include <boost/asio/ts/buffer.hpp>
 #include <deque>
 #include <chrono>
-
+#include <unordered_set>
 
 namespace netlib
 {
@@ -55,5 +55,7 @@ namespace netlib
       std::chrono::seconds m_periodicity;
       // Clients will be identified in the "wider system" via an ID
       uint32_t nIDCounter = 21000;
+
+      std::unordered_set<std::string> m_connectedPorts;
    };
 }    // namespace netlib

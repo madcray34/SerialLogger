@@ -199,6 +199,18 @@ namespace netlib
          }
       }
 
+      /**
+       * @brief wait.
+       */
+      void wait(const bool& exit) override
+      {
+         while (exit || empty())
+         {
+            std::unique_lock<std::mutex> ul(muxBlocking);
+            cvBlocking.wait(ul);
+         }
+      }
+
       template<typename Rep, typename Period>
       bool wait_for(const std::chrono::duration<Rep, Period>& timeout)
       {

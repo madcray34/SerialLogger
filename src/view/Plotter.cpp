@@ -56,29 +56,30 @@ void Plotter::update(std::string &&data)
 {
    m_Q.push_back(std::move(data));
    if (m_Q.count() > c_size)
+   {
       m_Q.pop_front();
+   }
 };
 
 void Plotter::DrawSelection()
 {
    // Empty function for now it will be usefull in future
-   ImGui::Text("WILL BE FILLED IN THE FUTURE WITH FILTERING OPTIONS ....");
+   static constexpr auto temporary1 = "WILL BE FILLED IN THE FUTURE WITH FILTERING OPTIONS ....";
+   ImGui::Text(temporary1);
 }
 
 void Plotter::DrawPlot()
 {
    // Range-based for loop
-   for (auto it = m_Q.begin(); it != m_Q.end(); ++it)
+   for (const auto &it : m_Q)
    {
-      if (it->c_str())
-      {
-         ImGui::Text("%s", it->c_str());
-         ImGui::Separator();
-      }
+      ImGui::Text(it.c_str());
+      ImGui::Separator();
    }
 }
 
 void render(Plotter &window_obj)
 {
-   window_obj.Draw("Plotter");
+   static constexpr auto viewName1 = "Plotter";
+   window_obj.Draw(viewName1);
 }

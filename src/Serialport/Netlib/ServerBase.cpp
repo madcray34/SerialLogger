@@ -14,6 +14,7 @@ namespace netlib
        , m_asyncTimer(m_asioContext, periodicity)
    {
       m_periodicity = periodicity;
+      m_connectedPorts.reserve(netlib::c_maxCOMports);
    }
 
    ServerBase::~ServerBase()
@@ -67,51 +68,34 @@ namespace netlib
              if (!ec)
              {
                 // Call the function to get available COM ports
-                std::vector<std::string> comPorts = m_portS.getAvailableCOMPorts();
+                const std::vector<std::string>& comPorts = m_portS.getAvailableCOMPorts();
                 if (!comPorts.empty())
                 {
                    for (const auto& port : comPorts)
                    {
-                      // Check if the port is already connected
-                      bool portAlreadyConnected = false;
-
-                      for (const auto& connection : m_deqConnections)
+                      // Skip already connected ports by checking the set
+                      if (m_connectedPorts.find(port) != m_connectedPorts.end())
                       {
-                         if (connection->getPortName() == port)
-                         {
-                            portAlreadyConnected = true;
-                            break;    // Exit loop early if port is found
-                         }
+                         continue;    // Move to the next port
                       }
 
-                      if (!portAlreadyConnected)
-                      {
-                         std::cout << " Detected COM PORT- " << port << std::endl;
-                         std::optional<boost::asio::serial_port> newPort;    // Declare as optional
-                         try
-                         {
-                            // construct the boost::asio::serial_port value in-place
-                            // That attempt's to open the port
-                            newPort.emplace(m_asioContext, port.data());
-                         }
-                         catch (std::exception& e)
-                         {
-                            // If port was not opened a runtime error was launched
-                            std::cerr << "Error opening serial port: " << e.what() << std::endl;
-                            waitForClientConnection();
-                         }
+                      std::cout << " Detected COM PORT- " << port << std::endl;
 
+                      try
+                      {
+                         boost::asio::serial_port newPort{ m_asioContext, port.data() };
                          // Create a new connection to handle this port
-                         std::shared_ptr<Connection> newconn = std::make_shared<Connection>(
-                             m_asioContext, std::move(newPort.value()), port, m_qMsgIn);
+                         auto newconn = std::make_shared<Connection>(
+                             m_asioContext, std::move(newPort), port, m_qMsgIn);
 
                          newconn->exampleMethod();
-
                          // Give the user server a chance to deny connection
                          if (onClientConnect(newconn))
                          {
                             // Connection allowed, so add to container of new connections
                             m_deqConnections.push_back(std::move(newconn));
+
+                            m_connectedPorts.insert(port);
 
                             // And very important! Issue a task to the connection's
                             // asio context to sit and wait for bytes to arrive!
@@ -130,18 +114,23 @@ namespace netlib
                             // get destroyed automagically due to the wonder of smart pointers
                          }
                       }
+                      catch (std::exception& e)
+                      {
+                         // If port was not opened a runtime error was launched
+                         std::cerr << "Error opening serial port: " << e.what() << std::endl;
+                         waitForClientConnection();
+                      }
                    }
                 }
                 else
                 {
-                   std::cout << "No COM ports detected." << std::endl;
-
                    // If something was connected now it isn't anymore, clean up
                    for (const auto& connection : m_deqConnections)
                    {
                       connection->disconnect();
                    }
                    m_deqConnections.clear();
+                   m_connectedPorts.clear();
                 }
              }
              else
@@ -188,7 +177,7 @@ namespace netlib
    void ServerBase::onClientDisconnect(std::shared_ptr<Connection> client)
    {}
 
-   void ServerBase::onMessage(std::shared_ptr<Connection>   _client,
+   void ServerBase::onMessage(std::shared_ptr<Connection>    _client,
                               [[maybe_unused]] std::string&& _msg)
    {}
 

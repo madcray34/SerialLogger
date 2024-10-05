@@ -5,11 +5,9 @@
 
 namespace netlib
 {
-   std::vector<std::string> WindowsCOMPortScanner::getAvailableCOMPorts()
+   const std::vector<std::string>& WindowsCOMPortScanner::getAvailableCOMPorts()
    {
-      // Reserve space for expected COM ports
-      std::vector<std::string> ports;
-      ports.reserve(16);
+      ports.clear();
 
       // Get the device information set for COM ports
       HDEVINFO hDevInfo = SetupDiGetClassDevs(&GUID_DEVINTERFACE_COMPORT, nullptr, nullptr,
@@ -24,31 +22,27 @@ namespace netlib
       SP_DEVINFO_DATA devInfoData;
       devInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
       DWORD i            = 0;
+      // Buffer to store the port name
+      static char portName[256];
 
       // Iterate through all devices
       while (SetupDiEnumDeviceInfo(hDevInfo, i, &devInfoData))
       {
-         // Buffer to store the port name
-         char portName[256];
-
          // Query the device's port name using SPDRP_FRIENDLYNAME
          if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, nullptr,
                                                reinterpret_cast<PBYTE>(portName), sizeof(portName),
                                                nullptr))
          {
-            std::string friendlyStr(portName);
-
-            // Find "COM" in the friendly name and extract the COM port
-            std::size_t comPos = friendlyStr.find("COM");
-            if (comPos != std::string::npos)
+            const char* comPos = std::strstr(portName, "COM");
+            if (comPos != nullptr)
             {
-               std::size_t closeParenPos = friendlyStr.find(")", comPos);
+               const char* closeParenPos = std::strchr(comPos, ')');
 
                // If a closing parenthesis was found, extract the COM port
-               if (closeParenPos != std::string::npos)
+               if (closeParenPos != nullptr)
                {
-                  // Extract the substring starting from "COM"
-                  std::string comPort = friendlyStr.substr(comPos, closeParenPos - comPos);
+                  // Extract COM port name between "COM" and ")"
+                  std::string comPort(comPos, closeParenPos - comPos);
                   ports.emplace_back(std::move(comPort));
                }
             }
