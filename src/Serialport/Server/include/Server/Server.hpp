@@ -42,8 +42,7 @@ namespace netlib
        * @param client
        * @param msg
        */
-      void onMessage(std::shared_ptr<Connection>    client,
-                     [[maybe_unused]] std::string&& _msg) override;
+      void onMessage([[maybe_unused]] netlib::OwnedMessage&& _msg) override;
 
       private:
       std::atomic<bool> stopMonitoring;

@@ -36,8 +36,7 @@ namespace netlib
       protected:
       virtual bool onClientConnect(std::shared_ptr<Connection> client) override;
       virtual void onClientDisconnect(std::shared_ptr<Connection> client) override;
-      virtual void onMessage(std::shared_ptr<Connection>    _client,
-                             [[maybe_unused]] std::string&& _msg) override;
+      virtual void onMessage([[maybe_unused]] netlib::OwnedMessage&& _msg) override;
 
       // Thread Safe Queue for incoming message packets
       ITSQueue<OwnedMessage>& m_qMsgIn;

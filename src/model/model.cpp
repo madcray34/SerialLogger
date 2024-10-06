@@ -61,9 +61,9 @@ void Model::startSavingToFile()
        .detach();    // Run in the background
 }
 
-void Model::pushMessage(std::string&& _msg)
+void Model::pushMessage(netlib::OwnedMessage&& _msg)
 {
-   std::string copy = _msg;
-   m_Qf.push_back(std::move(_msg));
+   std::string copy = _msg.m_msg;
+   m_Qf.push_back(std::move(_msg.m_msg));
    m_Qs.push_back(std::move(copy));
 }

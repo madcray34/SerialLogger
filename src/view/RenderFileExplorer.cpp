@@ -73,7 +73,7 @@ void FileExplorer::DrawContent()
    {
       const auto &is_selected  = entry.path() == m_selectedEntry;
       const auto &is_directory = entry.is_directory();
-      const auto &is_file      = entry.is_regular_file();
+      // const auto &is_file      = entry.is_regular_file();
 
       std::string_view entry_name = entry.path().filename().string();
 

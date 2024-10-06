@@ -33,7 +33,7 @@ class Model : public IModel
       m_stopReceiving = true;
    };
 
-   void pushMessage(std::string&& _msg) override;
+   void pushMessage(netlib::OwnedMessage&& _msg) override;
 
    // Start save in a separate thread
    void startSavingToFile() override;

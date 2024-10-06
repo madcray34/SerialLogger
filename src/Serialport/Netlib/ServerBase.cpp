@@ -141,11 +141,8 @@ namespace netlib
       int32_t nMessageCount = 0;
       while (nMessageCount < nMaxMessages && !m_qMsgIn.empty())
       {
-         // Grab the front message
-         auto msg = m_qMsgIn.pop_front();
-
          // Pass to message handler
-         onMessage(std::move(msg.m_remote), std::move(msg.m_msg));
+         onMessage(std::move(m_qMsgIn.pop_front()));
 
          nMessageCount++;
       }
@@ -159,8 +156,7 @@ namespace netlib
    void ServerBase::onClientDisconnect(std::shared_ptr<Connection> client)
    {}
 
-   void ServerBase::onMessage(std::shared_ptr<Connection>    _client,
-                              [[maybe_unused]] std::string&& _msg)
+   void ServerBase::onMessage([[maybe_unused]] netlib::OwnedMessage&& _msg)
    {}
 
 
