@@ -20,5 +20,17 @@ namespace netlib
    {
       std::shared_ptr<Connection> m_remote = nullptr;
       std::string                 m_msg;
+
+      OwnedMessage() = default;
+
+      // Move constructor
+      OwnedMessage(std::shared_ptr<Connection>&& otherRemote, std::string&& otherMsg) noexcept
+          : m_remote(std::move(otherRemote)), m_msg(std::move(otherMsg))
+      {}
+
+      // Move constructor
+      OwnedMessage(std::shared_ptr<Connection>&& otherRemote) noexcept
+          : m_remote(std::move(otherRemote))
+      {}
    };
 }    // namespace netlib

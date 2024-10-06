@@ -42,8 +42,6 @@ namespace netlib
 
       std::string_view getPortName() const override;
 
-      void exampleMethod();
-
       private:
       /**
        * @brief ASYNC - Prime context ready to read a message body. If this function is called, a
@@ -57,7 +55,7 @@ namespace netlib
        * @brief Once a full message is received, add it to the incoming queue, converting it to an
        * "owned message", by initialising with a shared pointer from this connection object.
        */
-      void AddToIncomingMessageQueue();
+      void AddToIncomingMessageQueue(const std::size_t& len);
 
       void configureSerialPort(boost::asio::serial_port& port);
 
@@ -76,7 +74,8 @@ namespace netlib
 
       // Incoming messages are constructed asynchronously, so we will
       // store the part assembled message here, until it is ready
-      std::string m_msgTemporaryIn{};
+      // std::string m_msgTemporaryIn{};
+      boost::asio::streambuf m_streamBuffer;
 
       bool m_bConnectionEstablished = false;
 

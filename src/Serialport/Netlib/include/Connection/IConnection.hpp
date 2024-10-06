@@ -4,6 +4,7 @@
 
 namespace netlib
 {
+   static constexpr uint16_t c_bufferCapacity = 1 << 14;
    /**
     * @brief Interface class for the connection object.
     *

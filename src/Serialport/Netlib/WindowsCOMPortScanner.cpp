@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <setupapi.h>
 #include <iostream>
+#include <windows.h>
 
 namespace netlib
 {
@@ -23,17 +24,25 @@ namespace netlib
       devInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
       DWORD i            = 0;
       // Buffer to store the port name
-      static char portName[256];
 
       // Iterate through all devices
       while (SetupDiEnumDeviceInfo(hDevInfo, i, &devInfoData))
       {
          // Query the device's port name using SPDRP_FRIENDLYNAME
          if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, nullptr,
-                                               reinterpret_cast<PBYTE>(portName), sizeof(portName),
-                                               nullptr))
+                                               reinterpret_cast<PBYTE>(portName.data()),
+                                               sizeof(portName), nullptr))
          {
-            const char* comPos = std::strstr(portName, "COM");
+            // Skip already connected ports by checking the set
+            if (m_connectedPorts.find(portName.data()) != m_connectedPorts.end())
+            {
+               ++i;    // Increment to the next device
+               continue;
+            }
+
+            m_connectedPorts.insert(portName.data());
+
+            const char* comPos = std::strstr(portName.data(), "COM");
             if (comPos != nullptr)
             {
                const char* closeParenPos = std::strchr(comPos, ')');
@@ -41,9 +50,7 @@ namespace netlib
                // If a closing parenthesis was found, extract the COM port
                if (closeParenPos != nullptr)
                {
-                  // Extract COM port name between "COM" and ")"
-                  std::string comPort(comPos, closeParenPos - comPos);
-                  ports.emplace_back(std::move(comPort));
+                  ports.emplace_back(comPos, closeParenPos - comPos);
                }
             }
          }

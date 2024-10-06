@@ -14,7 +14,6 @@ namespace netlib
        , m_asyncTimer(m_asioContext, periodicity)
    {
       m_periodicity = periodicity;
-      m_connectedPorts.reserve(netlib::c_maxCOMports);
    }
 
    ServerBase::~ServerBase()
@@ -73,12 +72,6 @@ namespace netlib
                 {
                    for (const auto& port : comPorts)
                    {
-                      // Skip already connected ports by checking the set
-                      if (m_connectedPorts.find(port) != m_connectedPorts.end())
-                      {
-                         continue;    // Move to the next port
-                      }
-
                       std::cout << " Detected COM PORT- " << port << std::endl;
 
                       try
@@ -88,14 +81,13 @@ namespace netlib
                          auto newconn = std::make_shared<Connection>(
                              m_asioContext, std::move(newPort), port, m_qMsgIn);
 
-                         newconn->exampleMethod();
                          // Give the user server a chance to deny connection
                          if (onClientConnect(newconn))
                          {
                             // Connection allowed, so add to container of new connections
                             m_deqConnections.push_back(std::move(newconn));
 
-                            m_connectedPorts.insert(port);
+
 
                             // And very important! Issue a task to the connection's
                             // asio context to sit and wait for bytes to arrive!
@@ -121,16 +113,6 @@ namespace netlib
                          waitForClientConnection();
                       }
                    }
-                }
-                else
-                {
-                   // If something was connected now it isn't anymore, clean up
-                   for (const auto& connection : m_deqConnections)
-                   {
-                      connection->disconnect();
-                   }
-                   m_deqConnections.clear();
-                   m_connectedPorts.clear();
                 }
              }
              else
