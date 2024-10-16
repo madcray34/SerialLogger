@@ -199,16 +199,12 @@ namespace netlib
          }
       }
 
-      /**
-       * @brief wait.
-       */
       void wait(const bool& exit) override
       {
-         while (exit || empty())
-         {
-            std::unique_lock<std::mutex> ul(muxBlocking);
-            cvBlocking.wait(ul);
-         }
+         std::unique_lock<std::mutex> ul(muxBlocking);
+
+         // Wait until either exit is true, or the queue is no longer empty
+         cvBlocking.wait(ul, [&]() { return exit || !empty(); });
       }
 
       template<typename Rep, typename Period>

@@ -24,6 +24,7 @@ class Model : public IModel
    ~Model()
    {
       stopReceivingData();
+      stopSavingToFile();
    }
 
    // Start data reception in a separate thread
@@ -37,16 +38,37 @@ class Model : public IModel
 
    // Start save in a separate thread
    void startSavingToFile() override;
-   void stopSavingToFile() override
+   void stopSavingToFile() override;
+   bool isSavingToFile() const
    {
-      m_stopSaving = true;
-   };
+      return !m_stopSaving;
+   }
 
    private:
-   std::mutex                     m_muxCB;
-   std::atomic<bool>              m_stopReceiving;
-   std::atomic<bool>              m_stopSaving;
+   std::mutex m_muxCB;
+
+   /**
+    * @brief Handling callback to UI
+    */
+   std::atomic<bool> m_stopReceiving;
+
+   /**
+    * @brief Handling saving Thread
+    */
+   std::atomic<bool> m_stopSaving;
+   std::atomic<bool> m_savingThreadRunning;    // Track if the thread is running
+
+   /**
+    * @brief Queues for async operations:
+    * m_Qf: Thread Safe Double ended queue for handling callback to UI
+    * m_Qs: Thread Safe Double ended queue for handling saving to file
+    */
    netlib::ITSQueue<std::string>& m_Qf;
    netlib::ITSQueue<std::string>& m_Qs;
-   std::string                    m_savingPath;
+
+   /**
+    * @brief Thread for saving to the file
+    */
+   std::thread m_savingThread;
+   std::string m_savingPath;
 };

@@ -9,8 +9,6 @@ void Presenter::start()
           // Forward data to the View
           m_viewCallback(std::move(data));
        });
-
-   m_model.startSavingToFile();
 }
 
 void Presenter::stop()

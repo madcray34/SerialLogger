@@ -97,17 +97,21 @@ void end_cycle(GLFWwindow *const window, const ImVec4 &clear_color, ImGuiConfigF
 }
 
 
-void drawmenu(GLFWwindow *const window, bool &show_file_explorer)
+void drawmenu(GLFWwindow *const window, bool &show_file_explorer, Model &model)
 {
    // TODO create a class to properly handle the menu bar
    /**
     * @brief Those string are made static to not construct them every frame
     */
-   static constexpr auto c_menu_file             = "File";
-   static constexpr auto c_menu_exit             = "Exit";
-   static constexpr auto c_menu_exit_shortcut    = "Alt+F4";
-   static constexpr auto c_menu_fileExp          = "OpenFileExplorer";
-   static constexpr auto c_menu_fileExp_shortcut = "Alt+f";
+   static constexpr auto c_menu_file              = "File";
+   static constexpr auto c_menu_exit              = "Exit";
+   static constexpr auto c_menu_exit_shortcut     = "Alt+F4";
+   static constexpr auto c_menu_fileExp           = "OpenFileExplorer";
+   static constexpr auto c_menu_fileExp_shortcut  = "Alt+f";
+   static constexpr auto c_menu_fileSave          = "Saving To File";
+   static constexpr auto c_menu_fileSave_shortcut = "Ctrl+s";
+   static constexpr auto c_menu_fileStop          = "Stop Saving";
+   static constexpr auto c_menu_fileStop_shortcut = "Shift+Ctrl+s";
 
    // Begin Menu Bar
    if (ImGui::BeginMenuBar())
@@ -117,6 +121,13 @@ void drawmenu(GLFWwindow *const window, bool &show_file_explorer)
          if (ImGui::MenuItem(c_menu_fileExp, c_menu_fileExp_shortcut))
          {
             show_file_explorer = !show_file_explorer;
+         }
+
+         const auto &saving = model.isSavingToFile();
+         if (ImGui::MenuItem(saving ? c_menu_fileStop : c_menu_fileSave,
+                             saving ? c_menu_fileStop_shortcut : c_menu_fileSave_shortcut))
+         {
+            saving ? model.stopSavingToFile() : model.startSavingToFile();
          }
 
          if (ImGui::MenuItem(c_menu_exit, c_menu_exit_shortcut))
@@ -256,7 +267,7 @@ int main(int, char **)
       ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
       ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
-      drawmenu(window, show_file_explorer);
+      drawmenu(window, show_file_explorer, model);
 
       if (show_file_explorer)
       {

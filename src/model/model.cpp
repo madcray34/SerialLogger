@@ -6,7 +6,12 @@
 
 Model::Model(netlib::ITSQueue<std::string>& _qf, netlib::ITSQueue<std::string>& _qs,
              const std::string saveFileName)
-    : m_stopReceiving(false), m_stopSaving(false), m_Qf(_qf), m_Qs(_qs), m_savingPath(saveFileName)
+    : m_stopReceiving(false)
+    , m_stopSaving(true)
+    , m_savingThreadRunning(false)
+    , m_Qf(_qf)
+    , m_Qs(_qs)
+    , m_savingPath(saveFileName)
 {}
 
 void Model::startReceivingData(std::function<void(std::string&&)> callback)
@@ -19,6 +24,9 @@ void Model::startReceivingData(std::function<void(std::string&&)> callback)
           {
              // Wait for a message to arrive in the queue
              m_Qf.wait(m_stopReceiving);
+
+             if (m_stopReceiving)
+                break;    // Check for stop signal after waiting
 
              // Process all messages in the queue
              while (!m_Qf.empty())
@@ -34,15 +42,37 @@ void Model::startReceivingData(std::function<void(std::string&&)> callback)
        .detach();    // Run in the background
 }
 
-// Separate thread to handle saving strings to a file periodically
+
+void Model::pushMessage(netlib::OwnedMessage&& _msg)
+{
+   if (!m_stopSaving)
+   {
+      std::string copy = _msg.m_msg;
+      m_Qs.push_back(std::move(copy));
+   }
+   m_Qf.push_back(std::move(_msg.m_msg));
+}
+
+// Function to start the saving thread
 void Model::startSavingToFile()
 {
-   std::thread(
+   // Check if the thread is already running
+   if (m_savingThreadRunning)
+   {
+      return;
+   }
+
+   m_stopSaving          = false;    // Ensure the stop flag is reset
+   m_savingThreadRunning = true;
+
+   // Launch a new thread for saving
+   m_savingThread = std::thread(
        [this]()
        {
           std::ofstream outFile(m_savingPath, std::ios::app);
           if (!outFile.is_open())
           {
+             // std::cerr << "Failed to open the file!" << std::endl;
              return;
           }
 
@@ -50,20 +80,34 @@ void Model::startSavingToFile()
           {
              // Wait for a message to arrive in the queue
              m_Qs.wait(m_stopSaving);
-             std::string message = m_Qs.pop_front();    // Now you move the string for file
-                                                        // saving
-             outFile << message << std::endl;           // Save message to file
+
+             if (m_stopSaving)
+                break;    // Check for stop signal after waiting
+
+             std::string message = m_Qs.pop_front();    // Get the message from the queue
+             outFile << message;                        // Write message to file
              outFile.flush();                           // Ensure data is written to disk
           }
 
           outFile.close();    // Close file when done
-       })
-       .detach();    // Run in the background
+          m_savingThreadRunning = false;
+       });
 }
 
-void Model::pushMessage(netlib::OwnedMessage&& _msg)
+void Model::stopSavingToFile()
 {
-   std::string copy = _msg.m_msg;
-   m_Qf.push_back(std::move(_msg.m_msg));
-   m_Qs.push_back(std::move(copy));
+   if (!m_savingThreadRunning)
+   {
+      // std::cout << "File saving is not running." << std::endl;
+      return;
+   }
+
+   m_stopSaving = true;    // Signal to stop the thread
+
+   if (m_savingThread.joinable())
+   {
+      m_savingThread.join();    // Wait for the thread to finish
+   }
+
+   // std::cout << "File saving stopped." << std::endl;
 }
