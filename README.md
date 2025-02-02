@@ -35,6 +35,8 @@ SerialLogger/
 Ensure you have the following installed:
 - **CMake (>= 3.30)**
 - **C++20 Compiler** (GCC, Clang, or MSVC)
+  
+The following will be automatically added to the ./external folder:
 - **Vcpkg** (for dependency management)
 - **Boost, fmt, GLFW, ImGui, ImPlot, OpenGL** (handled via vcpkg)
 
