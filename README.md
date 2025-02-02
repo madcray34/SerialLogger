@@ -53,7 +53,7 @@ make -j$(nproc)
 git clone https://github.com/madcray34/SerialLogger.git
 cd SerialLogger
 mkdir build; cd build
-cmake .. -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake ..
 cmake --build . --config Release
 ```
 
