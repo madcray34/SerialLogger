@@ -147,3 +147,4 @@ docs
 docs.rar
 pictureDocs
 *.qea
+external/vcpkg/

@@ -1,0 +1,7 @@
+add_library(${LIBRARY_INET_NAME} INTERFACE)
+
+target_include_directories(${LIBRARY_INET_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_libraries(${LIBRARY_INET_NAME} INTERFACE
+    ${LIBRARY_NET_NAME}
+)
