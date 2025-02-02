@@ -6,6 +6,10 @@ set(EXE_SOURCES
 
 add_executable(${EXECUTABLE_NAME} ${EXE_SOURCES})
 
+if(ENABLE_CLANG_FORMAT)
+    add_dependencies(${EXECUTABLE_NAME} run_clang_format)
+endif()
+
 # target_include_directories(${EXECUTABLE_NAME} PUBLIC
 #     ${EXE_INCLUDES})
 

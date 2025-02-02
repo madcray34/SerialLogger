@@ -3,6 +3,7 @@
 #include <setupapi.h>
 #include <iostream>
 #include <windows.h>
+#include <cstring>
 
 namespace netlib
 {

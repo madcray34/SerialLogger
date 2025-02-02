@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <iostream>
 #include <bit>
+#include <memory>
 
 namespace netlib
 {

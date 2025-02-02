@@ -5,7 +5,7 @@ project(
     VERSION 1.0.0
     LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -22,31 +22,37 @@ set(LIBRARY_NETSERVER_NAME Server)
 # Options
 option(ENABLE_WARNINGS "Enable to add warnings to a target." ON)
 option(ENABLE_WARNINGS_AS_ERRORS "Enable to treat warnings as errors." OFF)
-option(ENABLE_CLANG_TIDY "Enable to add clang tidy." ON)
-option(ENABLE_CLANG_FORMAT "Enable to add clang-format." ON)
+option(ENABLE_CLANG_FORMAT "Enable to add clang-format." OFF)
+option(ENABLE_CLANG_TIDY "Enable to add clang tidy." OFF)
 option(ENABLE_LTO "Enable Link Time Optimization." OFF) 
 
 if(ENABLE_WARNINGS)
     include(Warnings)
 endif()
 
-#include(Tools) # needs clang tidy and clang format
+include(Tools) # needs clang tidy and clang format
 include(ConfigSafeGuards)
 
 if(ENABLE_LTO)
     include(LTO)
 endif()
 
-# add_clang_format_target() # needs python 
+if(ENABLE_CLANG_FORMAT)
+    add_clang_format_target()
+endif()
+
+if(ENABLE_CLANG_TIDY)
+    set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*")  # Enable all checks
+endif()
 
 include(VcpkgSetup)  # Now we load the vcpkg logic from the separate file
 
-find_package(fmt CONFIG REQUIRED)
-find_package(glfw3 CONFIG REQUIRED)
-find_package(imgui CONFIG REQUIRED)
-find_package(implot CONFIG REQUIRED)
-find_package(OpenGL REQUIRED)
-find_package(Boost REQUIRED COMPONENTS circular_buffer asio system)
+find_package(fmt CONFIG REQUIRED QUIET)
+find_package(glfw3 CONFIG REQUIRED QUIET)
+find_package(imgui CONFIG REQUIRED QUIET)
+find_package(implot CONFIG REQUIRED QUIET)
+find_package(OpenGL REQUIRED QUIET)
+find_package(Boost REQUIRED COMPONENTS circular_buffer asio system QUIET)
 if (Boost_FOUND)
     message(STATUS "Boost found: ${Boost_VERSION}")
     message(STATUS "Include dir: ${Boost_INCLUDE_DIRS}")
