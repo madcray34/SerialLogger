@@ -39,11 +39,7 @@ endif()
 
 # add_clang_format_target() # needs python 
 
-# set (VCPKG_DIR ${CMAKE_SOURCE_DIR}/external/vcpkg)
-# you can set any other vcpkg installation on your system
-set(VCPKG_DIR $ENV{VCPKG_PATH})
-message(STATUS "Vcpkg path: ${VCPKG_DIR}")
-include(${VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake)
+include(VcpkgSetup)  # Now we load the vcpkg logic from the separate file
 
 find_package(fmt CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
