@@ -1,5 +1,5 @@
 set(EXE_SOURCES
-    "main.cpp")
+    "serial-logger.cpp")
 
 add_executable(${EXECUTABLE_NAME} ${EXE_SOURCES})
 
