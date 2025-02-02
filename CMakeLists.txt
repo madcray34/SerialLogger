@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.30)
 
 project(
-    "Serial-Port"
+    "SerialLogger"
     VERSION 1.0.0
     LANGUAGES C CXX)
 
@@ -12,7 +12,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Project/Library Names
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
-set(EXECUTABLE_NAME serialLogger)
+set(EXECUTABLE_NAME SerialLogger)
 set(LIBRARY_GUI_BACKEND_NAME guiBackend)
 set(LIBRARY_IGUI_BACKEND_NAME I${LIBRARY_GUI_BACKEND_NAME})
 set(LIBRARY_NET_NAME Netlib)
