@@ -60,9 +60,11 @@ cmake --build . --config Release
 ```
 
 ## Usage
-After building, you can run SerialLogger:
+After building, you can run SerialLogger, depending on you're local CMake configuration.
+For instance building it with MSVC:
 ```sh
-./SerialLogger
+cd build
+./app/Release/SerialLogger.exe
 ```
 
 ## Configuration Options
