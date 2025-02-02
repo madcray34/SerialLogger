@@ -50,7 +50,7 @@ cmake .. -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
 make -j$(nproc)
 ```
 
-#### Windows (Powershell)
+#### Windows
 ```powershell
 git clone https://github.com/madcray34/SerialLogger.git
 cd SerialLogger
