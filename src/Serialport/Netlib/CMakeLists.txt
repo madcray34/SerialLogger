@@ -13,10 +13,10 @@ target_link_libraries(${LIBRARY_NET_NAME} PUBLIC
     Boost::system
     Boost::asio)
 
-#Use the following when switching to shared library
-#target_compile_definitions(${LIBRARY_VIEW_NAME} PRIVATE BUILDING_VIEW_DLL)
-
-
+target_link_libraries(${LIBRARY_NET_NAME} PRIVATE 
+    ws2_32      # Link to the Winsock library
+    )
+    
 if (ENABLE_WARNINGS)
     target_set_warnings(TARGET ${LIBRARY_NET_NAME}
         ENABLE ${ENABLE_WARNINGS}

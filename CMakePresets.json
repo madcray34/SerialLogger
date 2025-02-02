@@ -10,10 +10,8 @@
       "name": "default",
       "displayName": "Default Build",
       "description": "Use vcpkg toolchain",
-      "generator": "Ninja",
       "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
         "CMAKE_BUILD_TYPE": "Release"
       }
     }

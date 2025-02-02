@@ -1,27 +1,25 @@
 set(EXE_SOURCES
     "main.cpp")
 
-# set(EXE_INCLUDES
-#     "./")
-
 add_executable(${EXECUTABLE_NAME} ${EXE_SOURCES})
+
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE 
+${LIBRARY_MODEL_NAME}
+${LIBRARY_VIEW_NAME}
+${LIBRARY_PRESENTER_NAME}
+${LIBRARY_NET_NAME}
+${LIBRARY_NETSERVER_NAME}
+glfw
+OpenGL::GL
+setupapi
+ws2_32
+imgui::imgui
+implot::implot
+)
 
 if(ENABLE_CLANG_FORMAT)
     add_dependencies(${EXECUTABLE_NAME} run_clang_format)
 endif()
-
-# target_include_directories(${EXECUTABLE_NAME} PUBLIC
-#     ${EXE_INCLUDES})
-
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE 
-    ${LIBRARY_MODEL_NAME}
-    ${LIBRARY_VIEW_NAME}
-    ${LIBRARY_PRESENTER_NAME}
-    ${LIBRARY_NET_NAME}
-    ${LIBRARY_NETSERVER_NAME}
-    glfw
-    OpenGL::GL
-    setupapi)
 
 # add_dependencies(${EXECUTABLE_NAME} ${LIBRARY_VIEW_NAME})
 

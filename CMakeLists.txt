@@ -46,6 +46,7 @@ if(ENABLE_CLANG_TIDY)
 endif()
 
 include(VcpkgSetup)  # Now we load the vcpkg logic from the separate file
+include(${VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake)
 
 find_package(fmt CONFIG REQUIRED QUIET)
 find_package(glfw3 CONFIG REQUIRED QUIET)
