@@ -1,9 +1,9 @@
 #pragma once
-#include <model/Imodel.hpp>
-#include <mutex>
 #include <condition_variable>
-#include <atomic>
+#include <model/Imodel.hpp>
 #include <thread>
+#include <atomic>
+#include <mutex>
 
 namespace netlib
 {

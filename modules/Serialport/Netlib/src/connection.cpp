@@ -1,5 +1,5 @@
-#include <Connection/Connection.hpp>
-#include <TSQueue/ITSQueue.hpp>
+#include <connection/connection.hpp>
+#include <tsQueue/ItsQueue.hpp>
 
 namespace netlib
 {

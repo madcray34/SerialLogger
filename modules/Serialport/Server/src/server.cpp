@@ -1,5 +1,5 @@
-#include <Server/Server.hpp>
-#include <Connection/Connection.hpp>
+#include <server/server.hpp>
+#include <connection/connection.hpp>
 #include <thread>
 
 namespace netlib

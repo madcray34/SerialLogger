@@ -1,9 +1,12 @@
 #pragma once
-
-#include <cstdint>
-#include <filesystem>
 #include <string_view>
+#include <filesystem>
+#include <cstdint>
 
+/**
+ * @brief THIS FILE IS WORK IN PROGRESS... DO NOT CONSIDER IT FOR THE MOMENT
+ *
+ */
 namespace fs = std::filesystem;
 
 class FileExplorer

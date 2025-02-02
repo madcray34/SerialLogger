@@ -1,8 +1,8 @@
-#include <chrono>
+#include <tsQueue/ItsQueue.hpp>
 #include <model/model.hpp>
-#include <thread>
-#include <TSQueue/ITSQueue.hpp>
 #include <fstream>
+#include <chrono>
+#include <thread>
 
 Model::Model(netlib::ITSQueue<std::string>& _qf, netlib::ITSQueue<std::string>& _qs,
              const std::string saveFileName)

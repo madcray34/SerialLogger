@@ -1,8 +1,8 @@
 #pragma once
-#include <cstdint>
+#include <tsQueue/types/message.hpp>
 #include <functional>
+#include <cstdint>
 #include <string>
-#include <TSQueue/Message.hpp>
 
 class IModel
 {

@@ -1,4 +1,4 @@
-#include <PortScanner/WindowsCOMPortScanner.hpp>
+#include <portScanner/windowsCOMPortScanner.hpp>
 #include <windows.h>
 #include <setupapi.h>
 #include <iostream>

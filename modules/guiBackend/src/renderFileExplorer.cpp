@@ -1,42 +1,24 @@
+#include <view/renderFileExplorer.hpp>
 #include <fmt/format.h>
-#include <imgui.h>
 #include <implot.h>
 #include <iostream>
-#include <view/RenderFileExplorer.hpp>
-
+#include <imgui.h>
 
 /**
- * @brief Here we define every aspect of what it should be drawn in the Frame window
+ * @brief THIS FILE IS WORK IN PROGRESS... DO NOT CONSIDER IT FOR THE MOMENT
  *
- * @param label
  */
+
 void FileExplorer::Draw(std::string_view label)
 {
-   /**
-    * @brief predefined ImGui flags to manage window properties, those will be passed down to the
-    * ImGui::Begin function as 3rd argument
-    */
    constexpr static auto window_flags = ImGuiWindowFlags_None;
 
    constexpr static auto windowSize = ImVec2(350.0F, 720.0F);
    constexpr static auto windowPos  = ImVec2(0.0F, 0.0F);
-
-   /**
-    * @brief Construct a new Im Gui:: Set Next Window Pos and Size objects to properly put into
-    * settings the next "imgui sub-window" called with Begin()
-    */
-   // ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
    ImGui::SetNextWindowSize(windowSize);
-   /*
-    * @brief Start a new "imgui sub-windows" inside our main frame window (something that is render
-    * inside) we must also call then an end window. This Begin, End work like a stack (in general
-    * ImGui work like a stack) Whenever we want to create a new window we push data to stack, and at
-    * the end the stack pointer must go to where it was before Begin.
-    */
+
    ImGui::Begin(label.data(), nullptr, window_flags);
-   /**
-    * @brief In between Begin/End we have to create the content of this sub-window
-    */
+
    DrawMenu();
    ImGui::Separator();    // Horizontal line
    DrawContent();
@@ -76,15 +58,6 @@ void FileExplorer::DrawContent()
       // const auto &is_file      = entry.is_regular_file();
 
       std::string_view entry_name = entry.path().filename().string();
-
-      // if (is_directory)
-      // {
-      //    entry_name = c_dirSymbol + entry_name;
-      // }
-      // else if (is_file)
-      // {
-      //    entry_name = c_fileSymbol + entry_name;
-      // }
 
       // The boolean is for the refrashe rate to mantain highlighted the last selected item in the
       // current view

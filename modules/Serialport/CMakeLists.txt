@@ -1,2 +1,2 @@
-add_subdirectory(Netlib ./Netlib)
-add_subdirectory(Server ./Server)
+add_subdirectory(netlib ./netlib)
+add_subdirectory(server ./server)

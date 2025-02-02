@@ -1,7 +1,7 @@
 #pragma once
-#include <Presenter/IPresenter.hpp>
-#include <functional>
+#include <presenter/Ipresenter.hpp>
 #include <model/Imodel.hpp>
+#include <functional>
 #include <mutex>
 
 class Presenter : public IPresenter

@@ -1,9 +1,7 @@
 #pragma once
-#include <PortScanner/ICOMPortScanner.hpp>
+#include <portScanner/IcomPortScanner.hpp>
 #include <unordered_set>
 #include <array>
-
-
 
 namespace netlib
 {

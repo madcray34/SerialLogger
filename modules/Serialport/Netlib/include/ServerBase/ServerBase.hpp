@@ -1,9 +1,9 @@
 #pragma once
-#include <ServerBase/IServerBase.hpp>
-#include <TSQueue/Message.hpp>
-#include <TSQueue/ITSQueue.hpp>
-#include <PortScanner/ICOMPortScanner.hpp>
-#include <Connection/Connection.hpp>
+#include <serverBase/IserverBase.hpp>
+#include <tsQueue/types/message.hpp>
+#include <tsQueue/ItsQueue.hpp>
+#include <portScanner/IcomPortScanner.hpp>
+#include <connection/connection.hpp>
 
 #ifdef _WIN32
    #define _WIN32_WINNT 0x0A00

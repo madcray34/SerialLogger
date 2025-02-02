@@ -1,15 +1,18 @@
 set(SOURCES 
-    "Connection.cpp"
-    "ServerBase.cpp"
-    "WindowsCOMPortScanner.cpp")
+    "./src/connection.cpp"
+    "./src/serverBase.cpp"
+    "./src/windowsCOMPortScanner.cpp")
 
 add_library(${LIBRARY_NET_NAME} STATIC 
     ${SOURCES})
+
+add_subdirectory(interfaces ./interfaces)    
 
 target_include_directories(${LIBRARY_NET_NAME} PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(${LIBRARY_NET_NAME} PUBLIC 
+    ${LIBRARY_INET_NAME}
     Boost::system
     Boost::asio)
 

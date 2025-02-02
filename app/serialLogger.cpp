@@ -13,15 +13,14 @@
 #include <GLFW/glfw3.h>
 
 // Application defined libraries
-#include <Presenter/Presenter.hpp>
+#include <presenter/presenter.hpp>
 #include <model/model.hpp>
-#include <view/Plotter.hpp>
-#include <view/RenderFileExplorer.hpp>
-#include <TSQueue/Message.hpp>
-#include <TSQueue/ITSQueue.hpp>
-#include <TSQueue/TSQueue.hpp>
-#include <PortScanner/WindowsCOMPortScanner.hpp>
-#include <Server/Server.hpp>
+#include <view/plotter.hpp>
+#include <view/renderFileExplorer.hpp>
+#include <tsQueue/types/message.hpp>
+#include <tsQueue/tsQueue.hpp>
+#include <portScanner/windowsCOMPortScanner.hpp>
+#include <server/server.hpp>
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
    #pragma comment(lib, "legacy_stdio_definitions")
@@ -271,7 +270,7 @@ int main(int, char **)
 
       if (show_file_explorer)
       {
-         render(fileExplorer);
+         // render(fileExplorer);
       }
 
       render(plotter);

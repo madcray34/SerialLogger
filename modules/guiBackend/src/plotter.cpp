@@ -1,11 +1,11 @@
+#include <tsQueue/ItsQueue.hpp>
+#include <view/plotter.hpp>
+#include <fmt/format.h>
+#include <iostream>
+#include <implot.h>
+#include <imgui.h>
 #include <array>
 #include <cmath>
-#include <fmt/format.h>
-#include <imgui.h>
-#include <implot.h>
-#include <iostream>
-#include <view/Plotter.hpp>
-#include <TSQueue/ITSQueue.hpp>
 
 
 Plotter::Plotter(netlib::ITSQueue<std::string> &_q) : m_Q(_q)

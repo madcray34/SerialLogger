@@ -1,15 +1,15 @@
 #pragma once
-#include <Connection/IConnection.hpp>
 #include <memory>
-#include <TSQueue/Message.hpp>
+#include <connection/Iconnection.hpp>
+#include <tsQueue/types/message.hpp>
 
 #ifdef _WIN32
    #define _WIN32_WINNT 0x0A00
 #endif
 
 #define ASIO_STANDALONE
-#include <boost/asio.hpp>
 #include <boost/asio/ts/buffer.hpp>
+#include <boost/asio.hpp>
 
 namespace netlib
 {

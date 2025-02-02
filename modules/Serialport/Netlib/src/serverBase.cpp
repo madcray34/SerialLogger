@@ -1,8 +1,8 @@
-#include <ServerBase/ServerBase.hpp>
-#include <TSQueue/ITSQueue.hpp>
+#include <serverBase/serverBase.hpp>
+#include <tsQueue/ItsQueue.hpp>
 #include <chrono>
-#include <PortScanner/ICOMPortScanner.hpp>
-#include <Connection/Connection.hpp>
+#include <portScanner/IcomPortScanner.hpp>
+#include <connection/connection.hpp>
 
 namespace netlib
 {

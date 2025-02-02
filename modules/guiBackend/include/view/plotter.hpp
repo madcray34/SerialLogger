@@ -1,8 +1,8 @@
 #pragma once
-#include <cstdint>
 #include <model/Imodel.hpp>
-#include <mutex>
 #include <string_view>
+#include <cstdint>
+#include <mutex>
 
 namespace netlib
 {

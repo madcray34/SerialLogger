@@ -1,8 +1,7 @@
 #pragma once
-
 #include <shared_mutex>
 #include <condition_variable>
-#include <TSQueue/ITSQueue.hpp>
+#include <tsQueue/ItsQueue.hpp>
 
 namespace netlib
 {
