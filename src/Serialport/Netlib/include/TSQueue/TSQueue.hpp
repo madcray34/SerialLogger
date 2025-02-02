@@ -184,7 +184,7 @@ namespace netlib
          std::scoped_lock lock(muxQueue);
          deqQueue.clear();
          std::unique_lock<std::mutex> ul(muxBlocking);
-         cvBlocking.notify_all();
+         cvBlocking.notify_one();
       }
 
       /**

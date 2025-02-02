@@ -108,9 +108,9 @@ void drawmenu(GLFWwindow *const window, bool &show_file_explorer, Model &model)
    static constexpr auto c_menu_exit_shortcut     = "Alt+F4";
    static constexpr auto c_menu_fileExp           = "OpenFileExplorer";
    static constexpr auto c_menu_fileExp_shortcut  = "Alt+f";
-   static constexpr auto c_menu_fileSave          = "Saving To File";
+   static constexpr auto c_menu_fileSave          = "Start saving";
    static constexpr auto c_menu_fileSave_shortcut = "Ctrl+s";
-   static constexpr auto c_menu_fileStop          = "Stop Saving";
+   static constexpr auto c_menu_fileStop          = "Stop saving";
    static constexpr auto c_menu_fileStop_shortcut = "Shift+Ctrl+s";
 
    // Begin Menu Bar

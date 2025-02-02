@@ -103,6 +103,7 @@ void Model::stopSavingToFile()
    }
 
    m_stopSaving = true;    // Signal to stop the thread
+   m_Qs.clear();
 
    if (m_savingThread.joinable())
    {
