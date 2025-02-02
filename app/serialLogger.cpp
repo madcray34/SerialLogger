@@ -207,12 +207,6 @@ int main(int, char **)
    ImGui_ImplGlfw_InitForOpenGL(window, true);
    ImGui_ImplOpenGL3_Init(glsl_version);
 
-
-   std::string defaultPath{
-      "C:/-- SomethingNew/ImGui/my_project/001 - "
-      "FileExplorer/dataToexperiment"
-   };
-
    FileExplorer                 fileExplorer{ SOURCE_LOGS_DIR };
    netlib::TSQueue<std::string> plotterQueue;
    Plotter                      plotter{ plotterQueue };
