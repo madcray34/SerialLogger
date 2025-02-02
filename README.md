@@ -9,7 +9,7 @@
 **SerialLogger** is a high-performance, cross-platform serial communication logging tool written in modern C++ (C++20). It is designed to efficiently log and analyze serial data streams, making it an ideal solution for embedded systems debugging, hardware communication analysis, and industrial automation.
 
 ## Features
-- **Cross-Platform Support**: Runs on Windows, Linux, and macOS.
+- **Cross-Platform Support**: Runs on Windows. Linux, and macOS are work in progres...
 - **C++20**: Leveraging the latest C++ features for better performance and maintainability.
 - **Modular Architecture**: Easily extendable and customizable.
 - **ImGui-based GUI**: User-friendly graphical interface for data visualization.
