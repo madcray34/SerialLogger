@@ -108,7 +108,6 @@ namespace netlib
                       {
                          // If port was not opened a runtime error was launched
                          std::cerr << "Error opening serial port: " << e.what() << std::endl;
-                         waitForClientConnection();
                       }
                    }
                 }
