@@ -1,13 +1,13 @@
 #include <serverBase/serverBase.hpp>
-#include <connection/connection.hpp>
 #include <chrono>
 
 namespace netlib
 {
    ServerBase::ServerBase(ITSQueue<OwnedMessage> &msgIn, ICOMPortScanner &portScanner,
-                          std::chrono::seconds periodicity)
+                          IConnectionFactory &connFactory, std::chrono::seconds periodicity)
        : m_qMsgIn(msgIn)
        , m_portS(portScanner)
+       , m_connFactory(connFactory)
        , m_asioContext()
        , m_asyncTimer(m_asioContext, periodicity)
    {
@@ -74,10 +74,7 @@ namespace netlib
 
                       try
                       {
-                         boost::asio::serial_port newPort{ m_asioContext, port.data() };
-                         // Create a new connection to handle this port
-                         auto newconn = std::make_shared<Connection>(
-                             m_asioContext, std::move(newPort), port, m_qMsgIn);
+                         auto newconn = m_connFactory.create(m_asioContext, port, m_qMsgIn);
 
                          // Give the user server a chance to deny connection
                          if (onClientConnect(newconn))

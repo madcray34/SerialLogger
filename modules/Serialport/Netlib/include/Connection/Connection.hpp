@@ -3,10 +3,6 @@
 #include <connection/Iconnection.hpp>
 #include <tsQueue/types/message.hpp>
 
-#ifdef _WIN32
-   #define _WIN32_WINNT 0x0A00
-#endif
-
 #define ASIO_STANDALONE
 #include <boost/asio/ts/buffer.hpp>
 #include <boost/asio.hpp>
@@ -26,8 +22,8 @@ namespace netlib
        * @param port
        * @param qIn
        */
-      Connection(boost::asio::io_context& asioContext, boost::asio::serial_port port,
-                 std::string name, ITSQueue<OwnedMessage>& qIn);
+      Connection(boost::asio::io_context &asioContext, boost::asio::serial_port port,
+                 std::string name, ITSQueue<OwnedMessage> &qIn);
 
       virtual ~Connection()
       {}
@@ -55,13 +51,13 @@ namespace netlib
        * @brief Once a full message is received, add it to the incoming queue, converting it to an
        * "owned message", by initialising with a shared pointer from this connection object.
        */
-      void AddToIncomingMessageQueue(const std::size_t& len);
+      void AddToIncomingMessageQueue(const std::size_t &len);
 
-      void configureSerialPort(boost::asio::serial_port& port);
+      void configureSerialPort(boost::asio::serial_port &port);
 
       protected:
       // This context is shared with the whole asio instance
-      boost::asio::io_context& m_asioContext;
+      boost::asio::io_context &m_asioContext;
 
       // Each connection has a unique serial port
       boost::asio::serial_port m_port;
@@ -70,7 +66,7 @@ namespace netlib
       std::string m_portName;
 
       // This references the incoming queue of the parent object
-      ITSQueue<OwnedMessage>& m_qMessagesIn;
+      ITSQueue<OwnedMessage> &m_qMessagesIn;
 
       // Incoming messages are constructed asynchronously, so we will
       // store the part assembled message here, until it is ready

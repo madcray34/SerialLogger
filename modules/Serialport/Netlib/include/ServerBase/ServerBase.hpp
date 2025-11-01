@@ -3,11 +3,8 @@
 #include <tsQueue/types/message.hpp>
 #include <tsQueue/ItsQueue.hpp>
 #include <connection/Iconnection.hpp>
+#include <connection/IconnectionFactory.hpp>
 #include <portScanner/IcomPortScanner.hpp>
-
-#ifdef _WIN32
-   #define _WIN32_WINNT 0x0A00
-#endif
 
 #define ASIO_STANDALONE
 #include <boost/asio.hpp>
@@ -22,7 +19,7 @@ namespace netlib
    {
       public:
       ServerBase(ITSQueue<OwnedMessage> &msgIn, ICOMPortScanner &portScanner,
-                 std::chrono::seconds periodicity);
+                 IConnectionFactory &connFactory, std::chrono::seconds periodicity);
       ~ServerBase() override;
 
       bool start() override;
@@ -38,11 +35,11 @@ namespace netlib
       private:
       // Thread Safe Queue for incoming message packets
       ITSQueue<OwnedMessage> &m_qMsgIn;
+      ICOMPortScanner        &m_portS;
+      IConnectionFactory     &m_connFactory;
 
       // Container of active validated connections
       std::deque<std::shared_ptr<IConnection>> m_deqConnections;
-
-      ICOMPortScanner &m_portS;
 
       // Asio related containers
       boost::asio::io_context   m_asioContext;
@@ -50,6 +47,7 @@ namespace netlib
       boost::asio::steady_timer m_asyncTimer;
 
       std::chrono::seconds m_periodicity;
+
       // Clients will be identified in the "wider system" via an ID
       uint32_t nIDCounter = 21000;
    };

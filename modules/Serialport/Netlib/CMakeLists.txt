@@ -1,7 +1,9 @@
 set(SOURCES 
     "./src/connection.cpp"
     "./src/serverBase.cpp"
-    "./src/windowsCOMPortScanner.cpp")
+    "./src/windowsCOMPortScanner.cpp"
+    "./src/asioSerialConnectionFactory.cpp"
+    )
 
 add_library(${LIBRARY_NET_NAME} STATIC 
     ${SOURCES})

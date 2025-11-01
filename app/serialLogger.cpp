@@ -21,6 +21,7 @@
 #include <tsQueue/tsQueue.hpp>
 #include <portScanner/windowsCOMPortScanner.hpp>
 #include <server/server.hpp>
+#include <connection/AsioSerialConnectionFactory.hpp>
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
    #pragma comment(lib, "legacy_stdio_definitions")
@@ -223,9 +224,11 @@ int main(int, char **)
 
    // ITSQueue<OwnedMessage> &msgIn, COMPortScanner &portScanner,
    //    std::chrono::seconds periodicity
-   netlib::TSQueue<netlib::OwnedMessage> myQueue;
-   static netlib::WindowsCOMPortScanner  portScanner;
-   netlib::CustomServer server{ myQueue, portScanner, std::chrono::seconds(5), model };
+   netlib::TSQueue<netlib::OwnedMessage>      myQueue;
+   static netlib::WindowsCOMPortScanner       portScanner;
+   static netlib::AsioSerialConnectionFactory connFactory;
+
+   netlib::CustomServer server{ myQueue, portScanner, connFactory, std::chrono::seconds(5), model };
    server.start();
    server.startMonitoringQueue();
    const auto clear_color = ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);

@@ -62,6 +62,11 @@ endif()
 
 add_compile_definitions(NOMINMAX)
 
+if(WIN32)
+    # target Windows 10
+    add_compile_definitions(_WIN32_WINNT=0x0A00)
+endif()
+
 add_subdirectory(modules ./modules)
 add_subdirectory(app ./app)
 
