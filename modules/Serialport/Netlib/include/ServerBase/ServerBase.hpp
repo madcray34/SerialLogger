@@ -2,8 +2,8 @@
 #include <serverBase/IserverBase.hpp>
 #include <tsQueue/types/message.hpp>
 #include <tsQueue/ItsQueue.hpp>
+#include <connection/Iconnection.hpp>
 #include <portScanner/IcomPortScanner.hpp>
-#include <connection/connection.hpp>
 
 #ifdef _WIN32
    #define _WIN32_WINNT 0x0A00
@@ -18,15 +18,12 @@
 
 namespace netlib
 {
-   template<typename T>
-   class ITSQueue;
-
    class ServerBase : public IServerBase
    {
       public:
-      ServerBase(ITSQueue<OwnedMessage>& msgIn, COMPortScanner& portScanner,
+      ServerBase(ITSQueue<OwnedMessage> &msgIn, ICOMPortScanner &portScanner,
                  std::chrono::seconds periodicity);
-      virtual ~ServerBase();
+      ~ServerBase() override;
 
       bool start() override;
       void stop() override;
@@ -34,17 +31,18 @@ namespace netlib
       void update(int32_t nMaxMessages = -1, bool _wait = true) override;
 
       protected:
-      virtual bool onClientConnect(std::shared_ptr<Connection> client) override;
-      virtual void onClientDisconnect(std::shared_ptr<Connection> client) override;
-      virtual void onMessage([[maybe_unused]] netlib::OwnedMessage&& _msg) override;
+      bool onClientConnect(std::shared_ptr<IConnection> client) override;
+      void onClientDisconnect(std::shared_ptr<IConnection> client) override;
+      void onMessage([[maybe_unused]] netlib::OwnedMessage &&_msg) override;
 
+      private:
       // Thread Safe Queue for incoming message packets
-      ITSQueue<OwnedMessage>& m_qMsgIn;
+      ITSQueue<OwnedMessage> &m_qMsgIn;
 
       // Container of active validated connections
-      std::deque<std::shared_ptr<Connection>> m_deqConnections;
+      std::deque<std::shared_ptr<IConnection>> m_deqConnections;
 
-      COMPortScanner& m_portS;
+      ICOMPortScanner &m_portS;
 
       // Asio related containers
       boost::asio::io_context   m_asioContext;

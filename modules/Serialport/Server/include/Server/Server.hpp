@@ -8,8 +8,8 @@ namespace netlib
    class CustomServer : public ServerBase
    {
       public:
-      CustomServer(ITSQueue<OwnedMessage>& msgIn, COMPortScanner& portScanner,
-                   std::chrono::seconds periodicity, IModel& _model)
+      CustomServer(ITSQueue<OwnedMessage> &msgIn, ICOMPortScanner &portScanner,
+                   std::chrono::seconds periodicity, IModel &_model)
           : ServerBase(msgIn, portScanner, periodicity), stopMonitoring(false), m_model(_model)
       {}
 
@@ -26,14 +26,14 @@ namespace netlib
       }
 
       protected:
-      bool onClientConnect(std::shared_ptr<Connection> client) override;
+      bool onClientConnect(std::shared_ptr<IConnection> client) override;
 
       /**
        * @brief Called when a client appears to have disconnected
        *
        * @param client
        */
-      void onClientDisconnect(std::shared_ptr<Connection> client) override;
+      void onClientDisconnect(std::shared_ptr<IConnection> client) override;
 
 
       /**
@@ -42,10 +42,10 @@ namespace netlib
        * @param client
        * @param msg
        */
-      void onMessage([[maybe_unused]] netlib::OwnedMessage&& _msg) override;
+      void onMessage([[maybe_unused]] netlib::OwnedMessage &&_msg) override;
 
       private:
       std::atomic<bool> stopMonitoring;
-      IModel&           m_model;
+      IModel           &m_model;
    };
 }    // namespace netlib

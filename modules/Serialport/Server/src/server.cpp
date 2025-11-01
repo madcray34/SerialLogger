@@ -1,5 +1,5 @@
 #include <server/server.hpp>
-#include <connection/connection.hpp>
+#include <connection/IConnection.hpp>
 #include <thread>
 
 namespace netlib
@@ -17,18 +17,18 @@ namespace netlib
           .detach();    // Run in the background
    }
 
-   bool CustomServer::onClientConnect(std::shared_ptr<Connection> client)
+   bool CustomServer::onClientConnect(std::shared_ptr<IConnection> client)
    {
       std::cout << "Connected client [" << client->getPortName() << "]" << std::endl;
       return true;
    }
 
-   void CustomServer::onClientDisconnect(std::shared_ptr<Connection> client)
+   void CustomServer::onClientDisconnect(std::shared_ptr<IConnection> client)
    {
       std::cout << "Removing client [" << client->getPortName() << "]" << std::endl;
    }
 
-   void CustomServer::onMessage([[maybe_unused]] netlib::OwnedMessage&& _msg)
+   void CustomServer::onMessage([[maybe_unused]] netlib::OwnedMessage &&_msg)
    {
       m_model.pushMessage(std::move(_msg));
    }

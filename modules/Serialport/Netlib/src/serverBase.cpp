@@ -1,12 +1,10 @@
 #include <serverBase/serverBase.hpp>
-#include <tsQueue/ItsQueue.hpp>
-#include <chrono>
-#include <portScanner/IcomPortScanner.hpp>
 #include <connection/connection.hpp>
+#include <chrono>
 
 namespace netlib
 {
-   ServerBase::ServerBase(ITSQueue<OwnedMessage>& msgIn, COMPortScanner& portScanner,
+   ServerBase::ServerBase(ITSQueue<OwnedMessage> &msgIn, ICOMPortScanner &portScanner,
                           std::chrono::seconds periodicity)
        : m_qMsgIn(msgIn)
        , m_portS(portScanner)
@@ -35,7 +33,7 @@ namespace netlib
          // Launch the asio context in its own thread
          m_threadContext = std::thread([this]() { m_asioContext.run(); });
       }
-      catch (std::exception& e)
+      catch (std::exception &e)
       {
          // Something prohibited the server from listening
          std::cerr << "[SERVER] Exception: " << e.what() << "\n";
@@ -67,10 +65,10 @@ namespace netlib
              if (!ec)
              {
                 // Call the function to get available COM ports
-                const std::vector<std::string>& comPorts = m_portS.getAvailableCOMPorts();
+                const std::vector<std::string> &comPorts = m_portS.getAvailableCOMPorts();
                 if (!comPorts.empty())
                 {
-                   for (const auto& port : comPorts)
+                   for (const auto &port : comPorts)
                    {
                       std::cout << " Detected COM PORT- " << port << std::endl;
 
@@ -106,7 +104,7 @@ namespace netlib
                             // get destroyed automagically due to the wonder of smart pointers
                          }
                       }
-                      catch (std::exception& e)
+                      catch (std::exception &e)
                       {
                          // If port was not opened a runtime error was launched
                          std::cerr << "Error opening serial port: " << e.what() << std::endl;
@@ -148,15 +146,15 @@ namespace netlib
       }
    }
 
-   bool ServerBase::onClientConnect(std::shared_ptr<Connection> client)
+   bool ServerBase::onClientConnect(std::shared_ptr<IConnection> client)
    {
       return false;
    }
 
-   void ServerBase::onClientDisconnect(std::shared_ptr<Connection> client)
+   void ServerBase::onClientDisconnect(std::shared_ptr<IConnection> client)
    {}
 
-   void ServerBase::onMessage([[maybe_unused]] netlib::OwnedMessage&& _msg)
+   void ServerBase::onMessage([[maybe_unused]] netlib::OwnedMessage &&_msg)
    {}
 
 

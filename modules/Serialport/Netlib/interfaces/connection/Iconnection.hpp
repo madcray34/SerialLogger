@@ -11,6 +11,8 @@ namespace netlib
     */
    class IConnection
    {
+      public:
+      virtual ~IConnection() = default;
       /**
        * @brief This ID is used system wide - its how clients will understand other clients exist
        across the whole system.

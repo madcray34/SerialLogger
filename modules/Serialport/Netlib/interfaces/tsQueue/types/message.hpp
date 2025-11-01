@@ -3,13 +3,13 @@
 #include <iostream>
 #include <bit>
 #include <memory>
+#include <connection/Iconnection.hpp>
 
 namespace netlib
 {
    /**
     * @brief Forward declare the connection
     */
-   class Connection;
 
    /**
     * @brief An "owned" message is identical to a regular message, but it is associated with
@@ -19,18 +19,18 @@ namespace netlib
 
    struct OwnedMessage
    {
-      std::shared_ptr<Connection> m_remote = nullptr;
-      std::string                 m_msg;
+      std::shared_ptr<IConnection> m_remote = nullptr;
+      std::string                  m_msg;
 
       OwnedMessage() = default;
 
       // Move constructor
-      OwnedMessage(std::shared_ptr<Connection>&& otherRemote, std::string&& otherMsg) noexcept
+      OwnedMessage(std::shared_ptr<IConnection> &&otherRemote, std::string &&otherMsg) noexcept
           : m_remote(std::move(otherRemote)), m_msg(std::move(otherMsg))
       {}
 
       // Move constructor
-      OwnedMessage(std::shared_ptr<Connection>&& otherRemote) noexcept
+      OwnedMessage(std::shared_ptr<IConnection> &&otherRemote) noexcept
           : m_remote(std::move(otherRemote))
       {}
    };

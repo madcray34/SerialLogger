@@ -2,13 +2,15 @@
 #include <memory>
 #include <string>
 #include <tsQueue/types/message.hpp>
+#include <connection/Iconnection.hpp>
 
 namespace netlib
 {
-   // Forward declare Connection class
-   class Connection;
    class IServerBase
    {
+      public:
+      virtual ~IServerBase() = default;
+
       /**
        * @brief Starts the server.
        * @return true
@@ -41,13 +43,13 @@ namespace netlib
        * @return true
        * @return false
        */
-      virtual bool onClientConnect(std::shared_ptr<Connection> client) = 0;
+      virtual bool onClientConnect(std::shared_ptr<IConnection> client) = 0;
 
       /**
        * @brief Called when a client appears to have disconnected.
        * @param client
        */
-      virtual void onClientDisconnect(std::shared_ptr<Connection> client) = 0;
+      virtual void onClientDisconnect(std::shared_ptr<IConnection> client) = 0;
 
       /**
        * @brief Called when a message arrives.
@@ -55,6 +57,6 @@ namespace netlib
        * @param client
        * @param msg
        */
-      virtual void onMessage([[maybe_unused]] netlib::OwnedMessage&& _msg) = 0;
+      virtual void onMessage([[maybe_unused]] netlib::OwnedMessage &&_msg) = 0;
    };
 }    // namespace netlib

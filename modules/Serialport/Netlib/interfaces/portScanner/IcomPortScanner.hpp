@@ -5,12 +5,12 @@
 namespace netlib
 {
    static constexpr auto c_maxCOMports = 16;
-   class COMPortScanner
+   class ICOMPortScanner
    {
       public:
-      virtual ~COMPortScanner() = default;
+      virtual ~ICOMPortScanner() = default;
 
       // The interface method that perform COM port scanning
-      virtual const std::vector<std::string>& getAvailableCOMPorts() = 0;
+      virtual const std::vector<std::string> &getAvailableCOMPorts() = 0;
    };
 }    // namespace netlib
