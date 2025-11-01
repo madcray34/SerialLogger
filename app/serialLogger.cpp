@@ -19,7 +19,8 @@
 #include <view/renderFileExplorer.hpp>
 #include <tsQueue/types/message.hpp>
 #include <tsQueue/tsQueue.hpp>
-#include <portScanner/windowsCOMPortScanner.hpp>
+#include <portScanner/WindowsCOMPortScanner.hpp>
+#include <portScanner/SerialPortScannerAdapter.hpp>
 #include <server/server.hpp>
 #include <connection/AsioSerialConnectionFactory.hpp>
 
@@ -226,9 +227,10 @@ int main(int, char **)
    //    std::chrono::seconds periodicity
    netlib::TSQueue<netlib::OwnedMessage>      myQueue;
    static netlib::WindowsCOMPortScanner       portScanner;
+   static netlib::SerialPortScannerAdapter    adapter{ portScanner };
    static netlib::AsioSerialConnectionFactory connFactory;
 
-   netlib::CustomServer server{ myQueue, portScanner, connFactory, std::chrono::seconds(5), model };
+   netlib::CustomServer server{ myQueue, adapter, connFactory, std::chrono::seconds(5), model };
    server.start();
    server.startMonitoringQueue();
    const auto clear_color = ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);

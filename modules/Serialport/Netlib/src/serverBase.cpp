@@ -3,10 +3,10 @@
 
 namespace netlib
 {
-   ServerBase::ServerBase(ITSQueue<OwnedMessage> &msgIn, ICOMPortScanner &portScanner,
+   ServerBase::ServerBase(ITSQueue<OwnedMessage> &msgIn, IEndPointEnumerator &endpoints,
                           IConnectionFactory &connFactory, std::chrono::seconds periodicity)
        : m_qMsgIn(msgIn)
-       , m_portS(portScanner)
+       , m_endpoints(endpoints)
        , m_connFactory(connFactory)
        , m_asioContext()
        , m_asyncTimer(m_asioContext, periodicity)
@@ -65,16 +65,16 @@ namespace netlib
              if (!ec)
              {
                 // Call the function to get available COM ports
-                const std::vector<std::string> &comPorts = m_portS.getAvailableCOMPorts();
-                if (!comPorts.empty())
+                const auto &eps = m_endpoints.getAvailableEndPoints();
+                if (!eps.empty())
                 {
-                   for (const auto &port : comPorts)
+                   for (const auto &ep : eps)
                    {
-                      std::cout << " Detected COM PORT- " << port << std::endl;
+                      std::cout << " Detected COM PORT- " << ep.portName << std::endl;
 
                       try
                       {
-                         auto newconn = m_connFactory.create(m_asioContext, port, m_qMsgIn);
+                         auto newconn = m_connFactory.create(m_asioContext, ep.portName, m_qMsgIn);
 
                          // Give the user server a chance to deny connection
                          if (onClientConnect(newconn))

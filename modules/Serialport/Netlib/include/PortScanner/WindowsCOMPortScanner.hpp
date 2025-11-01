@@ -1,11 +1,11 @@
 #pragma once
-#include <portScanner/IcomPortScanner.hpp>
+#include <portScanner/IserialPortScanner.hpp>
 #include <unordered_set>
 #include <array>
 
 namespace netlib
 {
-   class WindowsCOMPortScanner : public ICOMPortScanner
+   class WindowsCOMPortScanner : public ISerialPortScanner
    {
       public:
       WindowsCOMPortScanner()

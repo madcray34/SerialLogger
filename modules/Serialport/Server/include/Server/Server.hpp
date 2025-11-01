@@ -8,10 +8,10 @@ namespace netlib
    class CustomServer : public ServerBase
    {
       public:
-      CustomServer(ITSQueue<OwnedMessage> &msgIn, ICOMPortScanner &portScanner,
+      CustomServer(ITSQueue<OwnedMessage> &msgIn, IEndPointEnumerator &endpoints,
                    IConnectionFactory &connFactory, std::chrono::seconds periodicity,
                    IModel &_model)
-          : ServerBase(msgIn, portScanner, connFactory, periodicity)
+          : ServerBase(msgIn, endpoints, connFactory, periodicity)
           , stopMonitoring(false)
           , m_model(_model)
       {}

@@ -4,7 +4,7 @@
 #include <tsQueue/ItsQueue.hpp>
 #include <connection/Iconnection.hpp>
 #include <connection/IconnectionFactory.hpp>
-#include <portScanner/IcomPortScanner.hpp>
+#include <portScanner/IendPointEnumerator.hpp>
 
 #define ASIO_STANDALONE
 #include <boost/asio.hpp>
@@ -18,7 +18,7 @@ namespace netlib
    class ServerBase : public IServerBase
    {
       public:
-      ServerBase(ITSQueue<OwnedMessage> &msgIn, ICOMPortScanner &portScanner,
+      ServerBase(ITSQueue<OwnedMessage> &msgIn, IEndPointEnumerator &endpoints,
                  IConnectionFactory &connFactory, std::chrono::seconds periodicity);
       ~ServerBase() override;
 
@@ -35,7 +35,7 @@ namespace netlib
       private:
       // Thread Safe Queue for incoming message packets
       ITSQueue<OwnedMessage> &m_qMsgIn;
-      ICOMPortScanner        &m_portS;
+      IEndPointEnumerator    &m_endpoints;
       IConnectionFactory     &m_connFactory;
 
       // Container of active validated connections
