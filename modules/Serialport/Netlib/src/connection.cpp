@@ -3,8 +3,8 @@
 
 namespace netlib
 {
-   Connection::Connection(boost::asio::io_context& asioContext, boost::asio::serial_port port,
-                          std::string name, ITSQueue<OwnedMessage>& qIn)
+   Connection::Connection(boost::asio::io_context &asioContext, boost::asio::serial_port port,
+                          std::string name, ITSQueue<OwnedMessage> &qIn)
        : m_asioContext(asioContext), m_port(std::move(port)), m_portName(name), m_qMessagesIn(qIn)
    {
       configureSerialPort(m_port);
@@ -46,24 +46,24 @@ namespace netlib
 
    void Connection::ReadBody()
    {
-      boost::asio::async_read_until(m_port, m_streamBuffer, '\n',
-                                    [this](std::error_code ec, [[maybe_unused]] std::size_t length)
-                                    {
-                                       if (!ec && length > 0)
-                                       {
-                                          AddToIncomingMessageQueue(length);
-                                       }
-                                       else if (ec)
-                                       {
-                                          // TODO for the future improve error handling
-                                          std::cout << "[" << id
-                                                    << "] Read Body Fail: " << ec.message() << "\n";
-                                          m_port.close();
-                                       }
-                                    });
+      boost::asio::async_read_until(
+          m_port, m_streamBuffer, '\n',
+          [this](const boost::system::error_code &ec, [[maybe_unused]] std::size_t length)
+          {
+             if (!ec && length > 0)
+             {
+                AddToIncomingMessageQueue(length);
+             }
+             else if (ec)
+             {
+                // TODO for the future improve error handling
+                std::cout << "[" << id << "] Read Body Fail: " << ec.message() << "\n";
+                m_port.close();
+             }
+          });
    }
 
-   void Connection::AddToIncomingMessageQueue([[maybe_unused]] const std::size_t& len)
+   void Connection::AddToIncomingMessageQueue([[maybe_unused]] const std::size_t &len)
    {
       auto _ptr = shared_from_this();
       if (_ptr)    // avoid dangling pointers
@@ -77,7 +77,7 @@ namespace netlib
       ReadBody();
    }
 
-   void Connection::configureSerialPort(boost::asio::serial_port& port)
+   void Connection::configureSerialPort(boost::asio::serial_port &port)
    {
       // Apply serial port configuration options
       port.set_option(boost::asio::serial_port_base::baud_rate(9600));
