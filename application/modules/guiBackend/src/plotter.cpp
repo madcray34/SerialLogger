@@ -8,7 +8,7 @@
 #include <cmath>
 
 
-Plotter::Plotter(netlib::ITSQueue<std::string> &_q) : m_Q(_q)
+Plotter::Plotter(netlib::core::ITSQueue<std::string> &_q) : m_Q(_q)
 {}
 
 /**

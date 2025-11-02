@@ -2,7 +2,7 @@
 #include <NetlibCore/EndPointEnumerator/IEndPointEnumerator.hpp>
 #include <NetlibCore/EndPointEnumerator/ISerialPortScanner.hpp>
 
-namespace netlib
+namespace netlib::core
 {
    class SerialPortScannerAdapter : public IEndPointEnumerator
    {
@@ -26,4 +26,4 @@ namespace netlib
       ISerialPortScanner       &m_scanner;
       std::vector<CommEndPoint> _cache;
    };
-}    // namespace netlib
+}    // namespace netlib::core

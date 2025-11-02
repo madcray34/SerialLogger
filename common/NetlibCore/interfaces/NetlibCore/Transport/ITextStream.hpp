@@ -4,7 +4,7 @@
 #include <string_view>
 #include <system_error>
 
-namespace netlib
+namespace netlib::core
 {
    class ITextStream
    {

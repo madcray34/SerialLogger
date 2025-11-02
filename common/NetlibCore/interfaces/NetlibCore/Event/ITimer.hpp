@@ -3,7 +3,7 @@
 #include <functional>
 #include <system_error>
 
-namespace netlib
+namespace netlib::core
 {
    class ITimer
    {

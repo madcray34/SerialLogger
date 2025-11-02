@@ -20,7 +20,7 @@ class Model : public IModel
     * @param _qf filtering/viewing queue
     * @param _qs saving to file queue
     */
-   Model(netlib::ITSQueue<std::string>& _qf, netlib::ITSQueue<std::string>& _qs,
+   Model(netlib::core::ITSQueue<std::string> &_qf, netlib::core::ITSQueue<std::string> &_qs,
          const std::string saveFileName);
 
    ~Model()
@@ -30,13 +30,13 @@ class Model : public IModel
    }
 
    // Start data reception in a separate thread
-   void startReceivingData(std::function<void(std::string&&)> callback) override;
+   void startReceivingData(std::function<void(std::string &&)> callback) override;
    void stopReceivingData() override
    {
       m_stopReceiving = true;
    };
 
-   void pushMessage(netlib::OwnedMessage&& _msg) override;
+   void pushMessage(netlib::core::OwnedMessage &&_msg) override;
 
    // Start save in a separate thread
    void startSavingToFile() override;
@@ -65,8 +65,8 @@ class Model : public IModel
     * m_Qf: Thread Safe Double ended queue for handling callback to UI
     * m_Qs: Thread Safe Double ended queue for handling saving to file
     */
-   netlib::ITSQueue<std::string>& m_Qf;
-   netlib::ITSQueue<std::string>& m_Qs;
+   netlib::core::ITSQueue<std::string> &m_Qf;
+   netlib::core::ITSQueue<std::string> &m_Qs;
 
    /**
     * @brief Thread for saving to the file

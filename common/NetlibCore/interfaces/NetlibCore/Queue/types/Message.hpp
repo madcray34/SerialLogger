@@ -5,7 +5,7 @@
 #include <memory>
 #include <NetlibCore/Connection/Iconnection.hpp>
 
-namespace netlib
+namespace netlib::core
 {
    /**
     * @brief Forward declare the connection
@@ -38,4 +38,4 @@ namespace netlib
           : m_remote(std::move(otherRemote))
       {}
    };
-}    // namespace netlib
+}    // namespace netlib::core

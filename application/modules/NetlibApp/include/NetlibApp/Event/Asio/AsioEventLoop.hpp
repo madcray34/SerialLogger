@@ -4,7 +4,7 @@
 
 namespace netlib
 {
-   class AsioEventLoop final : public IEventLoop
+   class AsioEventLoop final : public core::IEventLoop
    {
       public:
       AsioEventLoop(boost::asio::io_context &asioContext) : m_asioContext(asioContext)

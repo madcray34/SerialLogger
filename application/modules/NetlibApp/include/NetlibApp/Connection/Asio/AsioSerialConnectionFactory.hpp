@@ -5,13 +5,13 @@
 
 namespace netlib
 {
-   class AsioSerialConnectionFactory final : public IConnectionFactory
+   class AsioSerialConnectionFactory final : public core::IConnectionFactory
    {
       public:
       explicit AsioSerialConnectionFactory(AsioEventLoop &ev) : m_eventLoop(ev) {};
       ~AsioSerialConnectionFactory() override = default;
-      std::shared_ptr<IConnection> create(std::string_view        portName,
-                                          ITSQueue<OwnedMessage> &qIn) override;
+      std::shared_ptr<core::IConnection> create(std::string_view                    portName,
+                                                core::ITSQueue<core::OwnedMessage> &qIn) override;
 
       private:
       AsioEventLoop &m_eventLoop;

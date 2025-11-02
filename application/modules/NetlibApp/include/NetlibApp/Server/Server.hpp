@@ -1,17 +1,17 @@
 #pragma once
-#include <NetlibCore/ConnectionSupervisor/ServerBase.hpp>
+#include <NetlibCore/Connection/ConnectionSupervisor.hpp>
 #include <model/Imodel.hpp>
 #include <atomic>
 
 namespace netlib
 {
-   class CustomServer : public ServerBase
+   class CustomServer : public core::ConnectionSupervisor
    {
       public:
-      CustomServer(ITSQueue<OwnedMessage> &msgIn, IEndPointEnumerator &endpoints,
-                   IConnectionFactory &connFactory, IEventLoop &eventLoop, ITimerFactory &timer,
-                   std::chrono::seconds periodicity, IModel &_model)
-          : ServerBase(msgIn, endpoints, connFactory, eventLoop, timer, periodicity)
+      CustomServer(core::ITSQueue<core::OwnedMessage> &msgIn, core::IEndPointEnumerator &endpoints,
+                   core::IConnectionFactory &connFactory, core::IEventLoop &eventLoop,
+                   core::ITimerFactory &timer, std::chrono::seconds periodicity, IModel &_model)
+          : core::ConnectionSupervisor(msgIn, endpoints, connFactory, eventLoop, timer, periodicity)
           , stopMonitoring(false)
           , m_model(_model)
       {}
@@ -29,14 +29,14 @@ namespace netlib
       }
 
       protected:
-      bool onClientConnect(std::shared_ptr<IConnection> client) override;
+      bool onClientConnect(std::shared_ptr<core::IConnection> client) override;
 
       /**
        * @brief Called when a client appears to have disconnected
        *
        * @param client
        */
-      void onClientDisconnect(std::shared_ptr<IConnection> client) override;
+      void onClientDisconnect(std::shared_ptr<core::IConnection> client) override;
 
 
       /**
@@ -45,7 +45,7 @@ namespace netlib
        * @param client
        * @param msg
        */
-      void onMessage([[maybe_unused]] netlib::OwnedMessage &&_msg) override;
+      void onMessage([[maybe_unused]] netlib::core::OwnedMessage &&_msg) override;
 
       private:
       std::atomic<bool> stopMonitoring;

@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <string_view>
 
-namespace netlib
+namespace netlib::core
 {
    static constexpr uint16_t c_bufferCapacity = 1 << 14;
    /**

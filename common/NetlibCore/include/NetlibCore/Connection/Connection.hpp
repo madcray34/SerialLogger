@@ -6,7 +6,7 @@
 
 #include <memory>
 
-namespace netlib
+namespace netlib::core
 {
    class Connection final : public std::enable_shared_from_this<Connection>, public IConnection
    {
@@ -14,7 +14,7 @@ namespace netlib
       /**
        * @brief Construct a new Connection object
        */
-      Connection(std::shared_ptr<netlib::ITextStream> textStream, std::string name,
+      Connection(std::shared_ptr<ITextStream> textStream, std::string name,
                  ITSQueue<OwnedMessage> &qIn);
 
       ~Connection() override = default;
@@ -45,7 +45,7 @@ namespace netlib
       void AddToIncomingMessageQueue(const std::size_t &len);
 
       protected:
-      const std::shared_ptr<netlib::ITextStream> m_textStream;
+      const std::shared_ptr<ITextStream> m_textStream;
 
       // Reference to the port name
       std::string m_portName;

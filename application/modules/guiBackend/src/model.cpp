@@ -4,7 +4,7 @@
 #include <chrono>
 #include <thread>
 
-Model::Model(netlib::ITSQueue<std::string> &_qf, netlib::ITSQueue<std::string> &_qs,
+Model::Model(netlib::core::ITSQueue<std::string> &_qf, netlib::core::ITSQueue<std::string> &_qs,
              const std::string saveFileName)
     : m_stopReceiving(false)
     , m_stopSaving(true)
@@ -43,7 +43,7 @@ void Model::startReceivingData(std::function<void(std::string &&)> callback)
 }
 
 
-void Model::pushMessage(netlib::OwnedMessage &&_msg)
+void Model::pushMessage(netlib::core::OwnedMessage &&_msg)
 {
    if (!m_stopSaving)
    {

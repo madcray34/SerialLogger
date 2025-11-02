@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-namespace netlib
+namespace netlib::core
 {
    struct CommEndPoint
    {

@@ -10,7 +10,7 @@ namespace netlib
 
 namespace netlib
 {
-   class AsioSerialTextStream final : public ITextStream
+   class AsioSerialTextStream final : public core::ITextStream
    {
       public:
       AsioSerialTextStream(AsioEventLoop &eventLoop, std::string portname,

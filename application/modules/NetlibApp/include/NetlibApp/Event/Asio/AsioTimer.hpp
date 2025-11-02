@@ -6,7 +6,7 @@
 
 namespace netlib
 {
-   class AsioTimer final : public ITimer
+   class AsioTimer final : public core::ITimer
    {
       public:
       AsioTimer(boost::asio::io_context &context, std::chrono::seconds initial)
@@ -27,13 +27,13 @@ namespace netlib
       boost::asio::steady_timer m_timer;
    };
 
-   class AsioTimerFactory final : public ITimerFactory
+   class AsioTimerFactory final : public core::ITimerFactory
    {
       public:
       AsioTimerFactory(AsioEventLoop &eventLoop) : m_eventLoop(eventLoop)
       {}
 
-      std::shared_ptr<ITimer> createTimer(std::chrono::seconds initial) override
+      std::shared_ptr<core::ITimer> createTimer(std::chrono::seconds initial) override
       {
          return std::make_shared<AsioTimer>(m_eventLoop.getContext(), initial);
       }

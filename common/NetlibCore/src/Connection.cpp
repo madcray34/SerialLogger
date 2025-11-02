@@ -1,8 +1,8 @@
 #include <NetlibCore/Connection/Connection.hpp>
 
-namespace netlib
+namespace netlib::core
 {
-   Connection::Connection(std::shared_ptr<netlib::ITextStream> textStream, std::string name,
+   Connection::Connection(std::shared_ptr<ITextStream> textStream, std::string name,
                           ITSQueue<OwnedMessage> &qIn)
        : m_textStream(textStream), m_portName(name), m_qMessagesIn(qIn)
    {}
@@ -79,4 +79,4 @@ namespace netlib
              }
           });
    }
-}    // namespace netlib
+}    // namespace netlib::core

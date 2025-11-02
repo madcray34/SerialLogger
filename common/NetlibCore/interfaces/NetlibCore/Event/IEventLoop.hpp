@@ -1,6 +1,6 @@
 #pragma once
 
-namespace netlib
+namespace netlib::core
 {
    class IEventLoop
    {

@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 
-namespace netlib
+namespace netlib::core
 {
    static constexpr auto c_maxPorts = 16;
    class ISerialPortScanner

@@ -6,7 +6,7 @@
 #include <memory>
 #include <string_view>
 
-namespace netlib
+namespace netlib::core
 {
    class IConnectionFactory
    {
@@ -24,4 +24,4 @@ namespace netlib
       virtual std::shared_ptr<IConnection> create(std::string_view        name,
                                                   ITSQueue<OwnedMessage> &qIn) = 0;
    };
-}    // namespace netlib
+}    // namespace netlib::core

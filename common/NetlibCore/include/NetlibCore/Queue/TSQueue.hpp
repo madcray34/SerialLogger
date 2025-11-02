@@ -4,7 +4,7 @@
 #include <condition_variable>
 #include <shared_mutex>
 
-namespace netlib
+namespace netlib::core
 {
    /**
     * @brief Thread safe, double ended, waiting queue.

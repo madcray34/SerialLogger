@@ -1,31 +1,33 @@
 #include <cstdint>
 #include <filesystem>
 
+// ImGui libraries
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_opengl3_loader.h"
 #include <imgui.h>
 #include <implot.h>
 
+// GL libraries
 #if defined(IMGUI_IMPL_OPENGL_ES2)
    #include <GLES2/gl2.h>
 #endif
 #include <GLFW/glfw3.h>
 
-// Common libraries
+// Common network core libraries
 #include <NetlibCore/Queue/types/Message.hpp>
 #include <NetlibCore/Queue/TSQueue.hpp>
 #include <NetlibCore/EndPointEnumerator/SerialPortScannerAdapter.hpp>
 
 // Application defined libraries
-// NetlibApp module
+// Network application libraries
 #include <NetlibApp/EndpointEnumerator/Windows/COMPort/WindowsCOMPortScanner.hpp>
 #include <NetlibApp/Connection/Asio/AsioSerialConnectionFactory.hpp>
 #include <NetlibApp/Server/Server.hpp>
 #include <NetlibApp/Event/Asio/AsioEventLoop.hpp>
 #include <NetlibApp/Event/Asio/AsioTimer.hpp>
 
-// Guibackend module
+// GUI application backend libraries
 #include <presenter/presenter.hpp>
 #include <model/model.hpp>
 #include <view/plotter.hpp>
@@ -217,13 +219,13 @@ int main(int, char **)
    ImGui_ImplGlfw_InitForOpenGL(window, true);
    ImGui_ImplOpenGL3_Init(glsl_version);
 
-   FileExplorer                 fileExplorer{ SOURCE_LOGS_DIR };
-   netlib::TSQueue<std::string> plotterQueue;
-   Plotter                      plotter{ plotterQueue };
+   FileExplorer                       fileExplorer{ SOURCE_LOGS_DIR };
+   netlib::core::TSQueue<std::string> plotterQueue;
+   Plotter                            plotter{ plotterQueue };
 
-   netlib::TSQueue<std::string> modelFq;
-   netlib::TSQueue<std::string> modelSq;
-   Model                        model{ modelFq, modelSq, OUTPUT_FILE_PATH };
+   netlib::core::TSQueue<std::string> modelFq;
+   netlib::core::TSQueue<std::string> modelSq;
+   Model                              model{ modelFq, modelSq, OUTPUT_FILE_PATH };
 
    // Instantiate the Presenter, passing the model and plotter's update method as the callback
    Presenter presenter(model, [&](std::string &&data) { plotter.update(std::move(data)); });
@@ -233,13 +235,13 @@ int main(int, char **)
 
    // ITSQueue<OwnedMessage> &msgIn, COMPortScanner &portScanner,
    //    std::chrono::seconds periodicity
-   netlib::TSQueue<netlib::OwnedMessage>      myQueue;
-   static netlib::WindowsCOMPortScanner       portScanner;
-   static netlib::SerialPortScannerAdapter    adapter{ portScanner };
-   static boost::asio::io_context             asioContext;
-   static netlib::AsioEventLoop               eventLoop{ asioContext };
-   static netlib::AsioTimerFactory            timerFactory{ eventLoop };
-   static netlib::AsioSerialConnectionFactory connFactory{ eventLoop };
+   netlib::core::TSQueue<netlib::core::OwnedMessage> myQueue;
+   static netlib::WindowsCOMPortScanner              portScanner;
+   static netlib::core::SerialPortScannerAdapter     adapter{ portScanner };
+   static boost::asio::io_context                    asioContext;
+   static netlib::AsioEventLoop                      eventLoop{ asioContext };
+   static netlib::AsioTimerFactory                   timerFactory{ eventLoop };
+   static netlib::AsioSerialConnectionFactory        connFactory{ eventLoop };
 
    netlib::CustomServer server{ myQueue,   adapter,      connFactory,
                                 eventLoop, timerFactory, std::chrono::seconds(5),

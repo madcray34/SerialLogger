@@ -1,10 +1,12 @@
-#include <NetlibCore/ConnectionSupervisor/ServerBase.hpp>
+#include <NetlibCore/Connection/ConnectionSupervisor.hpp>
 
-namespace netlib
+namespace netlib::core
 {
-   ServerBase::ServerBase(ITSQueue<OwnedMessage> &msgIn, IEndPointEnumerator &endpoints,
-                          IConnectionFactory &connFactory, IEventLoop &eventLoop,
-                          ITimerFactory &timer, std::chrono::seconds periodicity)
+   ConnectionSupervisor::ConnectionSupervisor(ITSQueue<OwnedMessage> &msgIn,
+                                              IEndPointEnumerator    &endpoints,
+                                              IConnectionFactory     &connFactory,
+                                              IEventLoop &eventLoop, ITimerFactory &timer,
+                                              std::chrono::seconds periodicity)
        : m_qMsgIn(msgIn)
        , m_endpoints(endpoints)
        , m_connFactory(connFactory)
@@ -14,12 +16,12 @@ namespace netlib
        , m_periodicity(periodicity)
    {}
 
-   ServerBase::~ServerBase()
+   ConnectionSupervisor::~ConnectionSupervisor()
    {
       stop();
    }
 
-   bool ServerBase::start()
+   bool ConnectionSupervisor::start()
    {
       try
       {
@@ -44,7 +46,7 @@ namespace netlib
       return true;
    }
 
-   void ServerBase::stop()
+   void ConnectionSupervisor::stop()
    {
       m_eventLoop.stop();
 
@@ -54,7 +56,7 @@ namespace netlib
       std::cout << "[SERVER] Stopped!\n";
    }
 
-   void ServerBase::waitForClientConnection()
+   void ConnectionSupervisor::waitForClientConnection()
    {
       // Set the timer to expire.
       m_asyncTimer->expires_after(m_periodicity);
@@ -123,7 +125,7 @@ namespace netlib
       return;
    }
 
-   void ServerBase::update(int32_t nMaxMessages, bool _wait)
+   void ConnectionSupervisor::update(int32_t nMaxMessages, bool _wait)
    {
       if (_wait)
       {
@@ -142,16 +144,16 @@ namespace netlib
       }
    }
 
-   bool ServerBase::onClientConnect(std::shared_ptr<IConnection> client)
+   bool ConnectionSupervisor::onClientConnect(std::shared_ptr<IConnection> client)
    {
       return false;
    }
 
-   void ServerBase::onClientDisconnect(std::shared_ptr<IConnection> client)
+   void ConnectionSupervisor::onClientDisconnect(std::shared_ptr<IConnection> client)
    {}
 
-   void ServerBase::onMessage([[maybe_unused]] netlib::OwnedMessage &&_msg)
+   void ConnectionSupervisor::onMessage([[maybe_unused]] OwnedMessage &&_msg)
    {}
 
 
-}    // namespace netlib
+}    // namespace netlib::core

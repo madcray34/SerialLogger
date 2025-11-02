@@ -5,12 +5,12 @@
 #include <string>
 #include <memory>
 
-namespace netlib
+namespace netlib::core
 {
-   class IServerBase
+   class IConnectionSupervisor
    {
       public:
-      virtual ~IServerBase() = default;
+      virtual ~IConnectionSupervisor() = default;
 
       /**
        * @brief Starts the server.
@@ -58,6 +58,6 @@ namespace netlib
        * @param client
        * @param msg
        */
-      virtual void onMessage([[maybe_unused]] netlib::OwnedMessage &&_msg) = 0;
+      virtual void onMessage([[maybe_unused]] OwnedMessage &&_msg) = 0;
    };
 }    // namespace netlib

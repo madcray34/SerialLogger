@@ -5,13 +5,13 @@
 
 namespace netlib
 {
-   class WindowsCOMPortScanner : public ISerialPortScanner
+   class WindowsCOMPortScanner : public core::ISerialPortScanner
    {
       public:
       WindowsCOMPortScanner()
       {
-         ports.reserve(c_maxPorts);
-         m_connectedPorts.reserve(netlib::c_maxPorts);
+         ports.reserve(netlib::core::c_maxPorts);
+         m_connectedPorts.reserve(netlib::core::c_maxPorts);
       };
       ~WindowsCOMPortScanner() override = default;
 

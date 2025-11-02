@@ -1,5 +1,5 @@
 #pragma once
-#include <NetlibCore/ConnectionSupervisor/IServerBase.hpp>
+#include <NetlibCore/Connection/IConnectionSupervisor.hpp>
 #include <NetlibCore/Queue/ITSQueue.hpp>
 #include <NetlibCore/Queue/types/Message.hpp>
 #include <NetlibCore/Connection/IConnection.hpp>
@@ -13,15 +13,15 @@
 #include <chrono>
 
 
-namespace netlib
+namespace netlib::core
 {
-   class ServerBase : public IServerBase
+   class ConnectionSupervisor : public IConnectionSupervisor
    {
       public:
-      ServerBase(ITSQueue<OwnedMessage> &msgIn, IEndPointEnumerator &endpoints,
-                 IConnectionFactory &connFactory, IEventLoop &eventLoop, ITimerFactory &timer,
-                 std::chrono::seconds periodicity);
-      ~ServerBase() override;
+      ConnectionSupervisor(ITSQueue<OwnedMessage> &msgIn, IEndPointEnumerator &endpoints,
+                           IConnectionFactory &connFactory, IEventLoop &eventLoop,
+                           ITimerFactory &timer, std::chrono::seconds periodicity);
+      ~ConnectionSupervisor() override;
 
       bool start() override;
       void stop() override;
@@ -31,7 +31,7 @@ namespace netlib
       protected:
       bool onClientConnect(std::shared_ptr<IConnection> client) override;
       void onClientDisconnect(std::shared_ptr<IConnection> client) override;
-      void onMessage([[maybe_unused]] netlib::OwnedMessage &&_msg) override;
+      void onMessage([[maybe_unused]] OwnedMessage &&_msg) override;
 
       private:
       // Thread Safe Queue for incoming message packets
@@ -50,4 +50,4 @@ namespace netlib
       // Clients will be identified in the "wider system" via an ID
       uint32_t nIDCounter = 21000;    // Start at an arbitrary value
    };
-}    // namespace netlib
+}    // namespace netlib::core
