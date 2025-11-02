@@ -24,6 +24,10 @@ namespace netlib
 
       OwnedMessage() = default;
 
+      OwnedMessage(const std::shared_ptr<IConnection> &otherRemote, std::string &&otherMsg) noexcept
+          : m_remote(otherRemote), m_msg(std::move(otherMsg))
+      {}
+
       // Move constructor
       OwnedMessage(std::shared_ptr<IConnection> &&otherRemote, std::string &&otherMsg) noexcept
           : m_remote(std::move(otherRemote)), m_msg(std::move(otherMsg))

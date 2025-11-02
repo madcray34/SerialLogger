@@ -1,5 +1,6 @@
 set(SOURCES 
     "./src/serverBase.cpp"
+    "./src/Connection.cpp"
     )
 
 add_library(${LIBRARY_NETCORE_NAME} STATIC 

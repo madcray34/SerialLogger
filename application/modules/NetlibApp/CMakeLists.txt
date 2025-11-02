@@ -1,5 +1,4 @@
 set(SOURCES 
-    "./src/connection.cpp"
     "./src/WindowsCOMPortScanner.cpp"
     "./src/AsioSerialConnectionFactory.cpp"
     "./src/AsioSerialTextStream.cpp"

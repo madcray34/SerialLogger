@@ -18,7 +18,7 @@ namespace netlib
        across the whole system.
        * @return uint32_t
        */
-      virtual uint32_t getID() const = 0;
+      virtual uint32_t getID() const noexcept = 0;
 
       /**
        * @brief Connect to the client, i.e. the serial port provided.
@@ -42,6 +42,6 @@ namespace netlib
        *
        * @return std::string
        */
-      virtual std::string_view getPortName() const = 0;
+      virtual std::string_view getPortName() const noexcept = 0;
    };
 }    // namespace netlib

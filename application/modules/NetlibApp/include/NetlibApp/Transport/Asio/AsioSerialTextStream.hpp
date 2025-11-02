@@ -1,20 +1,17 @@
 #pragma once
 #include <NetlibCore/Transport/ITextStream.hpp>
 #include <NetlibApp/Event/Asio/AsioEventLoop.hpp>
-#include <memory>
-
-#include <boost/asio/serial_port.hpp>
-#include <boost/asio/streambuf.hpp>
+#include <functional>
 
 namespace netlib
 {
-   class AsioSerialTextStream : public ITextStream
+   class AsioSerialTextStream final : public ITextStream
    {
       public:
-      AsioSerialTextStream(AsioEventLoop                            &eventLoop,
-                           std::shared_ptr<boost::asio::serial_port> port);
+      AsioSerialTextStream(AsioEventLoop &eventLoop, std::string portname,
+                           unsigned int baud = 9600);
 
-      virtual ~AsioSerialTextStream();
+      ~AsioSerialTextStream() override;
 
       void open(std::function<void(const std::error_code &)> handler) override;
 
@@ -27,12 +24,12 @@ namespace netlib
           std::function<void(const std::error_code &, std::string)> handler) override;
 
       // Asynchronous write a line (appends newline character)
-      void asyncWriteLine(
-          const std::string_view                                   &line,
+      [[maybe_unused]] void asyncWriteLine(
+          std::string_view                                          line,
           std::function<void(const std::error_code &, std::size_t)> handler) override;
 
       private:
-      std::shared_ptr<boost::asio::serial_port> m_port;
-      boost::asio::streambuf                    m_streamBuffer;
+      struct Impl;
+      std::unique_ptr<Impl> m_pImpl;
    };
 }    // namespace netlib

@@ -1,14 +1,14 @@
 #include <NetlibApp/Connection/Asio/AsioSerialConnectionFactory.hpp>
-#include <NetlibApp/Connection/Connection.hpp>
-#include <boost/asio/serial_port.hpp>
+#include <NetlibApp/Transport/Asio/AsioSerialTextStream.hpp>
+#include <NetlibCore/Connection/Connection.hpp>
+
 
 namespace netlib
 {
    std::shared_ptr<IConnection> AsioSerialConnectionFactory::create(std::string_view portname,
                                                                     ITSQueue<OwnedMessage> &qIn)
    {
-      boost::asio::serial_port newPort(m_eventLoop.getContext(), std::string(portname));
-      return std::make_shared<Connection>(m_eventLoop.getContext(), std::move(newPort),
-                                          std::string(portname), qIn);
+      auto textStream = std::make_shared<AsioSerialTextStream>(m_eventLoop, std::string(portname));
+      return std::make_shared<Connection>(std::move(textStream), std::string(portname), qIn);
    }
 }    // namespace netlib

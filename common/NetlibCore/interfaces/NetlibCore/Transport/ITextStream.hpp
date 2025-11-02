@@ -21,7 +21,7 @@ namespace netlib
 
       // Asynchronous write a line (appends newline character)
       virtual void asyncWriteLine(
-          const std::string_view                                   &line,
+          std::string_view                                          line,
           std::function<void(const std::error_code &, std::size_t)> handler) = 0;
    };
 }    // namespace netlib
