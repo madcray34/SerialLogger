@@ -1,18 +1,18 @@
 #include <serverBase/serverBase.hpp>
-#include <chrono>
 
 namespace netlib
 {
    ServerBase::ServerBase(ITSQueue<OwnedMessage> &msgIn, IEndPointEnumerator &endpoints,
-                          IConnectionFactory &connFactory, std::chrono::seconds periodicity)
+                          IConnectionFactory &connFactory, IEventLoop &eventLoop,
+                          ITimerFactory &timer, std::chrono::seconds periodicity)
        : m_qMsgIn(msgIn)
        , m_endpoints(endpoints)
        , m_connFactory(connFactory)
-       , m_asioContext()
-       , m_asyncTimer(m_asioContext, periodicity)
-   {
-      m_periodicity = periodicity;
-   }
+       , m_eventLoop(eventLoop)
+       , m_asyncTimerFactory(timer)
+       , m_asyncTimer(m_asyncTimerFactory.createTimer(periodicity))
+       , m_periodicity(periodicity)
+   {}
 
    ServerBase::~ServerBase()
    {
@@ -31,7 +31,7 @@ namespace netlib
          waitForClientConnection();
 
          // Launch the asio context in its own thread
-         m_threadContext = std::thread([this]() { m_asioContext.run(); });
+         m_threadContext = std::thread([this]() { m_eventLoop.start(); });
       }
       catch (std::exception &e)
       {
@@ -46,7 +46,7 @@ namespace netlib
 
    void ServerBase::stop()
    {
-      m_asioContext.stop();
+      m_eventLoop.stop();
 
       if (m_threadContext.joinable())
          m_threadContext.join();
@@ -57,24 +57,24 @@ namespace netlib
    void ServerBase::waitForClientConnection()
    {
       // Set the timer to expire.
-      m_asyncTimer.expires_after(m_periodicity);
+      m_asyncTimer->expires_after(m_periodicity);
 
-      m_asyncTimer.async_wait(
+      m_asyncTimer->async_wait(
           [this](const std::error_code ec)
           {
              if (!ec)
              {
-                // Call the function to get available COM ports
+                // Call the function to get available communication points
                 const auto &eps = m_endpoints.getAvailableEndPoints();
                 if (!eps.empty())
                 {
                    for (const auto &ep : eps)
                    {
-                      std::cout << " Detected COM PORT- " << ep.portName << std::endl;
+                      std::cout << " Detected endpoint- " << ep.portName << std::endl;
 
                       try
                       {
-                         auto newconn = m_connFactory.create(m_asioContext, ep.portName, m_qMsgIn);
+                         auto newconn = m_connFactory.create(ep.portName, m_qMsgIn);
 
                          // Give the user server a chance to deny connection
                          if (onClientConnect(newconn))

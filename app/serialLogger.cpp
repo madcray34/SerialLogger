@@ -23,6 +23,8 @@
 #include <portScanner/SerialPortScannerAdapter.hpp>
 #include <server/server.hpp>
 #include <connection/AsioSerialConnectionFactory.hpp>
+#include <ServerBase/AsioEventLoop.hpp>
+#include <ServerBase/AsioTimer.hpp>
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
    #pragma comment(lib, "legacy_stdio_definitions")
@@ -228,9 +230,13 @@ int main(int, char **)
    netlib::TSQueue<netlib::OwnedMessage>      myQueue;
    static netlib::WindowsCOMPortScanner       portScanner;
    static netlib::SerialPortScannerAdapter    adapter{ portScanner };
-   static netlib::AsioSerialConnectionFactory connFactory;
+   static netlib::AsioEventLoop               eventLoop;
+   static netlib::AsioTimerFactory            timerFactory{ eventLoop };
+   static netlib::AsioSerialConnectionFactory connFactory{ eventLoop };
 
-   netlib::CustomServer server{ myQueue, adapter, connFactory, std::chrono::seconds(5), model };
+   netlib::CustomServer server{ myQueue,   adapter,      connFactory,
+                                eventLoop, timerFactory, std::chrono::seconds(5),
+                                model };
    server.start();
    server.startMonitoringQueue();
    const auto clear_color = ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);

@@ -22,8 +22,7 @@ namespace netlib
        * @param qIn Reference to incoming message queue
        * @return std::shared_ptr<IConnection>
        */
-      virtual std::shared_ptr<IConnection> create(boost::asio::io_context &asioContext,
-                                                  std::string_view         name,
-                                                  ITSQueue<OwnedMessage>  &qIn) = 0;
+      virtual std::shared_ptr<IConnection> create(std::string_view        name,
+                                                  ITSQueue<OwnedMessage> &qIn) = 0;
    };
 }    // namespace netlib

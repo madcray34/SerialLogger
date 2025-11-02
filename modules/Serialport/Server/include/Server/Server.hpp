@@ -9,9 +9,9 @@ namespace netlib
    {
       public:
       CustomServer(ITSQueue<OwnedMessage> &msgIn, IEndPointEnumerator &endpoints,
-                   IConnectionFactory &connFactory, std::chrono::seconds periodicity,
-                   IModel &_model)
-          : ServerBase(msgIn, endpoints, connFactory, periodicity)
+                   IConnectionFactory &connFactory, IEventLoop &eventLoop, ITimerFactory &timer,
+                   std::chrono::seconds periodicity, IModel &_model)
+          : ServerBase(msgIn, endpoints, connFactory, eventLoop, timer, periodicity)
           , stopMonitoring(false)
           , m_model(_model)
       {}

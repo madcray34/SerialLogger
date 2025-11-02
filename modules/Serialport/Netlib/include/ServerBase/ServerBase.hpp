@@ -5,10 +5,10 @@
 #include <connection/Iconnection.hpp>
 #include <connection/IconnectionFactory.hpp>
 #include <portScanner/IendPointEnumerator.hpp>
+#include <ServerBase/IEventLoop.hpp>
+#include <ServerBase/ITimer.hpp>
 
-#define ASIO_STANDALONE
-#include <boost/asio.hpp>
-#include <boost/asio/ts/buffer.hpp>
+#include <thread>
 #include <deque>
 #include <chrono>
 
@@ -19,7 +19,8 @@ namespace netlib
    {
       public:
       ServerBase(ITSQueue<OwnedMessage> &msgIn, IEndPointEnumerator &endpoints,
-                 IConnectionFactory &connFactory, std::chrono::seconds periodicity);
+                 IConnectionFactory &connFactory, IEventLoop &eventLoop, ITimerFactory &timer,
+                 std::chrono::seconds periodicity);
       ~ServerBase() override;
 
       bool start() override;
@@ -34,21 +35,19 @@ namespace netlib
 
       private:
       // Thread Safe Queue for incoming message packets
-      ITSQueue<OwnedMessage> &m_qMsgIn;
-      IEndPointEnumerator    &m_endpoints;
-      IConnectionFactory     &m_connFactory;
+      ITSQueue<OwnedMessage>       &m_qMsgIn;
+      IEndPointEnumerator          &m_endpoints;
+      IConnectionFactory           &m_connFactory;
+      IEventLoop                   &m_eventLoop;
+      ITimerFactory                &m_asyncTimerFactory;
+      const std::shared_ptr<ITimer> m_asyncTimer;
+      std::chrono::seconds          m_periodicity;
+      std::thread                   m_threadContext;
 
       // Container of active validated connections
       std::deque<std::shared_ptr<IConnection>> m_deqConnections;
 
-      // Asio related containers
-      boost::asio::io_context   m_asioContext;
-      std::thread               m_threadContext;
-      boost::asio::steady_timer m_asyncTimer;
-
-      std::chrono::seconds m_periodicity;
-
       // Clients will be identified in the "wider system" via an ID
-      uint32_t nIDCounter = 21000;
+      uint32_t nIDCounter = 21000;    // Start at an arbitrary value
    };
 }    // namespace netlib

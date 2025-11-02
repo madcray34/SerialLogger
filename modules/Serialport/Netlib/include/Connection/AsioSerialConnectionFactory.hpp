@@ -1,15 +1,18 @@
 #pragma once
 #include <Connection/IconnectionFactory.hpp>
+#include <ServerBase/AsioEventLoop.hpp>
 
 namespace netlib
 {
    class AsioSerialConnectionFactory final : public IConnectionFactory
    {
       public:
-      AsioSerialConnectionFactory()           = default;
+      explicit AsioSerialConnectionFactory(AsioEventLoop &ev) : m_eventLoop(ev) {};
       ~AsioSerialConnectionFactory() override = default;
-      std::shared_ptr<IConnection> create(boost::asio::io_context &asioContext,
-                                          std::string_view         portName,
-                                          ITSQueue<OwnedMessage>  &qIn) override;
+      std::shared_ptr<IConnection> create(std::string_view        portName,
+                                          ITSQueue<OwnedMessage> &qIn) override;
+
+      private:
+      AsioEventLoop &m_eventLoop;
    };
 }    // namespace netlib
