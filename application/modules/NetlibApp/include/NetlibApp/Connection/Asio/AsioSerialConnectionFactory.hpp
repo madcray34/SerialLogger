@@ -1,6 +1,7 @@
 #pragma once
 #include <NetlibCore/Connection/IconnectionFactory.hpp>
 #include <NetlibApp/Event/Asio/AsioEventLoop.hpp>
+#include <NetlibApp/Transport/Asio/SerialOptions.hpp>
 
 namespace netlib
 {

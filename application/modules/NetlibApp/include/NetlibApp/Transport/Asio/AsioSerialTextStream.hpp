@@ -5,11 +5,18 @@
 
 namespace netlib
 {
+   struct SerialOptions;
+}
+
+namespace netlib
+{
    class AsioSerialTextStream final : public ITextStream
    {
       public:
       AsioSerialTextStream(AsioEventLoop &eventLoop, std::string portname,
                            unsigned int baud = 9600);
+
+      AsioSerialTextStream(AsioEventLoop &eventLoop, std::string portname, SerialOptions &options);
 
       ~AsioSerialTextStream() override;
 
@@ -29,7 +36,8 @@ namespace netlib
           std::function<void(const std::error_code &, std::size_t)> handler) override;
 
       private:
-      struct Impl;
-      std::unique_ptr<Impl> m_pImpl;
+      struct Impl;                      // Forward declaration of the implementation struct
+      std::unique_ptr<Impl> m_pImpl;    // Pointer to implementation idiom to hide details into the
+                                        // cpp file
    };
 }    // namespace netlib

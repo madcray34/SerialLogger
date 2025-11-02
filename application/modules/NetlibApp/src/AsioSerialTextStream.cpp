@@ -1,4 +1,5 @@
 #include <NetlibApp/Transport/Asio/AsioSerialTextStream.hpp>
+#include <NetlibApp/Transport/Asio/SerialOptions.hpp>
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/serial_port.hpp>
@@ -41,11 +42,39 @@ namespace netlib
          m_serialPort.set_option(boost::asio::serial_port_base::stop_bits(
              boost::asio::serial_port_base::stop_bits::one));
       };
+
+
+      Impl(AsioEventLoop &eventLoop, const std::string &portname, SerialOptions &options)
+          : m_eventLoop(eventLoop)
+          , m_ioContext(eventLoop.getContext())
+          , m_serialPort(m_ioContext, portname)
+      {
+         // For the next options we need to map from our SerialOptions to boost options
+         // The easiest way is to use the same type values (in SerialOptions) as boost defines
+         m_serialPort.set_option(boost::asio::serial_port_base::baud_rate(options.baudRate));
+
+         m_serialPort.set_option(
+             boost::asio::serial_port_base::character_size(options.characterSize));
+
+         m_serialPort.set_option(boost::asio::serial_port_base::flow_control(
+             static_cast<boost::asio::serial_port_base::flow_control::type>(options.flowControl)));
+
+         m_serialPort.set_option(boost::asio::serial_port_base::parity(
+             static_cast<boost::asio::serial_port_base::parity::type>(options.parity)));
+
+         m_serialPort.set_option(boost::asio::serial_port_base::stop_bits(
+             static_cast<boost::asio::serial_port_base::stop_bits::type>(options.stopBits)));
+      };
    };
 
    AsioSerialTextStream::AsioSerialTextStream(AsioEventLoop &eventLoop, std::string portname,
                                               unsigned int baud /*= 9600*/)
        : m_pImpl(std::make_unique<Impl>(eventLoop, portname, baud))
+   {}
+
+   AsioSerialTextStream::AsioSerialTextStream(AsioEventLoop &eventLoop, std::string portname,
+                                              SerialOptions &options)
+       : m_pImpl(std::make_unique<Impl>(eventLoop, portname, options))
    {}
 
    AsioSerialTextStream::~AsioSerialTextStream() = default;
