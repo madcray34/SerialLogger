@@ -57,7 +57,8 @@ PenaltyBreakComment: 0
 #PenaltyBreakTemplateDeclaration:0
 #PenaltyExcessCharacter: 0
 #PenaltyReturnTypeOnItsOwnLine: 0
-PointerAlignment: Middle # Left, Middle, Right
+PointerAlignment: Right # Left, Middle, Right
+ReferenceAlignment: Pointer
 SortIncludes: Never
 SpaceAfterTemplateKeyword: false # true, false
 #SpaceBeforeParens: Never # Never, ControlStatements, NonEmptyParentheses, Always
