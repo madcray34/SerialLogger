@@ -15,9 +15,9 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
 set(EXECUTABLE_NAME SerialLogger)
 set(LIBRARY_GUI_BACKEND_NAME guiBackend)
 set(LIBRARY_IGUI_BACKEND_NAME I${LIBRARY_GUI_BACKEND_NAME})
-set(LIBRARY_NET_NAME Netlib)
-set(LIBRARY_INET_NAME I${LIBRARY_NET_NAME})
-set(LIBRARY_NETSERVER_NAME Server)
+set(LIBRARY_NETCORE_NAME NetlibCore)
+set(LIBRARY_INETCORE_NAME I${LIBRARY_NETCORE_NAME})
+set(LIBRARY_NETAPP_NAME NetlibCoreApp)
 
 # Options
 option(ENABLE_WARNINGS "Enable to add warnings to a target." ON)
@@ -67,7 +67,7 @@ if(WIN32)
     add_compile_definitions(_WIN32_WINNT=0x0A00)
 endif()
 
-add_subdirectory(modules ./modules)
-add_subdirectory(app ./app)
+add_subdirectory(common ./common)
+add_subdirectory(application ./application)
 
 # add_clang_tidy_msvc_to_target(${PROJECT_NAME})
