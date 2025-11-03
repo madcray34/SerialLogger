@@ -2,6 +2,7 @@
 #include <NetlibCore/EndPointEnumerator/ISerialPortScanner.hpp>
 #include <unordered_set>
 #include <array>
+#include <string>
 
 namespace netlib
 {
@@ -18,8 +19,8 @@ namespace netlib
       const std::vector<std::string> &getAvailableCOMPorts() override;
 
       private:
-      std::vector<std::string>         ports;
-      std::array<char, 256>            portName{};
-      std::unordered_set<const char *> m_connectedPorts;
+      std::vector<std::string>        ports;
+      std::array<char, 256>           portName{};
+      std::unordered_set<std::string> m_connectedPorts;
    };
 }    // namespace netlib

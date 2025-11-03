@@ -2,7 +2,8 @@
 #include <windows.h>
 #include <setupapi.h>
 #include <iostream>
-#include <windows.h>
+#include <vector>
+#include <string>
 #include <cstring>
 
 namespace netlib
@@ -21,9 +22,10 @@ namespace netlib
          return ports;
       }
 
-      SP_DEVINFO_DATA devInfoData;
+      SP_DEVINFO_DATA devInfoData{};
       devInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
       DWORD i            = 0;
+
       // Buffer to store the port name
 
       // Iterate through all devices
@@ -32,26 +34,23 @@ namespace netlib
          // Query the device's port name using SPDRP_FRIENDLYNAME
          if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, nullptr,
                                                reinterpret_cast<PBYTE>(portName.data()),
-                                               sizeof(portName), nullptr))
+                                               static_cast<DWORD>(portName.size()), nullptr))
          {
-            // Skip already connected ports by checking the set
-            if (m_connectedPorts.find(portName.data()) != m_connectedPorts.end())
-            {
-               ++i;    // Increment to the next device
-               continue;
-            }
-
-            m_connectedPorts.insert(portName.data());
-
             const char *comPos = std::strstr(portName.data(), "COM");
             if (comPos != nullptr)
             {
                const char *closeParenPos = std::strchr(comPos, ')');
-
-               // If a closing parenthesis was found, extract the COM port
                if (closeParenPos != nullptr)
                {
-                  ports.emplace_back(comPos, closeParenPos - comPos);
+                  // estrai la stringa del COM, es. "COM3"
+                  std::string comStr(comPos, closeParenPos - comPos);
+
+                  // controlla usando il contenuto (non il puntatore)
+                  if (m_connectedPorts.find(comStr) == m_connectedPorts.end())
+                  {
+                     m_connectedPorts.insert(comStr);
+                     ports.emplace_back(std::move(comStr));
+                  }
                }
             }
          }
