@@ -24,9 +24,6 @@
             "name": "implot"
         },
         {
-            "name": "boost-circular-buffer"
-        },
-        {
             "name": "boost-asio",
             "default-features": false
         },
