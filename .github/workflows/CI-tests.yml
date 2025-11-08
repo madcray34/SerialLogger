@@ -1,0 +1,47 @@
+name: CI - Unit Tests
+
+on: 
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  test-windows:
+    runs-on: windows-latest
+
+    env:
+      VCPKG_DEFAULT_TRIPLET: x64-windows
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup vcpkg
+      id: vcpkg
+      uses: microsoft/vcpkg-action@v1
+      with:
+        triplet: x64-windows
+        runVcpkgInstall: true
+
+    - name: Configure (Cmake + tests)
+      shell: pwsh
+      env:
+        VCPKG_DIR: ${{ steps.vcpkg.outputs.vcpkgRoot }}
+      run: >
+        cmake -S . -B build
+        -DCMAKE_BUILD_TYPE=Release
+        -DENABLE_TESTS=ON
+
+    - name: Build tests
+      run: cmake --build build --config Release --target netcore_tests
+
+    - name: Run Tests
+      run: ctest -C Release --test-dir build --output-on-failure
+
+    # Save logs on failure
+    - name: Upload Test Logs
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-logs
+        path: build/Testing
