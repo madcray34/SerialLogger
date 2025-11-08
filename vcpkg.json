@@ -27,7 +27,8 @@
             "name": "boost-circular-buffer"
         },
         {
-            "name": "boost-asio"
+            "name": "boost-asio",
+            "default-features": false
         },
         {
             "name": "boost-system"
