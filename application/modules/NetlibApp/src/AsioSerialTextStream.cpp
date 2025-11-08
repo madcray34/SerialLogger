@@ -47,7 +47,8 @@ namespace netlib
       Impl(AsioEventLoop &eventLoop, const std::string &portname, SerialOptions &options)
           : m_eventLoop(eventLoop)
           , m_ioContext(eventLoop.getContext())
-          , m_serialPort(m_ioContext, portname)
+          , m_serialPort(m_ioContext, portname)    // This constructor creates and opens a serial
+                                                   // port for the specified device name.
       {
          // For the next options we need to map from our SerialOptions to boost options
          // The easiest way is to use the same type values (in SerialOptions) as boost defines

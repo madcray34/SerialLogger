@@ -1,0 +1,19 @@
+add_executable(
+    netcore_tests
+    Common/NetlibCore/test_tsqueue.cpp
+)
+
+target_link_libraries(netcore_tests PRIVATE
+    ${LIBRARY_NETCORE_NAME}
+    GTest::gtest
+    GTest::gtest_main
+    GTest::gmock
+    GTest::gmock_main
+)
+
+include(GoogleTest)
+
+gtest_discover_tests(netcore_tests 
+    DISCOVERY_MODE PRE_TEST
+    WORKING_DIRECTORY $<TARGET_FILE_DIR:netcore_tests>
+)
