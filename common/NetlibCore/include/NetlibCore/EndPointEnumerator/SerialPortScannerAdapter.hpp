@@ -17,7 +17,7 @@ namespace netlib::core
          _cache.clear();
          _cache.reserve(ports.size());
          for (const auto &portName : ports)
-            _cache.emplace_back(portName);
+            _cache.emplace_back(CommEndPoint{ portName });
 
          return _cache;
       }
