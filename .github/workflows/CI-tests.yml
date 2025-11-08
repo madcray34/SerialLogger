@@ -16,17 +16,17 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Setup vcpkg
-      id: vcpkg
-      uses: microsoft/vcpkg-action@v1
-      with:
-        triplet: x64-windows
-        runVcpkgInstall: true
+    # - name: Setup vcpkg
+    #   id: vcpkg
+    #   uses: microsoft/setup-vcpkg@v1
+    #   with:
+    #     triplet: x64-windows
+    #     runVcpkgInstall: true
 
     - name: Configure (Cmake + tests)
       shell: pwsh
-      env:
-        VCPKG_DIR: ${{ steps.vcpkg.outputs.vcpkgRoot }}
+      # env:
+      #   VCPKG_DIR: ${{ steps.vcpkg.outputs.vcpkgRoot }}
       run: >
         cmake -S . -B build
         -DCMAKE_BUILD_TYPE=Release
