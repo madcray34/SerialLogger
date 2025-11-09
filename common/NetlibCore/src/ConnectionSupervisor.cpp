@@ -135,7 +135,7 @@ namespace netlib::core
          msgIn = m_qMsgIn.wait_for(500ms);
       }
 
-      if (!msgIn && m_qMsgIn.empty())
+      if (_wait && !msgIn && m_qMsgIn.empty())
          return;
 
       // Process as many messages as you can up to the value
