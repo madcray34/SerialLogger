@@ -1,8 +1,8 @@
 set(MODEL_SOURCES 
-    "./src/model.cpp"
-    "./src/plotter.cpp" 
-    "./src/presenter.cpp"
-    "./src/renderFileExplorer.cpp"
+    "./src/Model.cpp"
+    "./src/LogViewer.cpp" 
+    "./src/Presenter.cpp"
+    "./src/FileExplorer.cpp"
     )
 
 add_library(${LIBRARY_GUI_BACKEND_NAME} STATIC 

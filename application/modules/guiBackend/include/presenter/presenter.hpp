@@ -1,6 +1,6 @@
 #pragma once
-#include <presenter/Ipresenter.hpp>
-#include <model/Imodel.hpp>
+#include <presenter/IPresenter.hpp>
+#include <model/IModel.hpp>
 #include <functional>
 #include <mutex>
 

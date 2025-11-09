@@ -1,6 +1,6 @@
 #pragma once
 #include <condition_variable>
-#include <model/Imodel.hpp>
+#include <model/IModel.hpp>
 #include <thread>
 #include <atomic>
 #include <mutex>

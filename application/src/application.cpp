@@ -26,10 +26,10 @@
 #include <NetlibApp/Event/Asio/AsioTimer.hpp>
 
 // GUI application backend libraries
-#include <presenter/presenter.hpp>
-#include <model/model.hpp>
-#include <view/plotter.hpp>
-#include <view/renderFileExplorer.hpp>
+#include <presenter/Presenter.hpp>
+#include <model/Model.hpp>
+#include <view/LogViewer.hpp>
+#include <view/FileExplorer.hpp>
 
 // Aplication libraries
 #include <application/AppConnectionSupervisor.hpp>
@@ -224,14 +224,14 @@ int main(int, char **)
 
    FileExplorer                       fileExplorer{ SOURCE_LOGS_DIR };
    netlib::core::TSQueue<std::string> plotterQueue;
-   Plotter                            plotter{ plotterQueue };
+   LogViewer                          viewer{ plotterQueue };
 
    netlib::core::TSQueue<std::string> modelFq;
    netlib::core::TSQueue<std::string> modelSq;
    Model                              model{ modelFq, modelSq, OUTPUT_FILE_PATH };
 
-   // Instantiate the Presenter, passing the model and plotter's update method as the callback
-   Presenter presenter(model, [&](std::string &&data) { plotter.update(std::move(data)); });
+   // Instantiate the Presenter, passing the model and viewer's update method as the callback
+   Presenter presenter(model, [&](std::string &&data) { viewer.update(std::move(data)); });
 
    // Start data reception in a separate thread
    presenter.start();
@@ -289,7 +289,7 @@ int main(int, char **)
          // render(fileExplorer);
       }
 
-      render(plotter);
+      render(viewer);
       ImGui::End();    // End the main DockSpace window
       ImGui::Render();
 
