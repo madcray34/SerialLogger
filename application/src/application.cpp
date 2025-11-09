@@ -6,7 +6,6 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_opengl3_loader.h"
 #include <imgui.h>
-#include <implot.h>
 
 // GL libraries
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -253,7 +252,6 @@ int main(int, char **)
    connectionSupervisor.start();
    connectionSupervisor.startMessagePump();
    const auto clear_color = ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
-   ImPlot::CreateContext();
 
    bool show_file_explorer{ false };
 
@@ -297,7 +295,6 @@ int main(int, char **)
 
       end_cycle(window, clear_color, io.ConfigFlags);
    }
-   ImPlot::DestroyContext();
 
    // Cleanup
    ImGui_ImplOpenGL3_Shutdown();

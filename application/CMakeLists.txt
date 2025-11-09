@@ -18,7 +18,6 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE
     setupapi
     ws2_32
     imgui::imgui
-    implot::implot
 )
 
 target_compile_definitions(${EXECUTABLE_NAME} PRIVATE 

@@ -2,7 +2,6 @@
 #include <view/plotter.hpp>
 #include <fmt/format.h>
 #include <iostream>
-#include <implot.h>
 #include <imgui.h>
 #include <array>
 #include <cmath>

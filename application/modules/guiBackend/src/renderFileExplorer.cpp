@@ -1,6 +1,5 @@
 #include <view/renderFileExplorer.hpp>
 #include <fmt/format.h>
-#include <implot.h>
 #include <iostream>
 #include <imgui.h>
 

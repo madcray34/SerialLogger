@@ -21,7 +21,6 @@ target_link_libraries(${LIBRARY_GUI_BACKEND_NAME} PUBLIC
 
 target_link_libraries(${LIBRARY_GUI_BACKEND_NAME} PRIVATE
     imgui::imgui
-    implot::implot
     fmt::fmt-header-only
     )
 
