@@ -31,7 +31,8 @@ namespace netlib
       Impl(AsioEventLoop &eventLoop, const std::string &portname, unsigned int baud)
           : m_eventLoop(eventLoop)
           , m_ioContext(eventLoop.getContext())
-          , m_serialPort(m_ioContext, portname)
+          , m_serialPort(m_ioContext, portname)    // This constructor creates and opens a serial
+                                                   // port for the specified device name.
       {
          m_serialPort.set_option(boost::asio::serial_port_base::baud_rate(baud));
          m_serialPort.set_option(boost::asio::serial_port_base::character_size(8));

@@ -1,5 +1,7 @@
 #pragma once
 #include <deque>
+#include <chrono>
+
 /**
  * @brief Interface for Thread Safe double ended, waiting queue. Practical for mockups.
  *
@@ -30,5 +32,6 @@ namespace netlib::core
       virtual void           clear()                   = 0;
       virtual void           wait()                    = 0;
       virtual void           wait(const bool &exit)    = 0;
+      virtual bool           wait_for(std::chrono::milliseconds timeout) = 0;
    };
 }    // namespace netlib::core

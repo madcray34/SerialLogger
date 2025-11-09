@@ -3,7 +3,7 @@
 #include <iostream>
 #include <bit>
 #include <memory>
-#include <NetlibCore/Connection/Iconnection.hpp>
+#include <NetlibCore/Connection/IConnection.hpp>
 
 namespace netlib::core
 {

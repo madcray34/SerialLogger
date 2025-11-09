@@ -207,8 +207,7 @@ namespace netlib::core
          cvBlocking.wait(ul, [&]() { return exit || !empty(); });
       }
 
-      template<typename Rep, typename Period>
-      bool wait_for(const std::chrono::duration<Rep, Period> &timeout)
+      bool wait_for(std::chrono::milliseconds timeout) override
       {
          std::unique_lock<std::mutex> ul(muxBlocking);
          return cvBlocking.wait_for(ul, timeout, [this]() { return !this->empty(); });
