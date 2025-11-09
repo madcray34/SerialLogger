@@ -8,7 +8,7 @@
 
 namespace netlib
 {
-   const std::vector<std::string> &WindowsCOMPortScanner::getAvailableCOMPorts()
+   const std::vector<std::string> &WindowsCOMPortScanner::getAvailableSerialPorts()
    {
       ports.clear();
 

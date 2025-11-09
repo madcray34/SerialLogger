@@ -6,7 +6,6 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_opengl3_loader.h"
 #include <imgui.h>
-#include <implot.h>
 
 // GL libraries
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -23,16 +22,17 @@
 // Network application libraries
 #include <NetlibApp/EndpointEnumerator/Windows/COMPort/WindowsCOMPortScanner.hpp>
 #include <NetlibApp/Connection/Asio/AsioSerialConnectionFactory.hpp>
-#include <NetlibApp/Server/Server.hpp>
 #include <NetlibApp/Event/Asio/AsioEventLoop.hpp>
 #include <NetlibApp/Event/Asio/AsioTimer.hpp>
 
 // GUI application backend libraries
-#include <presenter/presenter.hpp>
-#include <model/model.hpp>
-#include <view/plotter.hpp>
-#include <view/renderFileExplorer.hpp>
+#include <presenter/Presenter.hpp>
+#include <model/Model.hpp>
+#include <view/LogViewer.hpp>
+#include <view/FileExplorer.hpp>
 
+// Aplication libraries
+#include <application/AppConnectionSupervisor.hpp>
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
    #pragma comment(lib, "legacy_stdio_definitions")
@@ -54,6 +54,7 @@
 #include <iostream>
 #include <atomic>
 
+#ifdef ENABLE_ALLOC_TRACING
 std::atomic<int> allocation_count = 0;
 
 void *operator new(std::size_t size)
@@ -68,6 +69,8 @@ void operator delete(void *ptr) noexcept
 {
    std::free(ptr);
 }
+#endif
+
 
 constexpr auto WINDOW_WIDTH  = std::uint32_t{ 1280 };
 constexpr auto WINDOW_HEIGHT = std::uint32_t{ 720 };
@@ -221,14 +224,14 @@ int main(int, char **)
 
    FileExplorer                       fileExplorer{ SOURCE_LOGS_DIR };
    netlib::core::TSQueue<std::string> plotterQueue;
-   Plotter                            plotter{ plotterQueue };
+   LogViewer                          viewer{ plotterQueue };
 
    netlib::core::TSQueue<std::string> modelFq;
    netlib::core::TSQueue<std::string> modelSq;
    Model                              model{ modelFq, modelSq, OUTPUT_FILE_PATH };
 
-   // Instantiate the Presenter, passing the model and plotter's update method as the callback
-   Presenter presenter(model, [&](std::string &&data) { plotter.update(std::move(data)); });
+   // Instantiate the Presenter, passing the model and viewer's update method as the callback
+   Presenter presenter(model, [&](std::string &&data) { viewer.update(std::move(data)); });
 
    // Start data reception in a separate thread
    presenter.start();
@@ -243,13 +246,12 @@ int main(int, char **)
    static netlib::AsioTimerFactory                   timerFactory{ eventLoop };
    static netlib::AsioSerialConnectionFactory        connFactory{ eventLoop };
 
-   netlib::CustomServer server{ myQueue,   adapter,      connFactory,
-                                eventLoop, timerFactory, std::chrono::seconds(5),
-                                model };
-   server.start();
-   server.startMonitoringQueue();
+   netlib::AppConnectionSupervisor connectionSupervisor{
+      myQueue, adapter, connFactory, eventLoop, timerFactory, std::chrono::seconds(5), model
+   };
+   connectionSupervisor.start();
+   connectionSupervisor.startMessagePump();
    const auto clear_color = ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
-   ImPlot::CreateContext();
 
    bool show_file_explorer{ false };
 
@@ -287,13 +289,12 @@ int main(int, char **)
          // render(fileExplorer);
       }
 
-      render(plotter);
+      render(viewer);
       ImGui::End();    // End the main DockSpace window
       ImGui::Render();
 
       end_cycle(window, clear_color, io.ConfigFlags);
    }
-   ImPlot::DestroyContext();
 
    // Cleanup
    ImGui_ImplOpenGL3_Shutdown();
@@ -303,7 +304,7 @@ int main(int, char **)
    glfwDestroyWindow(window);
    glfwTerminate();
 
-   server.stopMonitoringQueue();
+   connectionSupervisor.stopMessagePump();
    presenter.stop();
    return 0;
 }

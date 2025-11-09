@@ -1,5 +1,5 @@
 #pragma once
-#include <model/Imodel.hpp>
+#include <model/IModel.hpp>
 #include <string_view>
 #include <cstdint>
 #include <mutex>
@@ -10,13 +10,13 @@ namespace netlib
    class ITSQueue;
 };
 
-class Plotter
+class LogViewer
 {
    static constexpr uint16_t c_size{ 100 };
 
    public:
-   Plotter(netlib::core::ITSQueue<std::string> &_q);
-   ~Plotter() = default;
+   LogViewer(netlib::core::ITSQueue<std::string> &_q);
+   ~LogViewer() = default;
    void Draw(std::string_view label);
    void update(std::string &&data);
 
@@ -29,4 +29,4 @@ class Plotter
    netlib::core::ITSQueue<std::string> &m_Q;
 };
 
-void render(Plotter &window_obj);
+void render(LogViewer &window_obj);

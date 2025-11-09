@@ -21,9 +21,6 @@
             ]
         },
         {
-            "name": "implot"
-        },
-        {
             "name": "boost-asio",
             "default-features": false
         },

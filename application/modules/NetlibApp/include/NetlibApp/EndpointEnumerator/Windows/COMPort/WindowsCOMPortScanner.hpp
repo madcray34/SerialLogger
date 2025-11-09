@@ -16,7 +16,7 @@ namespace netlib
       };
       ~WindowsCOMPortScanner() override = default;
 
-      const std::vector<std::string> &getAvailableCOMPorts() override;
+      const std::vector<std::string> &getAvailableSerialPorts() override;
 
       private:
       std::vector<std::string>        ports;

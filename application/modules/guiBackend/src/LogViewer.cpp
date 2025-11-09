@@ -1,14 +1,13 @@
 #include <NetlibCore/Queue/ITSQueue.hpp>
-#include <view/plotter.hpp>
+#include <view/LogViewer.hpp>
 #include <fmt/format.h>
 #include <iostream>
-#include <implot.h>
 #include <imgui.h>
 #include <array>
 #include <cmath>
 
 
-Plotter::Plotter(netlib::core::ITSQueue<std::string> &_q) : m_Q(_q)
+LogViewer::LogViewer(netlib::core::ITSQueue<std::string> &_q) : m_Q(_q)
 {}
 
 /**
@@ -16,7 +15,7 @@ Plotter::Plotter(netlib::core::ITSQueue<std::string> &_q) : m_Q(_q)
  *
  * @param label
  */
-void Plotter::Draw(std::string_view label)
+void LogViewer::Draw(std::string_view label)
 {
    /**
     * @brief predefined ImGui flags to manage window properties, those will be passed down to the
@@ -52,7 +51,7 @@ void Plotter::Draw(std::string_view label)
 }
 
 
-void Plotter::update(std::string &&data)
+void LogViewer::update(std::string &&data)
 {
    m_Q.push_back(std::move(data));
    if (m_Q.count() > c_size)
@@ -61,25 +60,25 @@ void Plotter::update(std::string &&data)
    }
 };
 
-void Plotter::DrawSelection()
+void LogViewer::DrawSelection()
 {
    // Empty function for now it will be usefull in future
    static constexpr auto temporary1 = "WILL BE FILLED IN THE FUTURE WITH FILTERING OPTIONS ....";
    ImGui::Text(temporary1);
 }
 
-void Plotter::DrawPlot()
+void LogViewer::DrawPlot()
 {
-   // Range-based for loop
-   for (const auto &it : m_Q)
+   // iterate a safe copy to avoid iterator invalidation from other threads
+   for (const auto &it : m_Q.to_deque())
    {
       ImGui::Text(it.c_str());
       ImGui::Separator();
    }
 }
 
-void render(Plotter &window_obj)
+void render(LogViewer &window_obj)
 {
-   static constexpr auto viewName1 = "Plotter";
+   static constexpr auto viewName1 = "LogViewer";
    window_obj.Draw(viewName1);
 }

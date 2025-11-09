@@ -2,7 +2,6 @@ set(SOURCES
     "./src/WindowsCOMPortScanner.cpp"
     "./src/AsioSerialConnectionFactory.cpp"
     "./src/AsioSerialTextStream.cpp"
-    "./src/Server.cpp"
     )
 
 add_library(${LIBRARY_NETAPP_NAME} STATIC 
@@ -13,7 +12,6 @@ target_include_directories(${LIBRARY_NETAPP_NAME} PUBLIC
 
 target_link_libraries(${LIBRARY_NETAPP_NAME} PUBLIC 
     ${LIBRARY_NETCORE_NAME}
-    ${LIBRARY_GUI_BACKEND_NAME}
     Boost::system
     Boost::asio)
 

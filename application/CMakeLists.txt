@@ -1,9 +1,13 @@
 add_subdirectory(modules ./modules)
 
 set(EXE_SOURCES
-    "./application.cpp")
+    "./src/application.cpp"
+    "./src/AppConnectionSupervisor.cpp")
 
 add_executable(${EXECUTABLE_NAME} ${EXE_SOURCES})
+
+target_include_directories(${EXECUTABLE_NAME} PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE 
     ${LIBRARY_NETCORE_NAME}
@@ -14,7 +18,6 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE
     setupapi
     ws2_32
     imgui::imgui
-    implot::implot
 )
 
 if(ENABLE_CLANG_FORMAT)
@@ -46,7 +49,15 @@ target_compile_definitions(${EXECUTABLE_NAME} PRIVATE
     SOURCE_ROOT_DIR="${SOURCE_ROOT}"
     SOURCE_LOGS_DIR="${SOURCE_LOGS_DIR}"
     OUTPUT_FILE_PATH="${OUTPUT_FILE_PATH}"
-)
+    )
+
+if(ENABLE_ALLOC_TRACING)
+    message(STATUS "Allocation tracing enabled.")
+    target_compile_definitions(
+        ${EXECUTABLE_NAME} PRIVATE
+        ENABLE_ALLOC_TRACING
+    )
+endif()
 
 # # Set output directory for the executable
 # set_target_properties(${EXECUTABLE_NAME} 

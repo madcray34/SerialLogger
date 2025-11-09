@@ -1,5 +1,7 @@
 #include <NetlibCore/Connection/ConnectionSupervisor.hpp>
 
+using namespace std::chrono_literals;
+
 namespace netlib::core
 {
    ConnectionSupervisor::ConnectionSupervisor(ITSQueue<OwnedMessage> &msgIn,
@@ -127,10 +129,14 @@ namespace netlib::core
 
    void ConnectionSupervisor::update(int32_t nMaxMessages, bool _wait)
    {
+      auto msgIn = false;
       if (_wait)
       {
-         m_qMsgIn.wait();
+         msgIn = m_qMsgIn.wait_for(500ms);
       }
+
+      if (_wait && !msgIn && m_qMsgIn.empty())
+         return;
 
       // Process as many messages as you can up to the value
       // specified

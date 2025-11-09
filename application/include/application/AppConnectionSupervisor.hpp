@@ -1,29 +1,31 @@
 #pragma once
 #include <NetlibCore/Connection/ConnectionSupervisor.hpp>
-#include <model/Imodel.hpp>
+#include <model/IModel.hpp>
 #include <atomic>
 
 namespace netlib
 {
-   class CustomServer : public core::ConnectionSupervisor
+   class AppConnectionSupervisor : public core::ConnectionSupervisor
    {
       public:
-      CustomServer(core::ITSQueue<core::OwnedMessage> &msgIn, core::IEndPointEnumerator &endpoints,
-                   core::IConnectionFactory &connFactory, core::IEventLoop &eventLoop,
-                   core::ITimerFactory &timer, std::chrono::seconds periodicity, IModel &_model)
+      AppConnectionSupervisor(core::ITSQueue<core::OwnedMessage> &msgIn,
+                              core::IEndPointEnumerator          &endpoints,
+                              core::IConnectionFactory &connFactory, core::IEventLoop &eventLoop,
+                              core::ITimerFactory &timer, std::chrono::seconds periodicity,
+                              IModel &_model)
           : core::ConnectionSupervisor(msgIn, endpoints, connFactory, eventLoop, timer, periodicity)
           , stopMonitoring(false)
           , m_model(_model)
       {}
 
-      ~CustomServer()
+      ~AppConnectionSupervisor()
       {
-         stopMonitoringQueue();
+         stopMessagePump();
       }
 
-      void startMonitoringQueue();
+      void startMessagePump();
 
-      void stopMonitoringQueue()
+      void stopMessagePump()
       {
          stopMonitoring = true;    // Signal the monitoring thread to stop
       }

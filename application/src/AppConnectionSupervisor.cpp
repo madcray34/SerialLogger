@@ -1,9 +1,9 @@
-#include <NetlibApp/Server/Server.hpp>
+#include <application/AppConnectionSupervisor.hpp>
 #include <thread>
 
 namespace netlib
 {
-   void CustomServer::startMonitoringQueue()
+   void AppConnectionSupervisor::startMessagePump()
    {
       std::thread(
           [this]()
@@ -16,18 +16,18 @@ namespace netlib
           .detach();    // Run in the background
    }
 
-   bool CustomServer::onClientConnect(std::shared_ptr<core::IConnection> client)
+   bool AppConnectionSupervisor::onClientConnect(std::shared_ptr<core::IConnection> client)
    {
       std::cout << "Connected client [" << client->getPortName() << "]" << std::endl;
       return true;
    }
 
-   void CustomServer::onClientDisconnect(std::shared_ptr<core::IConnection> client)
+   void AppConnectionSupervisor::onClientDisconnect(std::shared_ptr<core::IConnection> client)
    {
       std::cout << "Removing client [" << client->getPortName() << "]" << std::endl;
    }
 
-   void CustomServer::onMessage([[maybe_unused]] netlib::core::OwnedMessage &&_msg)
+   void AppConnectionSupervisor::onMessage([[maybe_unused]] netlib::core::OwnedMessage &&_msg)
    {
       m_model.pushMessage(std::move(_msg));
    }
