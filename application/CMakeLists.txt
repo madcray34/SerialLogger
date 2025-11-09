@@ -1,9 +1,13 @@
 add_subdirectory(modules ./modules)
 
 set(EXE_SOURCES
-    "./application.cpp")
+    "./src/application.cpp"
+    "./src/AppConnectionSupervisor.cpp")
 
 add_executable(${EXECUTABLE_NAME} ${EXE_SOURCES})
+
+target_include_directories(${LIBRARY_NETAPP_NAME} PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE 
     ${LIBRARY_NETCORE_NAME}

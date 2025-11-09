@@ -12,7 +12,7 @@ namespace netlib::core
 
       const std::vector<CommEndPoint> &getAvailableEndPoints() override
       {
-         const auto &ports = m_scanner.getAvailableCOMPorts();
+         const auto &ports = m_scanner.getAvailableSerialPorts();
 
          _cache.clear();
          _cache.reserve(ports.size());

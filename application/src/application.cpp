@@ -23,7 +23,6 @@
 // Network application libraries
 #include <NetlibApp/EndpointEnumerator/Windows/COMPort/WindowsCOMPortScanner.hpp>
 #include <NetlibApp/Connection/Asio/AsioSerialConnectionFactory.hpp>
-#include <NetlibApp/Server/Server.hpp>
 #include <NetlibApp/Event/Asio/AsioEventLoop.hpp>
 #include <NetlibApp/Event/Asio/AsioTimer.hpp>
 
@@ -33,6 +32,8 @@
 #include <view/plotter.hpp>
 #include <view/renderFileExplorer.hpp>
 
+// Aplication libraries
+#include <application/AppConnectionSupervisor.hpp>
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
    #pragma comment(lib, "legacy_stdio_definitions")
@@ -243,11 +244,11 @@ int main(int, char **)
    static netlib::AsioTimerFactory                   timerFactory{ eventLoop };
    static netlib::AsioSerialConnectionFactory        connFactory{ eventLoop };
 
-   netlib::CustomServer server{ myQueue,   adapter,      connFactory,
-                                eventLoop, timerFactory, std::chrono::seconds(5),
-                                model };
-   server.start();
-   server.startMonitoringQueue();
+   netlib::AppConnectionSupervisor connectionSupervisor{
+      myQueue, adapter, connFactory, eventLoop, timerFactory, std::chrono::seconds(5), model
+   };
+   connectionSupervisor.start();
+   connectionSupervisor.startMessagePump();
    const auto clear_color = ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
    ImPlot::CreateContext();
 
@@ -303,7 +304,7 @@ int main(int, char **)
    glfwDestroyWindow(window);
    glfwTerminate();
 
-   server.stopMonitoringQueue();
+   connectionSupervisor.stopMessagePump();
    presenter.stop();
    return 0;
 }
