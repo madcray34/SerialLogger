@@ -6,7 +6,7 @@ set(EXE_SOURCES
 
 add_executable(${EXECUTABLE_NAME} ${EXE_SOURCES})
 
-target_include_directories(${LIBRARY_NETAPP_NAME} PUBLIC 
+target_include_directories(${EXECUTABLE_NAME} PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE 
@@ -49,8 +49,15 @@ target_compile_definitions(${EXECUTABLE_NAME} PRIVATE
     SOURCE_ROOT_DIR="${SOURCE_ROOT}"
     SOURCE_LOGS_DIR="${SOURCE_LOGS_DIR}"
     OUTPUT_FILE_PATH="${OUTPUT_FILE_PATH}"
-    ENABLE_ALLOC_TRACING
-)
+    )
+
+if(ENABLE_ALLOC_TRACING)
+    message(STATUS "Allocation tracing enabled.")
+    target_compile_definitions(
+        ${EXECUTABLE_NAME} PRIVATE
+        ENABLE_ALLOC_TRACING
+    )
+endif()
 
 # # Set output directory for the executable
 # set_target_properties(${EXECUTABLE_NAME} 

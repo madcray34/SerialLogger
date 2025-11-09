@@ -19,13 +19,14 @@ set(LIBRARY_NETCORE_NAME NetlibCore)
 set(LIBRARY_INETCORE_NAME I${LIBRARY_NETCORE_NAME})
 set(LIBRARY_NETAPP_NAME NetlibApp)
 
-# Options
+# Options can be added from cmake command with -D<OPTION_NAME>=<VALUE>
 option(ENABLE_WARNINGS "Enable to add warnings to a target." ON)
 option(ENABLE_WARNINGS_AS_ERRORS "Enable to treat warnings as errors." OFF)
 option(ENABLE_CLANG_FORMAT "Enable to add clang-format." OFF)
 option(ENABLE_CLANG_TIDY "Enable to add clang tidy." OFF)
 option(ENABLE_LTO "Enable Link Time Optimization." OFF) 
 option(ENABLE_TESTS "Enable unit tests." OFF)
+option(ENABLE_ALLOC_TRACING "Enable allocation tracing" OFF)
 
 if(ENABLE_WARNINGS)
     include(Warnings)
