@@ -21,31 +21,15 @@ namespace netlib::core
          clear();
       }
 
-      typename std::deque<T>::iterator begin() override
+      /**
+       * @brief Return a copy of the queue contents for safe iteration.
+       */
+      std::deque<T> to_deque() const override
       {
          std::shared_lock lock(muxQueue);
-         return deqQueue.begin();
+         return deqQueue;
       }
 
-      typename std::deque<T>::iterator end() override
-      {
-         std::shared_lock lock(muxQueue);
-         return deqQueue.end();
-      }
-
-      typename std::deque<T>::const_iterator begin() const override
-      {
-         std::shared_lock lock(muxQueue);
-         return deqQueue.begin();
-      }
-
-      typename std::deque<T>::const_iterator end() const override
-      {
-         std::shared_lock lock(muxQueue);
-         return deqQueue.end();
-      }
-
-      public:
       /**
        * @brief Return and maintains item at front of Queue.
        * @return const T&
@@ -218,5 +202,37 @@ namespace netlib::core
       std::deque<T>             deqQueue;
       std::condition_variable   cvBlocking;
       std::mutex                muxBlocking;
+
+      private:
+      /**
+       * NOTE:
+       * These begin()/end() helpers acquire a shared_lock only while the iterator is retrieved.
+       * The lock is released when the function returns, so the returned iterator refers to the
+       * internal deque and is NOT safe against concurrent mutations (push/pop/clear) by other
+       * threads. For thread-safe iteration, use to_deque() to get a snapshot copy.
+       */
+      typename std::deque<T>::iterator begin()
+      {
+         std::shared_lock lock(muxQueue);
+         return deqQueue.begin();
+      }
+
+      typename std::deque<T>::iterator end()
+      {
+         std::shared_lock lock(muxQueue);
+         return deqQueue.end();
+      }
+
+      typename std::deque<T>::const_iterator begin() const
+      {
+         std::shared_lock lock(muxQueue);
+         return deqQueue.begin();
+      }
+
+      typename std::deque<T>::const_iterator end() const
+      {
+         std::shared_lock lock(muxQueue);
+         return deqQueue.end();
+      }
    };
-}    // namespace netlib
+}    // namespace netlib::core

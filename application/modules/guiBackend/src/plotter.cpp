@@ -70,8 +70,8 @@ void Plotter::DrawSelection()
 
 void Plotter::DrawPlot()
 {
-   // Range-based for loop
-   for (const auto &it : m_Q)
+   // iterate a safe copy to avoid iterator invalidation from other threads
+   for (const auto &it : m_Q.to_deque())
    {
       ImGui::Text(it.c_str());
       ImGui::Separator();

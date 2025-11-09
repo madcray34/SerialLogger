@@ -75,11 +75,14 @@ TEST_F(TSQueueTest, IteratorsProvideSnapshot)
    queue.push_back(2);
    queue.push_back(3);
 
-   const std::vector<int> values(queue.begin(), queue.end());
+   // take a thread-safe snapshot and iterate the copy
+   const auto             dq = queue.to_deque();
+   const std::vector<int> values(dq.begin(), dq.end());
    EXPECT_EQ(values, (std::vector<int>{ 1, 2, 3 }));
 
    const TSQueue<int>    &constQueue = queue;
-   const std::vector<int> constValues(constQueue.begin(), constQueue.end());
+   const auto             constDq    = constQueue.to_deque();
+   const std::vector<int> constValues(constDq.begin(), constDq.end());
    EXPECT_EQ(constValues, values);
 }
 
