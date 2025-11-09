@@ -21,6 +21,11 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE
     implot::implot
 )
 
+target_compile_definitions(${EXECUTABLE_NAME} PRIVATE 
+    ENABLE_ALLOC_TRACING
+)
+
+
 if(ENABLE_CLANG_FORMAT)
     add_dependencies(${EXECUTABLE_NAME} run_clang_format)
 endif()

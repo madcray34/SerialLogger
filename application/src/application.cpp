@@ -55,6 +55,7 @@
 #include <iostream>
 #include <atomic>
 
+#ifdef ENABLE_ALLOC_TRACING
 std::atomic<int> allocation_count = 0;
 
 void *operator new(std::size_t size)
@@ -69,6 +70,8 @@ void operator delete(void *ptr) noexcept
 {
    std::free(ptr);
 }
+#endif
+
 
 constexpr auto WINDOW_WIDTH  = std::uint32_t{ 1280 };
 constexpr auto WINDOW_HEIGHT = std::uint32_t{ 720 };
