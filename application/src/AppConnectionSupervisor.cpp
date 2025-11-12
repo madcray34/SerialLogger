@@ -1,19 +1,42 @@
 #include <application/AppConnectionSupervisor.hpp>
 #include <thread>
+#include "AppConnectionSupervisor.hpp"
 
 namespace netlib
 {
+   AppConnectionSupervisor::AppConnectionSupervisor(
+       core::ITSQueue<core::OwnedMessage> &msgIn, core::IEndPointEnumerator &endpoints,
+       core::IConnectionFactory &connFactory, core::IEventLoop &eventLoop,
+       core::ITimerFactory &timer, std::chrono::seconds periodicity, IModel &_model)
+       : core::ConnectionSupervisor(msgIn, endpoints, connFactory, eventLoop, timer, periodicity)
+       , stopMonitoring(false)
+       , m_model(_model)
+   {}
+
+   AppConnectionSupervisor::~AppConnectionSupervisor()
+   {
+      stopMessagePump();
+   }
+
    void AppConnectionSupervisor::startMessagePump()
    {
-      std::thread(
-          [this]()
+      m_monitor = std::jthread(
+          [this](std::stop_token st)
           {
-             while (!stopMonitoring)
+             while (!st.stop_requested())
              {
                 core::ConnectionSupervisor::update(10, true);
              }
-          })
-          .detach();    // Run in the background
+          });    // Run in the background
+   }
+
+
+   void AppConnectionSupervisor::stopMessagePump()
+   {
+      if (m_monitor.joinable())
+      {
+         m_monitor.request_stop();
+      }
    }
 
    bool AppConnectionSupervisor::onClientConnect(std::shared_ptr<core::IConnection> client)

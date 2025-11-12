@@ -1,7 +1,7 @@
 #pragma once
 #include <NetlibCore/Connection/ConnectionSupervisor.hpp>
 #include <model/IModel.hpp>
-#include <atomic>
+#include <thread>
 
 namespace netlib
 {
@@ -12,23 +12,11 @@ namespace netlib
                               core::IEndPointEnumerator          &endpoints,
                               core::IConnectionFactory &connFactory, core::IEventLoop &eventLoop,
                               core::ITimerFactory &timer, std::chrono::seconds periodicity,
-                              IModel &_model)
-          : core::ConnectionSupervisor(msgIn, endpoints, connFactory, eventLoop, timer, periodicity)
-          , stopMonitoring(false)
-          , m_model(_model)
-      {}
+                              IModel &_model);
 
-      ~AppConnectionSupervisor()
-      {
-         stopMessagePump();
-      }
-
+      ~AppConnectionSupervisor() override;
       void startMessagePump();
-
-      void stopMessagePump()
-      {
-         stopMonitoring = true;    // Signal the monitoring thread to stop
-      }
+      void stopMessagePump();
 
       protected:
       bool onClientConnect(std::shared_ptr<core::IConnection> client) override;
@@ -50,7 +38,7 @@ namespace netlib
       void onMessage([[maybe_unused]] netlib::core::OwnedMessage &&_msg) override;
 
       private:
-      std::atomic<bool> stopMonitoring;
-      IModel           &m_model;
+      IModel      &m_model;
+      std::jthread m_monitor;
    };
 }    // namespace netlib
