@@ -1,6 +1,5 @@
 #include <application/AppConnectionSupervisor.hpp>
 #include <thread>
-#include "AppConnectionSupervisor.hpp"
 
 namespace netlib
 {
@@ -9,7 +8,6 @@ namespace netlib
        core::IConnectionFactory &connFactory, core::IEventLoop &eventLoop,
        core::ITimerFactory &timer, std::chrono::seconds periodicity, IModel &_model)
        : core::ConnectionSupervisor(msgIn, endpoints, connFactory, eventLoop, timer, periodicity)
-       , stopMonitoring(false)
        , m_model(_model)
    {}
 
