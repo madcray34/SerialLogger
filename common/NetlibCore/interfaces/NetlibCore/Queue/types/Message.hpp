@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdint>
 #include <iostream>
-#include <bit>
 #include <memory>
 #include <NetlibCore/Connection/IConnection.hpp>
 
