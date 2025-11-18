@@ -10,7 +10,7 @@ namespace netlib
 {
    const std::vector<std::string> &WindowsCOMPortScanner::getAvailableSerialPorts()
    {
-      ports.clear();
+      m_ports.clear();
 
       // Get the device information set for COM ports
       HDEVINFO hDevInfo = SetupDiGetClassDevs(&GUID_DEVINTERFACE_COMPORT, nullptr, nullptr,
@@ -19,7 +19,7 @@ namespace netlib
       if (hDevInfo == INVALID_HANDLE_VALUE)
       {
          std::cerr << "Error getting device information set." << std::endl;
-         return ports;
+         return m_ports;
       }
 
       SP_DEVINFO_DATA devInfoData{};
@@ -49,7 +49,7 @@ namespace netlib
                   if (m_connectedPorts.find(comStr) == m_connectedPorts.end())
                   {
                      m_connectedPorts.insert(comStr);
-                     ports.emplace_back(std::move(comStr));
+                     m_ports.emplace_back(std::move(comStr));
                   }
                }
             }
@@ -58,6 +58,6 @@ namespace netlib
       }
 
       SetupDiDestroyDeviceInfoList(hDevInfo);
-      return ports;
+      return m_ports;
    }
 }    // namespace netlib
