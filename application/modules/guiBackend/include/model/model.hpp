@@ -47,27 +47,27 @@ class Model : public IModel
    }
 
    private:
-   std::mutex m_muxCB;
-
+   
    /**
     * @brief Handling callback to UI
     */
    std::atomic<bool> m_stopReceiving;
-
+   
    /**
     * @brief Handling saving Thread
     */
    std::atomic<bool> m_stopSaving;
    std::atomic<bool> m_savingThreadRunning;    // Track if the thread is running
-
+   
    /**
     * @brief Queues for async operations:
     * m_Qf: Thread Safe Double ended queue for handling callback to UI
     * m_Qs: Thread Safe Double ended queue for handling saving to file
     */
+   std::mutex m_muxCB;
    netlib::core::ITSQueue<std::string> &m_Qf;
    netlib::core::ITSQueue<std::string> &m_Qs;
-
+   
    /**
     * @brief Thread for saving to the file
     */

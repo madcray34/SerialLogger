@@ -34,7 +34,7 @@ namespace netlib::core
 
       // Move constructor
       OwnedMessage(std::shared_ptr<IConnection> &&otherRemote) noexcept
-          : m_remote(std::move(otherRemote))
+          : m_remote(std::move(otherRemote)), m_msg()
       {}
    };
 }    // namespace netlib::core

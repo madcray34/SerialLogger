@@ -10,6 +10,9 @@ namespace netlib
    {
       public:
       WindowsCOMPortScanner()
+         : ports()
+         , portName{}
+         , m_connectedPorts()
       {
          ports.reserve(netlib::core::c_maxPorts);
          m_connectedPorts.reserve(netlib::core::c_maxPorts);

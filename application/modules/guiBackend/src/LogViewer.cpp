@@ -24,7 +24,6 @@ void LogViewer::Draw(std::string_view label)
    constexpr static auto window_flags = ImGuiWindowFlags_None;
 
    constexpr static auto windowSize = ImVec2(920.0F, 720.0F);
-   constexpr static auto windowPos  = ImVec2(0.0F, 0.0F);
 
    /**
     * @brief Construct a new Im Gui:: Set Next Window Pos and Size objects to properly put into
@@ -64,7 +63,7 @@ void LogViewer::DrawSelection()
 {
    // Empty function for now it will be usefull in future
    static constexpr auto temporary1 = "WILL BE FILLED IN THE FUTURE WITH FILTERING OPTIONS ....";
-   ImGui::Text(temporary1);
+   ImGui::TextUnformatted(temporary1);
 }
 
 void LogViewer::DrawPlot()
@@ -72,7 +71,7 @@ void LogViewer::DrawPlot()
    // iterate a safe copy to avoid iterator invalidation from other threads
    for (const auto &it : m_Q.to_deque())
    {
-      ImGui::Text(it.c_str());
+      ImGui::TextUnformatted(it.c_str());
       ImGui::Separator();
    }
 }

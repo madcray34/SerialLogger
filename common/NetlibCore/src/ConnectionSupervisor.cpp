@@ -16,6 +16,8 @@ namespace netlib::core
        , m_asyncTimerFactory(timer)
        , m_asyncTimer(m_asyncTimerFactory.createTimer(periodicity))
        , m_periodicity(periodicity)
+       , m_threadContext()
+       , m_deqConnections()
    {}
 
    ConnectionSupervisor::~ConnectionSupervisor()
@@ -150,12 +152,12 @@ namespace netlib::core
       }
    }
 
-   bool ConnectionSupervisor::onClientConnect(std::shared_ptr<IConnection> client)
+   bool ConnectionSupervisor::onClientConnect([[maybe_unused]] std::shared_ptr<IConnection> client)
    {
       return false;
    }
 
-   void ConnectionSupervisor::onClientDisconnect(std::shared_ptr<IConnection> client)
+   void ConnectionSupervisor::onClientDisconnect([[maybe_unused]] std::shared_ptr<IConnection> client)
    {}
 
    void ConnectionSupervisor::onMessage([[maybe_unused]] OwnedMessage &&_msg)

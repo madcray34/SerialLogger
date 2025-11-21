@@ -9,8 +9,10 @@ Model::Model(netlib::core::ITSQueue<std::string> &_qf, netlib::core::ITSQueue<st
     : m_stopReceiving(false)
     , m_stopSaving(true)
     , m_savingThreadRunning(false)
+    , m_muxCB()
     , m_Qf(_qf)
     , m_Qs(_qs)
+    , m_savingThread()
     , m_savingPath(saveFileName)
 {}
 

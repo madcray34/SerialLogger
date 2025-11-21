@@ -1,7 +1,7 @@
 #pragma once
 #include <NetlibCore/Queue/ITSQueue.hpp>
-
 #include <condition_variable>
+#include <mutex>
 #include <shared_mutex>
 
 namespace netlib::core
@@ -14,7 +14,7 @@ namespace netlib::core
    class TSQueue : public ITSQueue<T>
    {
       public:
-      TSQueue()                   = default;
+      TSQueue() : muxQueue(), deqQueue(), cvBlocking(), muxBlocking() {}
       TSQueue(const TSQueue<T> &) = delete;
       virtual ~TSQueue() override
       {

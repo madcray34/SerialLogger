@@ -8,6 +8,7 @@ namespace netlib
        core::IConnectionFactory &connFactory, core::IEventLoop &eventLoop,
        core::ITimerFactory &timer, std::chrono::seconds periodicity, IModel &_model)
        : core::ConnectionSupervisor(msgIn, endpoints, connFactory, eventLoop, timer, periodicity)
+       , m_monitor()
        , m_model(_model)
    {}
 

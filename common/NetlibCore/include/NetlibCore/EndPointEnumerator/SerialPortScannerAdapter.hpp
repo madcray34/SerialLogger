@@ -7,7 +7,7 @@ namespace netlib::core
    class SerialPortScannerAdapter : public IEndPointEnumerator
    {
       public:
-      explicit SerialPortScannerAdapter(ISerialPortScanner &scanner) : m_scanner(scanner)
+      explicit SerialPortScannerAdapter(ISerialPortScanner &scanner) : m_scanner(scanner), _cache()
       {}
 
       const std::vector<CommEndPoint> &getAvailableEndPoints() override

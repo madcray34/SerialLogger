@@ -38,7 +38,7 @@ namespace netlib
       void onMessage([[maybe_unused]] netlib::core::OwnedMessage &&_msg) override;
 
       private:
-      IModel      &m_model;
       std::jthread m_monitor;
+      IModel      &m_model;
    };
 }    // namespace netlib

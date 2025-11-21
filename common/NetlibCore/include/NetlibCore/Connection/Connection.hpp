@@ -8,7 +8,7 @@
 
 namespace netlib::core
 {
-   class Connection final : public std::enable_shared_from_this<Connection>, public IConnection
+   class Connection final : public IConnection, private std::enable_shared_from_this<Connection>
    {
       public:
       /**
