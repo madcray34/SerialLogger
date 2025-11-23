@@ -148,3 +148,4 @@ docs.rar
 pictureDocs
 *.qea
 external/vcpkg/
+design/SerialPort_UML_design.eapx
