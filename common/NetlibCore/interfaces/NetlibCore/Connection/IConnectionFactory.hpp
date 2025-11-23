@@ -17,7 +17,7 @@ namespace netlib::core
        * @brief Create a new connection object
        *
        * @param asioContext Reference to asio::io_context
-       * @param name Port name
+       * @param name Connection name
        * @param qIn Reference to incoming message queue
        * @return std::shared_ptr<IConnection>
        */

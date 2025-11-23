@@ -31,18 +31,10 @@ namespace netlib::core
 
       private:
       /**
-       * @brief ASYNC - Prime context ready to read a message body. If this function is called, a
-       * header has already been read, and that header request we read a body, The space for that
-       * body has already been allocated in the temporary message object, so just wait for the bytes
-       * to arrive...
+       * @brief Starts the asynchronous receive loop, forwarding each received message to the
+       * inbound queue.
        */
       void _readBody();
-
-      /**
-       * @brief Once a full message is received, add it to the incoming queue, converting it to an
-       * "owned message", by initialising with a shared pointer from this connection object.
-       */
-      void AddToIncomingMessageQueue(const std::size_t &len);
 
       protected:
       const std::shared_ptr<ITextStream> m_textStream;
@@ -57,4 +49,4 @@ namespace netlib::core
 
       uint32_t id = 0;
    };
-}    // namespace netlib
+}    // namespace netlib::core
