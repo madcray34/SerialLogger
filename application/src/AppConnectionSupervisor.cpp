@@ -40,13 +40,13 @@ namespace netlib
 
    bool AppConnectionSupervisor::onClientConnect(std::shared_ptr<core::IConnection> client)
    {
-      std::cout << "Connected client [" << client->getPortName() << "]" << std::endl;
+      std::cout << "Connected client [" << client->getConnectionName() << "]" << std::endl;
       return true;
    }
 
    void AppConnectionSupervisor::onClientDisconnect(std::shared_ptr<core::IConnection> client)
    {
-      std::cout << "Removing client [" << client->getPortName() << "]" << std::endl;
+      std::cout << "Removing client [" << client->getConnectionName() << "]" << std::endl;
    }
 
    void AppConnectionSupervisor::onMessage([[maybe_unused]] netlib::core::OwnedMessage &&_msg)

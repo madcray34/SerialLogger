@@ -42,6 +42,6 @@ namespace netlib::core
        *
        * @return std::string
        */
-      virtual std::string_view getPortName() const noexcept = 0;
+      virtual std::string_view getConnectionName() const noexcept = 0;
    };
 }    // namespace netlib

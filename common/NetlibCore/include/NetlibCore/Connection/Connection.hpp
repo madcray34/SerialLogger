@@ -27,7 +27,7 @@ namespace netlib::core
 
       bool isConnected() const override;
 
-      std::string_view getPortName() const noexcept override;
+      std::string_view getConnectionName() const noexcept override;
 
       private:
       /**

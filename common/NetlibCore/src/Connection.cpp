@@ -38,7 +38,7 @@ namespace netlib::core
    }
 
 
-   std::string_view Connection::getPortName() const noexcept
+   std::string_view Connection::getConnectionName() const noexcept
    {
       return m_portName;
    }
