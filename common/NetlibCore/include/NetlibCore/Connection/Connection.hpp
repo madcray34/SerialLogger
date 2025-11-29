@@ -8,7 +8,7 @@
 
 namespace netlib::core
 {
-   class Connection final : public IConnection, private std::enable_shared_from_this<Connection>
+   class Connection final : public IConnection, public std::enable_shared_from_this<Connection>
    {
       public:
       /**
@@ -18,6 +18,7 @@ namespace netlib::core
                  ITSQueue<OwnedMessage> &qIn);
 
       ~Connection() override = default;
+
 
       uint32_t getID() const noexcept override;
 
