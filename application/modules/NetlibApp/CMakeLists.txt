@@ -12,6 +12,7 @@ target_include_directories(${LIBRARY_NETAPP_NAME} PUBLIC
 
 target_link_libraries(${LIBRARY_NETAPP_NAME} PUBLIC 
     ${LIBRARY_NETCORE_NAME}
+    PointerSafety
     Boost::system
     Boost::asio)
 

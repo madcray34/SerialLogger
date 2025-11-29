@@ -71,32 +71,31 @@ namespace netlib
 
    AsioSerialTextStream::AsioSerialTextStream(AsioEventLoop &eventLoop, std::string portname,
                                               unsigned int baud /*= 9600*/)
-       : m_pImpl(std::make_unique<Impl>(eventLoop, portname, baud))
+       : m_pImpl(RuntimeCheckedPtr<Impl>(new Impl(eventLoop, portname, baud)))
    {}
 
    AsioSerialTextStream::AsioSerialTextStream(AsioEventLoop &eventLoop, std::string portname,
                                               SerialOptions &options)
-       : m_pImpl(std::make_unique<Impl>(eventLoop, portname, options))
+       : m_pImpl(RuntimeCheckedPtr<Impl>(new Impl(eventLoop, portname, options)))
    {}
-
+ 
    AsioSerialTextStream::~AsioSerialTextStream() = default;
 
    void AsioSerialTextStream::open(std::function<void(const std::error_code &)> handler)
    {
-      // Serial port is opened in the constructor of Impl
       boost::asio::post(m_pImpl->m_ioContext, [handler]() { handler(std::error_code()); });
    }
-
+   
    bool AsioSerialTextStream::isOpen() const noexcept
-   {
+   {     
       return m_pImpl->m_serialPort.is_open();
    }
 
-   void AsioSerialTextStream::close() noexcept
+   void AsioSerialTextStream::close() noexcept 
    {
       boost::asio::post(m_pImpl->m_ioContext, [this]() { m_pImpl->m_serialPort.close(); });
    }
-
+ 
    void AsioSerialTextStream::asyncReadLine(
        std::function<void(const std::error_code &, std::string)> handler)
    {
@@ -132,7 +131,7 @@ namespace netlib
 
    void AsioSerialTextStream::asyncWriteLine(
        [[maybe_unused]] std::string_view                         line,
-       std::function<void(const std::error_code &, std::size_t)> handler) {
+       [[maybe_unused]] std::function<void(const std::error_code &, std::size_t)> handler) {
       // Empty implementation for the moment
       // TODO function body
    };

@@ -1,6 +1,7 @@
 #pragma once
 #include <NetlibCore/Transport/ITextStream.hpp>
 #include <NetlibApp/Event/Asio/AsioEventLoop.hpp>
+#include <PointerSafety/RuntimeCheckedPtr.hpp>
 #include <functional>
 
 namespace netlib
@@ -37,7 +38,7 @@ namespace netlib
 
       private:
       struct Impl;                      // Forward declaration of the implementation struct
-      std::unique_ptr<Impl> m_pImpl;    // Pointer to implementation idiom to hide details into the
+      RuntimeCheckedPtr<Impl> m_pImpl;  // Pointer to implementation idiom to hide details into the
                                         // cpp file
    };
 }    // namespace netlib
