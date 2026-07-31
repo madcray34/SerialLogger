@@ -148,3 +148,10 @@ docs.rar
 pictureDocs
 *.qea
 external/vcpkg/
+
+# Zig build artifacts and caches
+zig-cache/
+.zig-cache/
+zig-out/
+zig-pkg/
+external/*.tar.gz

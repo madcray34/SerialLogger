@@ -1,0 +1,16 @@
+.{
+    .name = .serialLogger,
+    .version = "0.16.0",
+    .dependencies = .{
+        .boost = .{
+            .url = "external/boost_1_86_0.tar.gz",
+            .hash = "N-V-__8AAEFVEy51yrU9bEt2PZnRSgALyKCpORe4MaMyRJrg",
+        },
+        .googletest = .{
+            .url = "external/googletest-1.15.2.tar.gz",
+            .hash = "N-V-__8AAMpEPQABCTtXlOz1pbU4h2IsddYzrysMNAKiZs5F",
+        },
+    },
+    .paths = .{""},
+    .fingerprint = 0x75b9fc99d722ca05,
+}

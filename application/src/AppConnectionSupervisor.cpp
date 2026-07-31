@@ -27,8 +27,12 @@ namespace netlib
       std::cout << "Removing client [" << client->getPortName() << "]" << std::endl;
    }
 
-   void AppConnectionSupervisor::onMessage([[maybe_unused]] netlib::core::OwnedMessage &&_msg)
+   void AppConnectionSupervisor::onMessage(netlib::core::OwnedMessage &&_msg)
    {
-      m_model.pushMessage(std::move(_msg));
+      std::cout << _msg.m_msg;
+      if (!_msg.m_msg.empty() && _msg.m_msg.back() != '\n')
+      {
+         std::cout << '\n';
+      }
    }
 }    // namespace netlib

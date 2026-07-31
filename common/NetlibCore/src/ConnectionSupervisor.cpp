@@ -50,6 +50,12 @@ namespace netlib::core
 
    void ConnectionSupervisor::stop()
    {
+      bool expected = false;
+      if (!m_stopped.compare_exchange_strong(expected, true))
+      {
+         return;
+      }
+
       m_eventLoop.stop();
 
       if (m_threadContext.joinable())

@@ -1,6 +1,6 @@
 #pragma once
+
 #include <NetlibCore/Connection/ConnectionSupervisor.hpp>
-#include <model/IModel.hpp>
 #include <atomic>
 
 namespace netlib
@@ -11,11 +11,9 @@ namespace netlib
       AppConnectionSupervisor(core::ITSQueue<core::OwnedMessage> &msgIn,
                               core::IEndPointEnumerator          &endpoints,
                               core::IConnectionFactory &connFactory, core::IEventLoop &eventLoop,
-                              core::ITimerFactory &timer, std::chrono::seconds periodicity,
-                              IModel &_model)
+                              core::ITimerFactory &timer, std::chrono::seconds periodicity)
           : core::ConnectionSupervisor(msgIn, endpoints, connFactory, eventLoop, timer, periodicity)
           , stopMonitoring(false)
-          , m_model(_model)
       {}
 
       ~AppConnectionSupervisor()
@@ -51,6 +49,5 @@ namespace netlib
 
       private:
       std::atomic<bool> stopMonitoring;
-      IModel           &m_model;
    };
 }    // namespace netlib

@@ -11,6 +11,7 @@
 #include <thread>
 #include <deque>
 #include <chrono>
+#include <atomic>
 
 
 namespace netlib::core
@@ -49,5 +50,7 @@ namespace netlib::core
 
       // Clients will be identified in the "wider system" via an ID
       uint32_t nIDCounter = 21000;    // Start at an arbitrary value
+
+      std::atomic<bool> m_stopped{false};
    };
 }    // namespace netlib::core

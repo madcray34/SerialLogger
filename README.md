@@ -1,90 +1,72 @@
 # SerialLogger
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 [![C++](https://img.shields.io/badge/C%2B%2B-20-blue)]()
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20MacOS-lightgrey)]()
+[![Zig](https://img.shields.io/badge/build-Zig-orange)]()
 
 ## Overview
-**SerialLogger** is a high-performance, cross-platform serial communication logging tool written in modern C++ (C++20). It is designed to auto detect when a serial port is connected and efficiently log (and analyze in future release) serial data streams, making it an ideal solution for embedded systems debugging, hardware communication analysis, and industrial automation.
+**SerialLogger** is a serial communication logging tool written in modern C++ (C++20). It auto-detects serial ports and logs incoming data to the console. The current focus is a minimal Linux console application; a graphical interface and full Windows port are future tasks.
 
 ## Features
-- **Cross-Platform Support**: Runs on Windows. Linux, and macOS are work in progres...
-- **C++20**: Leveraging the latest C++ features for better performance and maintainability.
-- **Modular Architecture**: Easily extendable and customizable.
-- **ImGui-based GUI**: User-friendly graphical interface for data visualization.
-- **Boost Asio for Networking**: Provides networking capabilities for remote logging.
-- **Lightweight & Fast**: Optimized for high-performance logging.
+- **C++20**: Modern C++ core.
+- **Console-based UI**: No GUI dependencies; data is printed to `stdout`.
+- **Boost.Asio**: Async serial I/O.
+- **Modular Architecture**: Core/application split with clean interfaces.
 
 ## Folder Structure
 ```
 SerialLogger/
-│-- CMakeLists.txt          # Project build configuration
-│-- prepare.bat             # Preparation script
-│-- vcpkg.json              # Dependencies configuration
+│-- build.zig              # Zig build script
+│-- build.zig.zon          # Zig package manifest
+│-- external/              # Cached dependency tarballs
 │
-├── app/                    # Application source code
-├── cmake/                  # CMake utilities and scripts
-├── external/               # External dependencies
-├── modules/                # Core modules
-├── tools/                  # Utility scripts and tools
+├── application/           # Application source code
+│   ├── include/           # App-level headers
+│   ├── src/               # Console main and supervisor
+│   └── modules/NetlibApp/ # Boost.Asio-based serial implementation
+├── common/NetlibCore/     # Core interfaces and shared code
+└── tests/                 # Unit tests
 ```
 
 ## Build Instructions
-### Prerequisites
-Ensure you have the following installed:
-- **CMake (>= 3.30)**
-- **C++20 Compiler** (GCC, Clang, or MSVC)
-  
-The following will be automatically added to the ./external folder:
-- **Vcpkg** (for dependency management)
-- **Boost, fmt, GLFW, ImGui, ImPlot, OpenGL** (handled via vcpkg)
 
-### Build Steps
-#### Linux/macOS
+### Prerequisites
+- **Zig** (tested with 0.16.0)
+- **C++20 Compiler** (Zig bundles `clang`/`libc++`, but GCC/Clang also work)
+
+Dependencies (Boost and GoogleTest) are fetched automatically by the Zig package manager.
+
+### Linux
 ```sh
 git clone https://github.com/madcray34/SerialLogger.git
 cd SerialLogger
-mkdir build && cd build
-cmake .. -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
-make -j$(nproc)
+zig build
+zig build test
+./zig-out/bin/SerialLogger
 ```
 
-#### Windows
-```powershell
-git clone https://github.com/madcray34/SerialLogger.git
-cd SerialLogger
-mkdir build; cd build
-cmake ..
-cmake --build . --config Release
+If `zig build` fails to download dependencies over HTTPS (some environments have TLS issues with the Zig toolchain), pre-download them with curl:
+```sh
+./external/fetch-deps.sh
+zig build
 ```
 
 ## Usage
-After building, you can run SerialLogger, depending on you're local CMake configuration.
-For instance building it with MSVC:
 ```sh
-cd build
-./app/Release/SerialLogger.exe
+./zig-out/bin/SerialLogger
 ```
-
-## Configuration Options
-SerialLogger provides multiple configuration options in `CMakeLists.txt`:
-- `ENABLE_WARNINGS` (ON/OFF) - Enables compiler warnings.
-- `ENABLE_WARNINGS_AS_ERRORS` (ON/OFF) - Treats warnings as errors.
-- `ENABLE_CLANG_FORMAT` (ON/OFF) - Enables Clang format enforcement.
-- `ENABLE_CLANG_TIDY` (ON/OFF) - Enables Clang static analysis.
-- `ENABLE_LTO` (ON/OFF) - Enables Link Time Optimization for better performance.
+The program scans for `/dev/ttyUSB*` and `/dev/ttyACM*` devices every 5 seconds and prints any data received from open ports to the console. Press `Ctrl-C` to stop.
 
 ## Dependencies
-SerialLogger uses several external libraries:
-- **Boost** (circular_buffer, asio, system)
-- **fmt** (formatting library)
-- **GLFW** (window management)
-- **ImGui** (GUI framework)
-- **ImPlot** (plotting library for ImGui)
-- **OpenGL** (rendering backend)
+- **Boost.Asio** (serial I/O)
+- **GoogleTest** (unit tests)
 
-All dependencies are managed via [vcpkg](https://vcpkg.io/).
+The following dependencies were removed to keep the project minimal:
+- fmt, GLFW, ImGui, ImPlot, OpenGL
+
+## Notes
+- The real Linux serial-port enumerator is a stub for now; the architecture is ready for a proper implementation in the next step.
+- The old Windows `SetupAPI` COM-port scanner is preserved for a future Windows port.
 
 ## Contribution
 Contributions are welcome! Please follow these steps:
@@ -98,8 +80,7 @@ Contributions are welcome! Please follow these steps:
 This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
-For issues, feature requests, or general inquiries, please open an [issue](https://github.com/madcray34/SerialLogger/issues) or reach out via email.
+For issues, feature requests, or general inquiries, please open an [issue](https://github.com/madcray34/serialLogger/issues).
 
 ---
 *Made with ❤️ by madcray34*
-
