@@ -69,7 +69,7 @@ namespace netlib::core
              if (!ec)
              {
                 // Call the function to get available communication points
-                const auto &eps = m_endpoints.getAvailableEndPoints();
+                const auto eps = m_endpoints.getAvailableEndPoints();
                 if (!eps.empty())
                 {
                    for (const auto &ep : eps)

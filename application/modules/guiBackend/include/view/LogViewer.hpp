@@ -1,5 +1,5 @@
 #pragma once
-#include <model/IModel.hpp>
+#include <model/Imodel.hpp>
 #include <string_view>
 #include <cstdint>
 #include <mutex>

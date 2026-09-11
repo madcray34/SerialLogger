@@ -10,7 +10,8 @@ namespace netlib::core
       public:
       virtual ~ISerialPortScanner() = default;
 
-      // The interface method that perform serial-port scanning
-      virtual const std::vector<std::string> &getAvailableSerialPorts() = 0;
+      // The interface method that perform serial-port scanning.
+      // Returns a snapshot by value so concurrent callers cannot race on shared state.
+      virtual std::vector<std::string> getAvailableSerialPorts() = 0;
    };
 }    // namespace netlib

@@ -14,7 +14,7 @@ namespace netlib::core
    class IEndPointEnumerator
    {
       public:
-      virtual ~IEndPointEnumerator()                                   = default;
-      virtual const std::vector<CommEndPoint> &getAvailableEndPoints() = 0;
+      virtual ~IEndPointEnumerator()                         = default;
+      virtual std::vector<CommEndPoint> getAvailableEndPoints() = 0;
    };
 }    // namespace netlib

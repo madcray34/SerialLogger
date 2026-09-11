@@ -1,6 +1,6 @@
 #pragma once
 #include <NetlibCore/Connection/ConnectionSupervisor.hpp>
-#include <model/IModel.hpp>
+#include <model/Imodel.hpp>
 #include <atomic>
 
 namespace netlib

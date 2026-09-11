@@ -2,6 +2,7 @@
 #include <NetlibCore/Queue/ITSQueue.hpp>
 
 #include <condition_variable>
+#include <mutex>
 #include <shared_mutex>
 
 namespace netlib::core

@@ -11,15 +11,13 @@ namespace netlib
       public:
       WindowsCOMPortScanner()
       {
-         ports.reserve(netlib::core::c_maxPorts);
          m_connectedPorts.reserve(netlib::core::c_maxPorts);
       };
       ~WindowsCOMPortScanner() override = default;
 
-      const std::vector<std::string> &getAvailableSerialPorts() override;
+      std::vector<std::string> getAvailableSerialPorts() override;
 
       private:
-      std::vector<std::string>        ports;
       std::array<char, 256>           portName{};
       std::unordered_set<std::string> m_connectedPorts;
    };
