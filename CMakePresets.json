@@ -25,7 +25,8 @@
       "name": "windows-release",
       "displayName": "Windows Release",
       "inherits": "base",
-      "generator": "Ninja",
+      "generator": "Visual Studio 18 2026",
+      "architecture": "x64",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -40,7 +41,8 @@
     },
     {
       "name": "windows-release",
-      "configurePreset": "windows-release"
+      "configurePreset": "windows-release",
+      "configuration": "Release"
     }
   ],
   "testPresets": [
@@ -54,6 +56,7 @@
     {
       "name": "windows-release",
       "configurePreset": "windows-release",
+      "configuration": "Release",
       "output": {
         "outputOnFailure": true
       }
