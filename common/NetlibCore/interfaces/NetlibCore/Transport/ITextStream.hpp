@@ -13,7 +13,8 @@ namespace netlib::core
 
       virtual void open(std::function<void(const std::error_code &)> handler) = 0;
       virtual bool isOpen() const noexcept                                    = 0;
-      virtual void close() noexcept                                           = 0;
+      // Must be called on the transport executor thread. The close completes synchronously.
+      virtual void close() noexcept = 0;
 
       // Asynchronous read a line (until newline character)
       virtual void asyncReadLine(
@@ -24,4 +25,4 @@ namespace netlib::core
           std::string_view                                          line,
           std::function<void(const std::error_code &, std::size_t)> handler) = 0;
    };
-}    // namespace netlib
+}    // namespace netlib::core

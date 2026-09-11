@@ -3,7 +3,6 @@
 
 #include <condition_variable>
 #include <mutex>
-#include <shared_mutex>
 
 namespace netlib::core
 {
@@ -27,8 +26,18 @@ namespace netlib::core
        */
       std::deque<T> to_deque() const override
       {
-         std::shared_lock lock(muxQueue);
+         std::unique_lock lock(muxQueue);
          return deqQueue;
+      }
+
+      /**
+       * @brief Runs @p fn with read access to the underlying deque while holding the lock.
+       * Avoids copying the whole container, unlike to_deque().
+       */
+      void withLock(const std::function<void(const std::deque<T> &)> &fn) const override
+      {
+         std::unique_lock lock(muxQueue);
+         fn(deqQueue);
       }
 
       /**
@@ -37,7 +46,7 @@ namespace netlib::core
        */
       const T &front() override
       {
-         std::shared_lock lock(muxQueue);
+         std::unique_lock lock(muxQueue);
          return deqQueue.front();
       }
 
@@ -47,7 +56,7 @@ namespace netlib::core
        */
       const T &back() override
       {
-         std::shared_lock lock(muxQueue);
+         std::unique_lock lock(muxQueue);
          return deqQueue.back();
       }
 
@@ -57,7 +66,7 @@ namespace netlib::core
        */
       T pop_front() override
       {
-         std::scoped_lock lock(muxQueue);
+         std::unique_lock lock(muxQueue);
          T                result = std::move(deqQueue.front());
          deqQueue.pop_front();
          return result;
@@ -69,7 +78,7 @@ namespace netlib::core
        */
       T pop_back() override
       {
-         std::scoped_lock lock(muxQueue);
+         std::unique_lock lock(muxQueue);
          T                result = std::move(deqQueue.back());
          deqQueue.pop_back();
          return result;
@@ -81,14 +90,10 @@ namespace netlib::core
        */
       void push_back(const T &item) override
       {
-         std::scoped_lock lock(muxQueue);
-         bool             wasEmpty = deqQueue.empty();
+         std::unique_lock lock(muxQueue);
          deqQueue.emplace_back(item);
-         if (wasEmpty)
-         {
-            std::unique_lock<std::mutex> ul(muxBlocking);
-            cvBlocking.notify_one();
-         }
+         lock.unlock();
+         cvBlocking.notify_one();
       }
 
       /**
@@ -97,14 +102,10 @@ namespace netlib::core
        */
       void push_back(T &&item) override
       {
-         std::scoped_lock lock(muxQueue);
-         bool             wasEmpty = deqQueue.empty();
+         std::unique_lock lock(muxQueue);
          deqQueue.emplace_back(std::move(item));
-         if (wasEmpty)
-         {
-            std::unique_lock<std::mutex> ul(muxBlocking);
-            cvBlocking.notify_one();
-         }
+         lock.unlock();
+         cvBlocking.notify_one();
       }
 
       /**
@@ -113,14 +114,10 @@ namespace netlib::core
        */
       void push_front(const T &item) override
       {
-         std::scoped_lock lock(muxQueue);
-         bool             wasEmpty = deqQueue.empty();
+         std::unique_lock lock(muxQueue);
          deqQueue.emplace_front(item);
-         if (wasEmpty)
-         {
-            std::unique_lock<std::mutex> ul(muxBlocking);
-            cvBlocking.notify_one();
-         }
+         lock.unlock();
+         cvBlocking.notify_one();
       }
 
       /**
@@ -129,15 +126,10 @@ namespace netlib::core
        */
       void push_front(T &&item) override
       {
-         std::scoped_lock lock(muxQueue);
-         bool             wasEmpty = deqQueue.empty();
+         std::unique_lock lock(muxQueue);
          deqQueue.emplace_front(std::move(item));
-
-         if (wasEmpty)
-         {
-            std::unique_lock<std::mutex> ul(muxBlocking);
-            cvBlocking.notify_one();
-         }
+         lock.unlock();
+         cvBlocking.notify_one();
       }
 
       /**
@@ -147,7 +139,7 @@ namespace netlib::core
        */
       bool empty() override
       {
-         std::scoped_lock lock(muxQueue);
+         std::unique_lock lock(muxQueue);
          return deqQueue.empty();
       }
 
@@ -157,7 +149,7 @@ namespace netlib::core
        */
       size_t count() override
       {
-         std::scoped_lock lock(muxQueue);
+         std::unique_lock lock(muxQueue);
          return deqQueue.size();
       }
 
@@ -166,9 +158,9 @@ namespace netlib::core
        */
       void clear() override
       {
-         std::scoped_lock lock(muxQueue);
+         std::unique_lock lock(muxQueue);
          deqQueue.clear();
-         std::unique_lock<std::mutex> ul(muxBlocking);
+         lock.unlock();
          cvBlocking.notify_one();
       }
 
@@ -177,62 +169,63 @@ namespace netlib::core
        */
       void wait() override
       {
-         while (empty())
-         {
-            std::unique_lock<std::mutex> ul(muxBlocking);
-            cvBlocking.wait(ul);
-         }
+         std::unique_lock lock(muxQueue);
+         cvBlocking.wait(lock, [this]() { return !deqQueue.empty(); });
       }
 
       void wait(const bool &exit) override
       {
-         std::unique_lock<std::mutex> ul(muxBlocking);
+         std::unique_lock lock(muxQueue);
 
          // Wait until either exit is true, or the queue is no longer empty
-         cvBlocking.wait(ul, [&]() { return exit || !empty(); });
+         cvBlocking.wait(lock, [&]() { return exit || !deqQueue.empty(); });
       }
 
       bool wait_for(std::chrono::milliseconds timeout) override
       {
-         std::unique_lock<std::mutex> ul(muxBlocking);
-         return cvBlocking.wait_for(ul, timeout, [this]() { return !this->empty(); });
+         std::unique_lock lock(muxQueue);
+         return cvBlocking.wait_for(lock, timeout, [this]() { return !deqQueue.empty(); });
       }
 
       protected:
-      mutable std::shared_mutex muxQueue;
-      std::deque<T>             deqQueue;
-      std::condition_variable   cvBlocking;
-      std::mutex                muxBlocking;
+      // A single mutex guards both the deque and the condition variable: using separate
+      // locks for data access and for wait/notify previously caused a lock-order inversion
+      // (push_back took muxQueue then muxBlocking, while wait_for took muxBlocking then
+      // muxQueue via empty()), which could deadlock the queue under sustained concurrent
+      // producer/consumer traffic.
+      mutable std::mutex     muxQueue;
+      std::deque<T>          deqQueue;
+      std::condition_variable cvBlocking;
 
       private:
       /**
        * NOTE:
-       * These begin()/end() helpers acquire a shared_lock only while the iterator is retrieved.
+       * These begin()/end() helpers acquire the lock only while the iterator is retrieved.
        * The lock is released when the function returns, so the returned iterator refers to the
        * internal deque and is NOT safe against concurrent mutations (push/pop/clear) by other
        * threads. For thread-safe iteration, use to_deque() to get a snapshot copy.
        */
       typename std::deque<T>::iterator begin()
       {
-         std::shared_lock lock(muxQueue);
+         std::unique_lock lock(muxQueue);
          return deqQueue.begin();
       }
 
       typename std::deque<T>::iterator end()
       {
-         std::shared_lock lock(muxQueue);
+         std::unique_lock lock(muxQueue);
          return deqQueue.end();
       }
 
       typename std::deque<T>::const_iterator begin() const
       {
-         std::shared_lock lock(muxQueue);
+         std::unique_lock lock(muxQueue);
          return deqQueue.begin();
       }
 
       typename std::deque<T>::const_iterator end() const
       {
-         std::shared_lock lock(muxQueue);
+         std::unique_lock lock(muxQueue);
          return deqQueue.end();
       }
    };

@@ -18,6 +18,17 @@ namespace netlib
       return std::error_code(ec.value(), std::system_category());
    }
 
+   static std::string serialDeviceName(const std::string &portName)
+   {
+#ifdef _WIN32
+      if (portName.starts_with("COM"))
+      {
+         return R"(\\.\)" + portName;
+      }
+#endif
+      return portName;
+   }
+
    struct AsioSerialTextStream::Impl
    {
       AsioEventLoop           &m_eventLoop;
@@ -31,8 +42,9 @@ namespace netlib
       Impl(AsioEventLoop &eventLoop, const std::string &portname, unsigned int baud)
           : m_eventLoop(eventLoop)
           , m_ioContext(eventLoop.getContext())
-          , m_serialPort(m_ioContext, portname)    // This constructor creates and opens a serial
-                                                   // port for the specified device name.
+          , m_serialPort(m_ioContext, serialDeviceName(portname))
+      // This constructor creates and opens a serial
+      // port for the specified device name.
       {
          m_serialPort.set_option(boost::asio::serial_port_base::baud_rate(baud));
          m_serialPort.set_option(boost::asio::serial_port_base::character_size(8));
@@ -45,11 +57,12 @@ namespace netlib
       };
 
 
-      Impl(AsioEventLoop &eventLoop, const std::string &portname, SerialOptions &options)
+      Impl(AsioEventLoop &eventLoop, const std::string &portname, const SerialOptions &options)
           : m_eventLoop(eventLoop)
           , m_ioContext(eventLoop.getContext())
-          , m_serialPort(m_ioContext, portname)    // This constructor creates and opens a serial
-                                                   // port for the specified device name.
+          , m_serialPort(m_ioContext, serialDeviceName(portname))
+      // This constructor creates and opens a serial
+      // port for the specified device name.
       {
          // For the next options we need to map from our SerialOptions to boost options
          // The easiest way is to use the same type values (in SerialOptions) as boost defines
@@ -75,7 +88,7 @@ namespace netlib
    {}
 
    AsioSerialTextStream::AsioSerialTextStream(AsioEventLoop &eventLoop, std::string portname,
-                                              SerialOptions &options)
+                                              const SerialOptions &options)
        : m_pImpl(std::make_unique<Impl>(eventLoop, portname, options))
    {}
 
@@ -94,7 +107,9 @@ namespace netlib
 
    void AsioSerialTextStream::close() noexcept
    {
-      boost::asio::post(m_pImpl->m_ioContext, [this]() { m_pImpl->m_serialPort.close(); });
+      boost::system::error_code ignored;
+      m_pImpl->m_serialPort.cancel(ignored);
+      m_pImpl->m_serialPort.close(ignored);
    }
 
    void AsioSerialTextStream::asyncReadLine(

@@ -14,9 +14,10 @@ namespace netlib
    {
       public:
       AsioSerialTextStream(AsioEventLoop &eventLoop, std::string portname,
-                           unsigned int baud = 9600);
+                           unsigned int baud = 115200);
 
-      AsioSerialTextStream(AsioEventLoop &eventLoop, std::string portname, SerialOptions &options);
+      AsioSerialTextStream(AsioEventLoop &eventLoop, std::string portname,
+                           const SerialOptions &options);
 
       ~AsioSerialTextStream() override;
 

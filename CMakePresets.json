@@ -25,6 +25,18 @@
       "name": "windows-release",
       "displayName": "Windows Release",
       "inherits": "base",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "windows-ci-release",
+      "displayName": "Windows CI Release",
+      "inherits": "base",
       "generator": "Visual Studio 18 2026",
       "architecture": "x64",
       "condition": {
@@ -43,6 +55,11 @@
       "name": "windows-release",
       "configurePreset": "windows-release",
       "configuration": "Release"
+    },
+    {
+      "name": "windows-ci-release",
+      "configurePreset": "windows-ci-release",
+      "configuration": "Release"
     }
   ],
   "testPresets": [
@@ -56,6 +73,14 @@
     {
       "name": "windows-release",
       "configurePreset": "windows-release",
+      "configuration": "Release",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "windows-ci-release",
+      "configurePreset": "windows-ci-release",
       "configuration": "Release",
       "output": {
         "outputOnFailure": true

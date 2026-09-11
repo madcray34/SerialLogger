@@ -43,15 +43,9 @@ namespace netlib
                const char *closeParenPos = std::strchr(comPos, ')');
                if (closeParenPos != nullptr)
                {
-                  // estrai la stringa del COM, es. "COM3"
+                  // Extract the COM identifier, e.g. "COM3".
                   std::string comStr(comPos, closeParenPos - comPos);
-
-                  // controlla usando il contenuto (non il puntatore)
-                  if (m_connectedPorts.find(comStr) == m_connectedPorts.end())
-                  {
-                     m_connectedPorts.insert(comStr);
-                     ports.emplace_back(std::move(comStr));
-                  }
+                  ports.emplace_back(std::move(comStr));
                }
             }
          }

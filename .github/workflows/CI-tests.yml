@@ -32,20 +32,30 @@ jobs:
       shell: pwsh
       env:
         VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/vcpkg-cache,readwrite
-      run: cmake --preset windows-release -DENABLE_TESTS=ON
+      run: cmake --preset windows-ci-release -DENABLE_TESTS=ON
 
     - name: Build application and tests
-      run: cmake --build --preset windows-release --target SerialLogger netcore_tests
+      run: cmake --build --preset windows-ci-release
 
     - name: Run tests
-      run: ctest --preset windows-release --output-on-failure
+      run: ctest --preset windows-ci-release --output-on-failure
+
+    - name: Upload Windows executable
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: SerialLogger-windows
+        path: |
+          build/windows-ci-release/bin/Release/SerialLogger.exe
+          build/windows-ci-release/bin/Release/*.dll
+        if-no-files-found: error
 
     - name: Upload test logs
       if: failure()
       uses: actions/upload-artifact@v4
       with:
         name: windows-test-logs
-        path: build/windows-release/Testing
+        path: build/windows-ci-release/Testing
 
   test-ubuntu:
     runs-on: ubuntu-24.04
@@ -90,7 +100,7 @@ jobs:
       run: cmake --preset linux-release -DENABLE_TESTS=ON
 
     - name: Build application and tests
-      run: cmake --build --preset linux-release --target SerialLogger netcore_tests netlibapp_linux_tests
+      run: cmake --build --preset linux-release
 
     - name: Run tests
       run: ctest --preset linux-release --output-on-failure

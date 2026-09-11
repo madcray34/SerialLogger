@@ -29,6 +29,8 @@ namespace netlib::core
 
       std::string_view getPortName() const noexcept override;
 
+      void setErrorHandler(std::function<void(const std::error_code &)> handler) override;
+
       private:
       /**
        * @brief ASYNC - Prime context ready to read a message body. If this function is called, a
@@ -53,8 +55,9 @@ namespace netlib::core
       // This references the incoming queue of the parent object
       ITSQueue<OwnedMessage> &m_qMessagesIn;
 
-      bool m_bConnectionEstablished = false;
+      bool                                         m_bConnectionEstablished = false;
+      std::function<void(const std::error_code &)> m_errorHandler;
 
       uint32_t id = 0;
    };
-}    // namespace netlib
+}    // namespace netlib::core

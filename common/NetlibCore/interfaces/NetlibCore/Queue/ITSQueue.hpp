@@ -1,6 +1,7 @@
 #pragma once
 #include <deque>
 #include <chrono>
+#include <functional>
 
 /**
  * @brief Interface for Thread Safe double ended, waiting queue. Practical for mockups.
@@ -30,5 +31,12 @@ namespace netlib::core
       virtual void          wait()                    = 0;
       virtual void          wait(const bool &exit)    = 0;
       virtual bool          wait_for(std::chrono::milliseconds timeout) = 0;
+
+      /**
+       * @brief Runs @p fn with read access to the underlying deque while holding a shared lock,
+       * avoiding the cost of copying the whole container (used by to_deque()). Intended for
+       * rendering/inspection of potentially very large queues.
+       */
+      virtual void withLock(const std::function<void(const std::deque<T> &)> &fn) const = 0;
    };
 }    // namespace netlib::core
