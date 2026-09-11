@@ -67,15 +67,17 @@ namespace netlib
                           });
    }
 
-   const std::vector<std::string> &LinuxSerialPortScanner::getAvailableSerialPorts()
+   std::vector<std::string> LinuxSerialPortScanner::getAvailableSerialPorts()
    {
-      m_ports.clear();
+      std::vector<std::string> ports;
 
       const std::unique_ptr<udev, UdevDeleter> context(udev_new());
       if (context == nullptr)
       {
-         std::cerr << "Unable to create libudev context for serial-port discovery." << std::endl;
-         return m_ports;
+         std::cerr << "[LinuxSerialPortScanner] Unable to create libudev context for serial-port "
+                      "discovery."
+                   << std::endl;
+         return ports;
       }
 
       const std::unique_ptr<udev_enumerate, UdevEnumerateDeleter> enumerator(
@@ -84,8 +86,10 @@ namespace netlib
           udev_enumerate_add_match_subsystem(enumerator.get(), "tty") < 0 ||
           udev_enumerate_scan_devices(enumerator.get()) < 0)
       {
-         std::cerr << "Unable to enumerate Linux serial ports through libudev." << std::endl;
-         return m_ports;
+         std::cerr << "[LinuxSerialPortScanner] Unable to enumerate Linux serial ports through "
+                      "libudev."
+                   << std::endl;
+         return ports;
       }
 
       udev_list_entry *entry = nullptr;
@@ -102,12 +106,12 @@ namespace netlib
          const char *const deviceNode = udev_device_get_devnode(device.get());
          if (deviceNode != nullptr && isSerialDeviceNode(deviceNode))
          {
-            m_ports.emplace_back(deviceNode);
+            ports.emplace_back(deviceNode);
          }
       }
 
-      std::sort(m_ports.begin(), m_ports.end());
-      m_ports.erase(std::unique(m_ports.begin(), m_ports.end()), m_ports.end());
-      return m_ports;
+      std::sort(ports.begin(), ports.end());
+      ports.erase(std::unique(ports.begin(), ports.end()), ports.end());
+      return ports;
    }
 }    // namespace netlib

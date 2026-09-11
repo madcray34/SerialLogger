@@ -22,7 +22,7 @@ TEST(LinuxSerialPortScannerTest, RejectsConsoleAndNonTtyDeviceNodes)
 TEST(LinuxSerialPortScannerTest, ReturnsSortedUniqueDeviceNodes)
 {
    netlib::LinuxSerialPortScanner scanner;
-   const auto                    &ports = scanner.getAvailableSerialPorts();
+   const auto                     ports = scanner.getAvailableSerialPorts();
 
    EXPECT_TRUE(std::is_sorted(ports.begin(), ports.end()));
    EXPECT_EQ(std::adjacent_find(ports.begin(), ports.end()), ports.end());

@@ -8,9 +8,10 @@
 
 namespace netlib
 {
-   const std::vector<std::string> &WindowsCOMPortScanner::getAvailableSerialPorts()
+   std::vector<std::string> WindowsCOMPortScanner::getAvailableSerialPorts()
    {
-      ports.clear();
+      std::vector<std::string> ports;
+      ports.reserve(netlib::core::c_maxPorts);
 
       // Get the device information set for COM ports
       HDEVINFO hDevInfo = SetupDiGetClassDevs(&GUID_DEVINTERFACE_COMPORT, nullptr, nullptr,

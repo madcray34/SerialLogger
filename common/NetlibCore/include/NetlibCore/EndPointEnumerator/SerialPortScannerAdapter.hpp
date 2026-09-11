@@ -10,20 +10,19 @@ namespace netlib::core
       explicit SerialPortScannerAdapter(ISerialPortScanner &scanner) : m_scanner(scanner)
       {}
 
-      const std::vector<CommEndPoint> &getAvailableEndPoints() override
+      std::vector<CommEndPoint> getAvailableEndPoints() override
       {
-         const auto &ports = m_scanner.getAvailableSerialPorts();
+         const auto ports = m_scanner.getAvailableSerialPorts();
 
-         _cache.clear();
-         _cache.reserve(ports.size());
+         std::vector<CommEndPoint> endpoints;
+         endpoints.reserve(ports.size());
          for (const auto &portName : ports)
-            _cache.emplace_back(CommEndPoint{ portName });
+            endpoints.emplace_back(CommEndPoint{ portName });
 
-         return _cache;
+         return endpoints;
       }
 
       private:
-      ISerialPortScanner       &m_scanner;
-      std::vector<CommEndPoint> _cache;
+      ISerialPortScanner &m_scanner;
    };
 }    // namespace netlib::core
