@@ -1,7 +1,7 @@
 set(MODEL_SOURCES 
-    "./src/Model.cpp"
-    "./src/LogViewer.cpp" 
-    "./src/Presenter.cpp"
+    "./src/model.cpp"
+    "./src/LogViewer.cpp"
+    "./src/presenter.cpp"
     "./src/FileExplorer.cpp"
     )
 

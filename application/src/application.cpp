@@ -20,14 +20,14 @@
 
 // Application defined libraries
 // Network application libraries
-#include <NetlibApp/EndpointEnumerator/Windows/COMPort/WindowsCOMPortScanner.hpp>
+#include <NetlibApp/EndpointEnumerator/PlatformSerialPortScanner.hpp>
 #include <NetlibApp/Connection/Asio/AsioSerialConnectionFactory.hpp>
 #include <NetlibApp/Event/Asio/AsioEventLoop.hpp>
 #include <NetlibApp/Event/Asio/AsioTimer.hpp>
 
 // GUI application backend libraries
-#include <presenter/Presenter.hpp>
-#include <model/Model.hpp>
+#include <presenter/presenter.hpp>
+#include <model/model.hpp>
 #include <view/LogViewer.hpp>
 #include <view/FileExplorer.hpp>
 
@@ -239,7 +239,7 @@ int main(int, char **)
    // ITSQueue<OwnedMessage> &msgIn, COMPortScanner &portScanner,
    //    std::chrono::seconds periodicity
    netlib::core::TSQueue<netlib::core::OwnedMessage> myQueue;
-   static netlib::WindowsCOMPortScanner              portScanner;
+   static netlib::PlatformSerialPortScanner           portScanner;
    static netlib::core::SerialPortScannerAdapter     adapter{ portScanner };
    static boost::asio::io_context                    asioContext;
    static netlib::AsioEventLoop                      eventLoop{ asioContext };

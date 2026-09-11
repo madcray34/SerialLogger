@@ -2,6 +2,7 @@
 #include <fmt/format.h>
 #include <iostream>
 #include <imgui.h>
+#include <cstring>
 
 /**
  * @brief THIS FILE IS WORK IN PROGRESS... DO NOT CONSIDER IT FOR THE MOMENT

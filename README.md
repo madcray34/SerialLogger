@@ -1,105 +1,103 @@
 # SerialLogger
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![C++](https://img.shields.io/badge/C%2B%2B-20-blue)]()
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20MacOS-lightgrey)]()
+SerialLogger is a C++20 GLFW/ImGui application for discovering serial ports and logging their
+data. Windows uses SetupAPI for discovery. Ubuntu 24.04 uses `libudev` to discover USB serial
+devices such as `/dev/ttyUSB0` and `/dev/ttyACM0`.
 
-## Overview
-**SerialLogger** is a high-performance, cross-platform serial communication logging tool written in modern C++ (C++20). It is designed to auto detect when a serial port is connected and efficiently log (and analyze in future release) serial data streams, making it an ideal solution for embedded systems debugging, hardware communication analysis, and industrial automation.
+## Supported platforms
 
-## Features
-- **Cross-Platform Support**: Runs on Windows. Linux, and macOS are work in progres...
-- **C++20**: Leveraging the latest C++ features for better performance and maintainability.
-- **Modular Architecture**: Easily extendable and customizable.
-- **ImGui-based GUI**: User-friendly graphical interface for data visualization.
-- **Boost Asio for Networking**: Provides networking capabilities for remote logging.
-- **Lightweight & Fast**: Optimized for high-performance logging.
+| Platform | Build and GUI | Serial discovery |
+| --- | --- | --- |
+| Windows | Supported | SetupAPI |
+| Ubuntu 24.04 | Supported | `libudev` |
+| Ubuntu 24.04 under WSL | Build, tests, and GUI smoke testing supported | Depends on separately configured USB passthrough |
+| macOS | Not supported | Not implemented |
 
-## Folder Structure
-```
-SerialLogger/
-│-- CMakeLists.txt          # Project build configuration
-│-- prepare.bat             # Preparation script
-│-- vcpkg.json              # Dependencies configuration
-│
-├── app/                    # Application source code
-├── cmake/                  # CMake utilities and scripts
-├── external/               # External dependencies
-├── modules/                # Core modules
-├── tools/                  # Utility scripts and tools
-```
+WSL is useful for development but does not automatically expose Windows COM or USB devices as
+Linux `/dev/tty*` devices. WSLg can display the GUI when it is available. Physical serial-device
+validation must be completed on a native Ubuntu installation or a WSL setup with USB passthrough.
 
-## Build Instructions
-### Prerequisites
-Ensure you have the following installed:
-- **CMake (>= 3.30)**
-- **C++20 Compiler** (GCC, Clang, or MSVC)
-  
-The following will be automatically added to the ./external folder:
-- **Vcpkg** (for dependency management)
-- **Boost, fmt, GLFW, ImGui, ImPlot, OpenGL** (handled via vcpkg)
+## Prerequisites
 
-### Build Steps
-#### Linux/macOS
-```sh
-git clone https://github.com/madcray34/SerialLogger.git
-cd SerialLogger
-mkdir build && cd build
-cmake .. -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
-make -j$(nproc)
+- CMake 3.28 or newer
+- A C++20 compiler
+- [vcpkg](https://github.com/microsoft/vcpkg), bootstrapped and available through `VCPKG_ROOT`
+
+On Ubuntu 24.04, install the system libraries required by `libudev`, GLFW, and OpenGL:
+
+```bash
+sudo apt-get update
+sudo apt-get install --yes \
+  build-essential cmake pkg-config libudev-dev \
+  libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev \
+  libgl1-mesa-dev xvfb
 ```
 
-#### Windows
+vcpkg is cross-platform. It supplies the portable C++ dependencies declared in `vcpkg.json`
+(`fmt`, GLFW, ImGui, Boost, and GoogleTest); `libudev-dev` is an Ubuntu system dependency.
+
+## Install vcpkg
+
+Choose a location outside the repository and set `VCPKG_ROOT` to it:
+
+```bash
+git clone --branch 2026.07.29 --depth 1 https://github.com/microsoft/vcpkg.git "$HOME/vcpkg"
+"$HOME/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
+export VCPKG_ROOT="$HOME/vcpkg"
+```
+
+On Windows PowerShell:
+
 ```powershell
-git clone https://github.com/madcray34/SerialLogger.git
-cd SerialLogger
-mkdir build; cd build
-cmake ..
-cmake --build . --config Release
+git clone --branch 2026.07.29 --depth 1 https://github.com/microsoft/vcpkg.git $HOME\vcpkg
+& $HOME\vcpkg\bootstrap-vcpkg.bat -disableMetrics
+$env:VCPKG_ROOT = "$HOME\vcpkg"
 ```
 
-## Usage
-After building, you can run SerialLogger, depending on you're local CMake configuration.
-For instance building it with MSVC:
-```sh
-cd build
-./app/Release/SerialLogger.exe
+## Build and test
+
+### Ubuntu 24.04 and WSL
+
+```bash
+export VCPKG_ROOT="$HOME/vcpkg"
+cmake --preset linux-release -DENABLE_TESTS=ON
+cmake --build --preset linux-release --target SerialLogger netcore_tests netlibapp_linux_tests
+ctest --preset linux-release --output-on-failure
 ```
 
-## Configuration Options
-SerialLogger provides multiple configuration options in `CMakeLists.txt`:
-- `ENABLE_WARNINGS` (ON/OFF) - Enables compiler warnings.
-- `ENABLE_WARNINGS_AS_ERRORS` (ON/OFF) - Treats warnings as errors.
-- `ENABLE_CLANG_FORMAT` (ON/OFF) - Enables Clang format enforcement.
-- `ENABLE_CLANG_TIDY` (ON/OFF) - Enables Clang static analysis.
-- `ENABLE_LTO` (ON/OFF) - Enables Link Time Optimization for better performance.
+The executable is `build/linux-release/bin/SerialLogger`. In a headless environment, verify
+startup with:
 
-## Dependencies
-SerialLogger uses several external libraries:
-- **Boost** (circular_buffer, asio, system)
-- **fmt** (formatting library)
-- **GLFW** (window management)
-- **ImGui** (GUI framework)
-- **ImPlot** (plotting library for ImGui)
-- **OpenGL** (rendering backend)
+```bash
+timeout 5s xvfb-run -a build/linux-release/bin/SerialLogger
+```
 
-All dependencies are managed via [vcpkg](https://vcpkg.io/).
+An exit status of `124` means the application remained running until the expected timeout.
 
-## Contribution
-Contributions are welcome! Please follow these steps:
-1. Fork the repository.
-2. Create a new branch (`feature-branch`).
-3. Commit your changes.
-4. Push to your fork.
-5. Open a pull request.
+### Windows
 
-## License
-This project is licensed under the [MIT License](LICENSE).
+```powershell
+$env:VCPKG_ROOT = "$HOME\vcpkg"
+cmake --preset windows-release -DENABLE_TESTS=ON
+cmake --build --preset windows-release --target SerialLogger netcore_tests
+ctest --preset windows-release --output-on-failure
+```
 
-## Contact
-For issues, feature requests, or general inquiries, please open an [issue](https://github.com/madcray34/SerialLogger/issues) or reach out via email.
+## Native Ubuntu serial-device acceptance
 
----
-*Made with ❤️ by madcray34*
+On a native Ubuntu 24.04 machine:
 
+1. Connect a USB serial device and confirm a `/dev/ttyUSB*` or `/dev/ttyACM*` node exists.
+2. Ensure the current user may access serial devices:
+
+   ```bash
+   groups
+   sudo usermod -aG dialout "$USER"
+   ```
+
+   Log out and back in after modifying group membership.
+3. Run `build/linux-release/bin/SerialLogger`.
+4. Confirm the connected device is discovered, can be opened, and incoming data is logged.
+
+Use `ls -l /dev/ttyUSB* /dev/ttyACM*` to inspect permissions. Absence of such devices in WSL is
+normal and is not a SerialLogger failure.

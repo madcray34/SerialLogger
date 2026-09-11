@@ -1,6 +1,6 @@
-name: CI - Unit Tests
+name: CI
 
-on: 
+on:
   push:
     branches: ["**"]
   pull_request:
@@ -8,40 +8,104 @@ on:
 jobs:
   test-windows:
     runs-on: windows-latest
-
     env:
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_TRIPLET: x64-windows
 
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
-    # - name: Setup vcpkg
-    #   id: vcpkg
-    #   uses: microsoft/setup-vcpkg@v1
-    #   with:
-    #     triplet: x64-windows
-    #     runVcpkgInstall: true
+    - name: Restore vcpkg binary cache
+      uses: actions/cache@v4
+      with:
+        path: vcpkg-cache
+        key: windows-vcpkg-${{ hashFiles('vcpkg.json') }}
 
-    - name: Configure (Cmake + tests)
+    - name: Bootstrap vcpkg
       shell: pwsh
-      # env:
-      #   VCPKG_DIR: ${{ steps.vcpkg.outputs.vcpkgRoot }}
-      run: >
-        cmake -S . -B build
-        -DCMAKE_BUILD_TYPE=Release
-        -DENABLE_TESTS=ON
+      run: |
+        git clone --branch 2026.07.29 --depth 1 https://github.com/microsoft/vcpkg.git $env:VCPKG_ROOT
+        & "$env:VCPKG_ROOT\bootstrap-vcpkg.bat" -disableMetrics
 
-    - name: Build tests
-      run: cmake --build build --config Release --target netcore_tests
+    - name: Configure
+      shell: pwsh
+      env:
+        VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/vcpkg-cache,readwrite
+      run: cmake --preset windows-release -DENABLE_TESTS=ON
 
-    - name: Run Tests
-      run: ctest -C Release --test-dir build --output-on-failure
+    - name: Build application and tests
+      run: cmake --build --preset windows-release --target SerialLogger netcore_tests
 
-    # Save logs on failure
-    - name: Upload Test Logs
+    - name: Run tests
+      run: ctest --preset windows-release --output-on-failure
+
+    - name: Upload test logs
       if: failure()
       uses: actions/upload-artifact@v4
       with:
-        name: test-logs
-        path: build/Testing
+        name: windows-test-logs
+        path: build/windows-release/Testing
+
+  test-ubuntu:
+    runs-on: ubuntu-24.04
+    env:
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      VCPKG_DEFAULT_TRIPLET: x64-linux
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install --yes \
+          build-essential \
+          cmake \
+          pkg-config \
+          libudev-dev \
+          libx11-dev \
+          libxrandr-dev \
+          libxinerama-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libgl1-mesa-dev \
+          xvfb
+
+    - name: Restore vcpkg binary cache
+      uses: actions/cache@v4
+      with:
+        path: vcpkg-cache
+        key: ubuntu-vcpkg-${{ hashFiles('vcpkg.json') }}
+
+    - name: Bootstrap vcpkg
+      run: |
+        git clone --branch 2026.07.29 --depth 1 https://github.com/microsoft/vcpkg.git "$VCPKG_ROOT"
+        "$VCPKG_ROOT/bootstrap-vcpkg.sh" -disableMetrics
+
+    - name: Configure
+      env:
+        VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/vcpkg-cache,readwrite
+      run: cmake --preset linux-release -DENABLE_TESTS=ON
+
+    - name: Build application and tests
+      run: cmake --build --preset linux-release --target SerialLogger netcore_tests netlibapp_linux_tests
+
+    - name: Run tests
+      run: ctest --preset linux-release --output-on-failure
+
+    - name: Smoke-test GUI startup
+      run: |
+        set +e
+        timeout 5s xvfb-run -a build/linux-release/bin/SerialLogger
+        status=$?
+        set -e
+        test "$status" -eq 0 -o "$status" -eq 124
+
+    - name: Upload test logs
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ubuntu-test-logs
+        path: build/linux-release/Testing

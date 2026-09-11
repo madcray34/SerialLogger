@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.28)
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/VcpkgSetup.cmake)
 
 project(
     "SerialLogger"
@@ -47,9 +49,6 @@ if(ENABLE_CLANG_TIDY)
     set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*")  # Enable all checks
 endif()
 
-include(VcpkgSetup)  # Now we load the vcpkg logic from the separate file
-include(${VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake)
-
 find_package(fmt CONFIG REQUIRED QUIET)
 find_package(glfw3 CONFIG REQUIRED QUIET)
 find_package(imgui CONFIG REQUIRED QUIET)
@@ -64,7 +63,7 @@ endif()
 if(ENABLE_TESTS)
     find_package(GTest CONFIG REQUIRED QUIET)
     enable_testing()
-    add_subdirectory(tests ./tests)
+    add_subdirectory(tests)
     message(STATUS "Unit tests enabled.")
 endif()
 

@@ -15,8 +15,6 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE
     ${LIBRARY_GUI_BACKEND_NAME}
     glfw
     OpenGL::GL
-    setupapi
-    ws2_32
     imgui::imgui
 )
 
@@ -59,10 +57,9 @@ if(ENABLE_ALLOC_TRACING)
     )
 endif()
 
-# # Set output directory for the executable
-# set_target_properties(${EXECUTABLE_NAME} 
-#     PROPERTIES RUNTIME_OUTPUT_DIRECTORY 
-#     ${CMAKE_BINARY_DIR}/bin)
+set_target_properties(${EXECUTABLE_NAME}
+    PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+    ${CMAKE_BINARY_DIR}/bin)
 
 # # Copy the DLL to the executable's directory after building
 # add_custom_command(TARGET ${EXECUTABLE_NAME}  

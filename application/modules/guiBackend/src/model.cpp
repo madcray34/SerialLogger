@@ -1,5 +1,5 @@
 #include <NetlibCore/Queue/ITSQueue.hpp>
-#include <model/Model.hpp>
+#include <model/model.hpp>
 #include <fstream>
 #include <chrono>
 #include <thread>
