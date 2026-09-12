@@ -1,19 +1,31 @@
 #include <application/AppConnectionSupervisor.hpp>
-#include <thread>
 
 namespace netlib
 {
    void AppConnectionSupervisor::startMessagePump()
    {
-      std::thread(
-          [this]()
+      if (m_monitor.joinable())
+      {
+         return;
+      }
+
+      m_monitor = std::jthread(
+          [this](std::stop_token stopToken)
           {
-             while (!stopMonitoring)
+             while (!stopToken.stop_requested())
              {
                 core::ConnectionSupervisor::update(10, true);
              }
-          })
-          .detach();    // Run in the background
+          });
+   }
+
+   void AppConnectionSupervisor::stopMessagePump()
+   {
+      if (m_monitor.joinable())
+      {
+         m_monitor.request_stop();
+         m_monitor.join();
+      }
    }
 
    bool AppConnectionSupervisor::onClientConnect(std::shared_ptr<core::IConnection> client)

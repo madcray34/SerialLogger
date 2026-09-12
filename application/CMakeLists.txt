@@ -2,7 +2,7 @@ add_subdirectory(modules ./modules)
 
 set(EXE_SOURCES
     "./src/application.cpp"
-    "./src/AppConnectionSupervisor.cpp")
+    "./src/SerialSession.cpp")
 
 add_executable(${EXECUTABLE_NAME} ${EXE_SOURCES})
 
@@ -61,6 +61,11 @@ set_target_properties(${EXECUTABLE_NAME}
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY
     ${CMAKE_BINARY_DIR}/bin)
 
-# # Copy the DLL to the executable's directory after building
-# add_custom_command(TARGET ${EXECUTABLE_NAME}  
-#     POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${LIBRARY_VIEW_NAME}> $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>)
+if(WIN32)
+    add_custom_command(TARGET ${EXECUTABLE_NAME}
+        POST_BUILD
+        COMMAND
+            "$<$<BOOL:$<TARGET_RUNTIME_DLLS:${EXECUTABLE_NAME}>>:${CMAKE_COMMAND};-E;copy_if_different;$<TARGET_RUNTIME_DLLS:${EXECUTABLE_NAME}>;$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>>"
+        COMMAND_EXPAND_LISTS
+        VERBATIM)
+endif()

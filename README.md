@@ -4,6 +4,14 @@ SerialLogger is a C++20 GLFW/ImGui application for discovering serial ports and 
 data. Windows uses SetupAPI for discovery. Ubuntu 24.04 uses `libudev` to discover USB serial
 devices such as `/dev/ttyUSB0` and `/dev/ttyACM0`.
 
+## Serial-port usage
+
+The default serial settings are `115200 8-N-1` with no flow control. Use the **Serial Port** panel
+to refresh the available ports, choose one port, and configure its baud rate, data bits, parity,
+stop bits, and flow control. Press **Connect** to open the selected port. **Apply and reconnect**
+closes the current port before reopening it with the displayed settings. SerialLogger does not
+save the selected port or settings between runs.
+
 ## Supported platforms
 
 | Platform | Build and GUI | Serial discovery |

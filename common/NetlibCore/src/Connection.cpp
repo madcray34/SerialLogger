@@ -43,6 +43,11 @@ namespace netlib::core
       return m_portName;
    }
 
+   void Connection::setErrorHandler(std::function<void(const std::error_code &)> handler)
+   {
+      m_errorHandler = std::move(handler);
+   }
+
    void Connection::_readBody()
    {
       auto _ptr = shared_from_this();
@@ -73,8 +78,10 @@ namespace netlib::core
              }
              else if (ec)
              {
-                // TODO for the future improve error handling
-                std::cout << "[" << _ptr->getID() << "] Read Body Fail: " << ec.message() << "\n";
+                if (_ptr->m_errorHandler)
+                {
+                   _ptr->m_errorHandler(ec);
+                }
                 _ptr->m_textStream->close();
              }
           });

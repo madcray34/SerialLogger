@@ -6,8 +6,7 @@ namespace netlib
 {
    struct SerialOptions
    {
-      /* data */
-      unsigned int baudRate      = 9600;
+      unsigned int baudRate      = 115200;
       unsigned int characterSize = 8;
 
       enum class Parity
@@ -30,5 +29,7 @@ namespace netlib
          Software,
          Hardware
       } flowControl = FlowControl::None;
+
+      friend constexpr bool operator==(const SerialOptions &, const SerialOptions &) = default;
    };
 }    // namespace netlib

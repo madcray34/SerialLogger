@@ -1,5 +1,7 @@
 #include <cstdint>
 #include <filesystem>
+#include <algorithm>
+#include <array>
 
 // ImGui libraries
 #include "imgui_impl_glfw.h"
@@ -16,14 +18,12 @@
 // Common network core libraries
 #include <NetlibCore/Queue/types/Message.hpp>
 #include <NetlibCore/Queue/TSQueue.hpp>
-#include <NetlibCore/EndPointEnumerator/SerialPortScannerAdapter.hpp>
 
 // Application defined libraries
 // Network application libraries
 #include <NetlibApp/EndpointEnumerator/PlatformSerialPortScanner.hpp>
 #include <NetlibApp/Connection/Asio/AsioSerialConnectionFactory.hpp>
 #include <NetlibApp/Event/Asio/AsioEventLoop.hpp>
-#include <NetlibApp/Event/Asio/AsioTimer.hpp>
 
 // GUI application backend libraries
 #include <presenter/presenter.hpp>
@@ -32,7 +32,7 @@
 #include <view/FileExplorer.hpp>
 
 // Aplication libraries
-#include <application/AppConnectionSupervisor.hpp>
+#include <application/SerialSession.hpp>
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
    #pragma comment(lib, "legacy_stdio_definitions")
@@ -154,6 +154,140 @@ void drawmenu(GLFWwindow *const window, bool &show_file_explorer, Model &model)
    }
 }
 
+void drawSerialPortPanel(netlib::SerialSession &session)
+{
+   static constexpr std::array<unsigned int, 9> baudRates{ 9600,   19200,  38400,  57600,  115200,
+                                                           230400, 460800, 921600, 1000000 };
+   static constexpr const char                 *parityNames[]  = { "None", "Odd", "Even" };
+   static constexpr const char                 *stopBitNames[] = { "1", "1.5", "2" };
+   static constexpr const char *flowControlNames[]             = { "None", "Software", "Hardware" };
+
+   static bool                  initialized = false;
+   static std::string           selectedPort;
+   static netlib::SerialOptions options;
+
+   const auto snapshot = session.snapshot();
+   if (!initialized)
+   {
+      options     = snapshot.options;
+      initialized = true;
+   }
+
+   if (std::find(snapshot.ports.begin(), snapshot.ports.end(), selectedPort) ==
+       snapshot.ports.end())
+   {
+      selectedPort.clear();
+   }
+
+   ImGui::Begin("Serial Port");
+   if (ImGui::Button("Refresh"))
+   {
+      session.refresh();
+   }
+
+   const char *portPreview = selectedPort.empty() ? "Select a port" : selectedPort.c_str();
+   if (ImGui::BeginCombo("Port", portPreview))
+   {
+      for (const auto &port : snapshot.ports)
+      {
+         const bool selected = selectedPort == port;
+         if (ImGui::Selectable(port.c_str(), selected))
+         {
+            selectedPort = port;
+         }
+         if (selected)
+         {
+            ImGui::SetItemDefaultFocus();
+         }
+      }
+      ImGui::EndCombo();
+   }
+
+   int baudIndex = -1;
+   for (std::size_t index = 0; index < baudRates.size(); ++index)
+   {
+      if (baudRates[index] == options.baudRate)
+      {
+         baudIndex = static_cast<int>(index);
+         break;
+      }
+   }
+   const std::string baudPreview = baudIndex >= 0 ? std::to_string(options.baudRate) : "Select";
+   if (ImGui::BeginCombo("Baud rate", baudPreview.c_str()))
+   {
+      for (std::size_t index = 0; index < baudRates.size(); ++index)
+      {
+         const bool selected = baudIndex == static_cast<int>(index);
+         if (ImGui::Selectable(std::to_string(baudRates[index]).c_str(), selected))
+         {
+            options.baudRate = baudRates[index];
+         }
+         if (selected)
+         {
+            ImGui::SetItemDefaultFocus();
+         }
+      }
+      ImGui::EndCombo();
+   }
+
+   int dataBits = options.characterSize == 7 ? 0 : 1;
+   if (ImGui::Combo("Data bits", &dataBits, "7\08\0"))
+   {
+      options.characterSize = dataBits == 0 ? 7 : 8;
+   }
+
+   int parity = static_cast<int>(options.parity);
+   if (ImGui::Combo("Parity", &parity, parityNames, IM_ARRAYSIZE(parityNames)))
+   {
+      options.parity = static_cast<netlib::SerialOptions::Parity>(parity);
+   }
+
+   int stopBits = static_cast<int>(options.stopBits);
+   if (ImGui::Combo("Stop bits", &stopBits, stopBitNames, IM_ARRAYSIZE(stopBitNames)))
+   {
+      options.stopBits = static_cast<netlib::SerialOptions::StopBits>(stopBits);
+   }
+
+   int flowControl = static_cast<int>(options.flowControl);
+   if (ImGui::Combo("Flow control", &flowControl, flowControlNames, IM_ARRAYSIZE(flowControlNames)))
+   {
+      options.flowControl = static_cast<netlib::SerialOptions::FlowControl>(flowControl);
+   }
+
+   const bool isConnected = snapshot.state == netlib::SerialSessionState::Connected;
+   const bool isBusy      = snapshot.state == netlib::SerialSessionState::Connecting;
+   if (ImGui::Button(isConnected ? "Apply and reconnect" : "Connect") && !isBusy &&
+       !selectedPort.empty())
+   {
+      session.connect(selectedPort, options);
+   }
+   ImGui::SameLine();
+   if (ImGui::Button("Disconnect") && (isConnected || isBusy))
+   {
+      session.disconnect();
+   }
+
+   const char *state = "Disconnected";
+   if (snapshot.state == netlib::SerialSessionState::Connecting)
+   {
+      state = "Connecting";
+   }
+   else if (snapshot.state == netlib::SerialSessionState::Connected)
+   {
+      state = "Connected";
+   }
+   else if (snapshot.state == netlib::SerialSessionState::Error)
+   {
+      state = "Error";
+   }
+   ImGui::Text("Status: %s", state);
+   if (!snapshot.error.empty())
+   {
+      ImGui::TextColored(ImVec4(1.0F, 0.3F, 0.3F, 1.0F), "%s", snapshot.error.c_str());
+   }
+   ImGui::End();
+}
+
 
 int main(int, char **)
 {
@@ -239,18 +373,13 @@ int main(int, char **)
    // ITSQueue<OwnedMessage> &msgIn, COMPortScanner &portScanner,
    //    std::chrono::seconds periodicity
    netlib::core::TSQueue<netlib::core::OwnedMessage> myQueue;
-   static netlib::PlatformSerialPortScanner           portScanner;
-   static netlib::core::SerialPortScannerAdapter     adapter{ portScanner };
+   static netlib::PlatformSerialPortScanner          portScanner;
    static boost::asio::io_context                    asioContext;
    static netlib::AsioEventLoop                      eventLoop{ asioContext };
-   static netlib::AsioTimerFactory                   timerFactory{ eventLoop };
    static netlib::AsioSerialConnectionFactory        connFactory{ eventLoop };
-
-   netlib::AppConnectionSupervisor connectionSupervisor{
-      myQueue, adapter, connFactory, eventLoop, timerFactory, std::chrono::seconds(5), model
-   };
-   connectionSupervisor.start();
-   connectionSupervisor.startMessagePump();
+   netlib::SerialSession serialSession{ portScanner, connFactory, asioContext, myQueue, model };
+   serialSession.start();
+   serialSession.refresh();
    const auto clear_color = ImVec4(30.0F / 255.0F, 30.0F / 255.0F, 30.0F / 255.0F, 1.00f);
 
    bool show_file_explorer{ false };
@@ -283,6 +412,7 @@ int main(int, char **)
       ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
       drawmenu(window, show_file_explorer, model);
+      drawSerialPortPanel(serialSession);
 
       if (show_file_explorer)
       {
@@ -304,7 +434,7 @@ int main(int, char **)
    glfwDestroyWindow(window);
    glfwTerminate();
 
-   connectionSupervisor.stopMessagePump();
+   serialSession.stop();
    presenter.stop();
    return 0;
 }

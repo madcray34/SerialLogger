@@ -1,5 +1,7 @@
 #pragma once
 #include <cstdint>
+#include <functional>
+#include <system_error>
 #include <string_view>
 
 namespace netlib::core
@@ -43,5 +45,9 @@ namespace netlib::core
        * @return std::string
        */
       virtual std::string_view getPortName() const noexcept = 0;
+
+      virtual void setErrorHandler(
+          [[maybe_unused]] std::function<void(const std::error_code &)> handler)
+      {}
    };
-}    // namespace netlib
+}    // namespace netlib::core
